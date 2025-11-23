@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
+const { generateToken, getTokenExpirationTime } = require('../utils/jwt');
 
 const router = express.Router();
 
@@ -60,12 +61,18 @@ router.post('/google', async (req, res) => {
     }
 
     // 3. Return session/success (In a real app, issue a JWT here)
+    // Generate JWT token
+    const token = generateToken(user.id, user.email, user.role || 'user');
+    const expiresIn = getTokenExpirationTime();
+
     res.json({
       message: 'Login successful',
+      token,
+      expiresIn,
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role || 'user',
         name: given_name
       }
     });

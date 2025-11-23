@@ -1,20 +1,47 @@
 import React, { useState } from 'react';
 import { FaGoogle, FaMicrosoft } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useGoogleLogin } from '@react-oauth/google';
+import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import './LoginPage.css';
 
-import { useGoogleLogin } from '@react-oauth/google';
-
 const LoginPage = () => {
     const { t } = useTranslation();
+    const { login } = useAuth();
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        console.log('Login attempt:', { email, password });
+        setLoading(true);
+        setError('');
+
+        try {
+            const res = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                login(data.token, data.user);
+                navigate('/dashboard');
+            } else {
+                setError(data.error || 'Login failed');
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            setError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const googleLogin = useGoogleLogin({
@@ -27,17 +54,17 @@ const LoginPage = () => {
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    console.log('Google Login Success:', data);
-                    alert(`Welcome ${data.user.name}!`);
-                    // Navigate to dashboard or store session
+                    login(data.token, data.user);
+                    navigate('/dashboard');
                 } else {
-                    console.error('Google Login Failed:', data.error);
+                    setError(data.error || 'Google login failed');
                 }
             } catch (err) {
                 console.error('Google Login Error:', err);
+                setError('Network error. Please try again.');
             }
         },
-        onError: () => console.log('Google Login Failed'),
+        onError: () => setError('Google Login Failed'),
     });
 
     const handleSocialLogin = (provider) => {
@@ -121,8 +148,15 @@ const LoginPage = () => {
                                 <Link to="/forgot-password" style={{ fontSize: '0.875rem', color: '#2563eb', textDecoration: 'none' }}>{t('forgot_password')}</Link>
                             </div>
 
+                            {error && (
+                                <div style={{ padding: '0.75rem', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.875rem' }}>
+                                    {error}
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
+                                disabled={loading}
                                 style={{ width: '100%', padding: '0.75rem', backgroundColor: '#111827', color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '600', cursor: 'pointer', transition: 'background-color 0.2s' }}
                             >
                                 {t('sign_in')}

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import './LoginPage.css';
 
 const RegisterPage = () => {
     const { t } = useTranslation();
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         firstName: '',
@@ -69,8 +71,9 @@ const RegisterPage = () => {
                 throw new Error(data.error || t('registration_failed'));
             }
 
-            alert(t('registration_success'));
-            navigate('/');
+            // Auto-login after successful registration
+            login(data.token, data.user);
+            navigate('/dashboard');
         } catch (err) {
             setError(err.message);
         }

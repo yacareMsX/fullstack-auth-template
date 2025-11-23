@@ -6,6 +6,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const googleAuthRoutes = require('./routes/google_auth');
 const passwordResetRoutes = require('./routes/password_reset');
+const userRoutes = require('./routes/user');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use('/api', authRoutes);
 app.use('/api/auth', googleAuthRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
+app.use('/api/user', userRoutes);
 
 app.get('/api/health', async (req, res) => {
     try {
