@@ -6,6 +6,10 @@ import RegisterPage from './pages/RegisterPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import DashboardPage from './pages/DashboardPage'
+import InvoiceDashboard from './pages/invoices/InvoiceDashboard'
+import InvoiceList from './pages/invoices/InvoiceList'
+import InvoiceForm from './pages/invoices/InvoiceForm'
+import InvoiceDetail from './pages/invoices/InvoiceDetail'
 import './App.css'
 
 function App() {
@@ -21,6 +25,46 @@ function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/invoices"
+          element={
+            <ProtectedRoute>
+              <InvoiceDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/invoices/list"
+          element={
+            <ProtectedRoute>
+              <InvoiceList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/invoices/new"
+          element={
+            <ProtectedRoute>
+              <InvoiceForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/invoices/edit/:id"
+          element={
+            <ProtectedRoute>
+              <InvoiceForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/invoices/:id"
+          element={
+            <ProtectedRoute>
+              <InvoiceDetail />
             </ProtectedRoute>
           }
         />

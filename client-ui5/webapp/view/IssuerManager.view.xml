@@ -1,0 +1,49 @@
+<mvc:View
+    controllerName="invoice.app.controller.IssuerManager"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">
+    
+    <Page title="Manage Issuers" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <Table
+                id="issuersTable"
+                items="{issuer>/issuers}"
+                mode="SingleSelectMaster"
+                growing="true"
+                growingThreshold="20">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="Issuers" level="H2"/>
+                        <ToolbarSpacer/>
+                        <Button 
+                            text="New Issuer" 
+                            icon="sap-icon://add" 
+                            type="Emphasized"
+                            press="onCreateIssuer"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column><Text text="Name"/></Column>
+                    <Column><Text text="NIF"/></Column>
+                    <Column><Text text="Email"/></Column>
+                    <Column><Text text="Phone"/></Column>
+                    <Column width="8em"><Text text="Actions"/></Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <ObjectIdentifier title="{issuer>nombre}"/>
+                            <Text text="{issuer>nif}"/>
+                            <Text text="{issuer>email}"/>
+                            <Text text="{issuer>telefono}"/>
+                            <HBox>
+                                <Button icon="sap-icon://edit" type="Transparent" press="onEditIssuer"/>
+                                <Button icon="sap-icon://delete" type="Transparent" press="onDeleteIssuer"/>
+                            </HBox>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

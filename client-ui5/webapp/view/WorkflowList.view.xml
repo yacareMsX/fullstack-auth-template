@@ -1,0 +1,62 @@
+<mvc:View
+    controllerName="invoice.app.controller.WorkflowList"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core">
+    
+    <Page title="Workflows" class="sapUiContentPadding">
+        <headerContent>
+            <Button icon="sap-icon://add" text="Create Workflow" press="onCreateWorkflow" type="Emphasized"/>
+        </headerContent>
+        
+        <content>
+            <Table
+                id="workflowTable"
+                items="{workflows>/}"
+                growing="true"
+                growingThreshold="20"
+                mode="SingleSelectMaster"
+                itemPress="onWorkflowPress">
+                
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="All Workflows" level="H2"/>
+                        <ToolbarSpacer/>
+                        <SearchField width="30%" search="onSearch"/>
+                    </Toolbar>
+                </headerToolbar>
+                
+                <columns>
+                    <Column>
+                        <Text text="Name"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="Description"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                        <Text text="Status"/>
+                    </Column>
+                    <Column hAlign="End">
+                        <Text text="Actions"/>
+                    </Column>
+                </columns>
+                
+                <items>
+                    <ColumnListItem type="Navigation">
+                        <cells>
+                            <ObjectIdentifier title="{workflows>name}"/>
+                            <Text text="{workflows>description}"/>
+                            <ObjectStatus
+                                text="{= ${workflows>is_active} ? 'Active' : 'Inactive' }"
+                                state="{= ${workflows>is_active} ? 'Success' : 'Warning' }"/>
+                            <HBox justifyContent="End">
+                                <Button icon="sap-icon://edit" press="onEditWorkflow" type="Transparent"/>
+                                <Button icon="sap-icon://delete" press="onDeleteWorkflow" type="Transparent"/>
+                            </HBox>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

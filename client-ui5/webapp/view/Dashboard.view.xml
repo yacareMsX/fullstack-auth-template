@@ -1,0 +1,116 @@
+<mvc:View
+    controllerName="invoice.app.controller.Dashboard"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout">
+    
+    <Page title="{i18n>dashboardTitle}" showNavButton="false">
+        <headerContent>
+            <Button 
+                text="Logout" 
+                icon="sap-icon://log" 
+                press="onLogout"/>
+        </headerContent>
+        <content>
+            <layout:VerticalLayout width="100%" class="sapUiContentPadding">
+                
+                <!-- Header Section -->
+                <layout:HorizontalLayout class="sapUiMediumMarginBottom">
+                    <Title text="{i18n>invoices}" level="H1" class="sapUiSmallMarginEnd"/>
+                    <Button text="{i18n>newInvoice}" type="Emphasized" press="onCreateInvoice" icon="sap-icon://add"/>
+                </layout:HorizontalLayout>
+
+                <!-- Stats Cards -->
+                <layout:Grid defaultSpan="L3 M6 S12" class="sapUiMediumMarginBottom">
+                    <GenericTile header="{i18n>totalInvoices}" press="onNavToList">
+                        <TileContent>
+                            <NumericContent value="{dashboard>/stats/total}" icon="sap-icon://document"/>
+                        </TileContent>
+                    </GenericTile>
+                    
+                    <GenericTile header="{i18n>draft}">
+                        <TileContent>
+                            <NumericContent value="{dashboard>/stats/borrador}" valueColor="Neutral"/>
+                        </TileContent>
+                    </GenericTile>
+                    
+                    <GenericTile header="{i18n>issued}">
+                        <TileContent>
+                            <NumericContent value="{dashboard>/stats/emitida}" valueColor="Good"/>
+                        </TileContent>
+                    </GenericTile>
+                    
+                    <GenericTile header="{i18n>paid}">
+                        <TileContent>
+                            <NumericContent value="{dashboard>/stats/pagada}" valueColor="Good"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:Grid>
+
+                <!-- Recent Invoices Table -->
+                <Panel headerText="{i18n>recentInvoices}" class="sapUiResponsiveMargin">
+                    <Table
+                        id="recentInvoicesTable"
+                        items="{dashboard>/recentInvoices}"
+                        mode="SingleSelectMaster"
+                        selectionChange="onInvoiceSelect">
+                        <columns>
+                            <Column width="12em">
+                                <Text text="{i18n>number}"/>
+                            </Column>
+                            <Column minScreenWidth="Tablet" demandPopin="true">
+                                <Text text="{i18n>receiver}"/>
+                            </Column>
+                            <Column minScreenWidth="Desktop" demandPopin="true">
+                                <Text text="{i18n>date}"/>
+                            </Column>
+                            <Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                                <Text text="{i18n>status}"/>
+                            </Column>
+                            <Column hAlign="End">
+                                <Text text="{i18n>amount}"/>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Navigation">
+                                <cells>
+                                    <ObjectIdentifier
+                                        title="{dashboard>numero}"
+                                        text="{dashboard>serie}"/>
+                                    <Text text="{dashboard>receptor_nombre}"/>
+                                    <Text text="{
+                                        path: 'dashboard>fecha_emision',
+                                        type: 'sap.ui.model.type.Date',
+                                        formatOptions: { pattern: 'dd/MM/yyyy' }
+                                    }"/>
+                                    <ObjectStatus
+                                        text="{dashboard>estado}"
+                                        state="{
+                                            path: 'dashboard>estado',
+                                            formatter: '.formatter.statusState'
+                                        }"/>
+                                    <ObjectNumber
+                                        number="{
+                                            path: 'dashboard>total',
+                                            type: 'sap.ui.model.type.Currency',
+                                            formatOptions: { showMeasure: false }
+                                        }"
+                                        unit="EUR"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </Panel>
+
+                <!-- Quick Actions -->
+                <layout:HorizontalLayout class="sapUiMediumMarginTop">
+                    <Button text="{i18n>viewAllInvoices}" press="onNavToList" class="sapUiTinyMarginEnd"/>
+                    <Button text="{i18n>manageIssuers}" press="onManageIssuers" class="sapUiTinyMarginEnd"/>
+                    <Button text="{i18n>manageReceivers}" press="onManageReceivers" class="sapUiTinyMarginEnd"/>
+                </layout:HorizontalLayout>
+
+            </layout:VerticalLayout>
+        </content>
+    </Page>
+</mvc:View>

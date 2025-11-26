@@ -1,0 +1,44 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <TableSelectDialog
+        id="catalogSelectDialog"
+        noDataText="No products found"
+        title="Select Product"
+        search="onCatalogSearch"
+        confirm="onCatalogConfirm"
+        cancel="onCatalogCancel"
+        items="{catalog>/products}"
+        multiSelect="true">
+        <ColumnListItem>
+            <cells>
+                <ObjectIdentifier title="{catalog>sku}"/>
+                <Text text="{catalog>translations/0/nombre}"/>
+                <ObjectNumber
+                    number="{
+                        parts: [{path: 'catalog>precio_base'}, {path: 'catalog>prices/0/moneda'}],
+                        type: 'sap.ui.model.type.Currency',
+                        formatOptions: {showMeasure: true}
+                    }"
+                    unit="{catalog>prices/0/moneda}"/>
+            </cells>
+        </ColumnListItem>
+        <columns>
+            <Column width="150px">
+                <header>
+                    <Text text="SKU"/>
+                </header>
+            </Column>
+            <Column>
+                <header>
+                    <Text text="Description"/>
+                </header>
+            </Column>
+            <Column width="100px" hAlign="End">
+                <header>
+                    <Text text="Price"/>
+                </header>
+            </Column>
+        </columns>
+    </TableSelectDialog>
+</core:FragmentDefinition>

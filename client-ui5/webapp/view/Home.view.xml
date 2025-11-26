@@ -1,0 +1,62 @@
+<mvc:View
+    controllerName="invoice.app.controller.Home"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+    
+    <Page showHeader="false" class="homePage">
+        <content>
+            <layout:VerticalLayout width="100%">
+                
+                <!-- Hero Section -->
+                <VBox 
+                    height="280px"
+                    justifyContent="Center"
+                    alignItems="Center"
+                    class="heroSection">
+                    <Title 
+                        text="Invoice Management" 
+                        level="H1"
+                        class="heroTitle"/>
+                    <Text 
+                        text="Explore and manage your invoices"
+                        class="heroSubtitle"/>
+                </VBox>
+
+                <!-- Featured Controls Section -->
+                <layout:VerticalLayout width="100%" class="sapUiContentPadding featuredSection">
+                    <Title text="Featured Controls" level="H3" class="sapUiMediumMarginBottom sectionTitle"/>
+                    
+                    <layout:HorizontalLayout class="cardsContainer">
+                        
+                        <!-- Issue Invoices Card -->
+                        <GenericTile 
+                            header="Issue Invoices" 
+                            subheader="Manage outgoing invoices"
+                            press="onNavigateToIssueInvoices"
+                            class="featureCard sapUiMediumMarginEnd">
+                            <TileContent>
+                                <ImageContent src="sap-icon://create-form"/>
+                            </TileContent>
+                        </GenericTile>
+                        
+                        <!-- Receipt Invoices Card -->
+                        <GenericTile 
+                            header="Receipt Invoices" 
+                            subheader="Manage incoming invoices"
+                            press="onNavigateToReceiptInvoices"
+                            class="featureCard">
+                            <TileContent>
+                                <ImageContent src="sap-icon://inbox"/>
+                            </TileContent>
+                        </GenericTile>
+                        
+                    </layout:HorizontalLayout>
+                </layout:VerticalLayout>
+                
+            </layout:VerticalLayout>
+        </content>
+    </Page>
+</mvc:View>

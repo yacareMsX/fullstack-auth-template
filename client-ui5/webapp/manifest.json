@@ -1,0 +1,226 @@
+{
+    "_version": "1.59.0",
+    "sap.app": {
+        "id": "invoice.app",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "invoiceService": {
+                "uri": "/api/invoices/",
+                "type": "JSON"
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "rootView": {
+            "viewName": "invoice.app.view.Shell",
+            "type": "XML",
+            "id": "shell"
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "dependencies": {
+            "minUI5Version": "1.120.0",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.ui.layout": {},
+                "sap.tnt": {}
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "invoice.app.i18n.i18n"
+                }
+            }
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "invoice.app.view",
+                "controlId": "shellNavContainer",
+                "controlAggregation": "pages",
+                "transition": "slide",
+                "bypassed": {
+                    "target": "notFound"
+                }
+            },
+            "routes": [
+                {
+                    "name": "home",
+                    "pattern": "",
+                    "target": "home"
+                },
+                {
+                    "name": "dashboard",
+                    "pattern": "dashboard",
+                    "target": "dashboard"
+                },
+                {
+                    "name": "invoiceList",
+                    "pattern": "invoices/:tipo:",
+                    "target": "invoiceList"
+                },
+                {
+                    "name": "invoiceNew",
+                    "pattern": "invoice/new",
+                    "target": "invoiceForm"
+                },
+                {
+                    "name": "invoiceEdit",
+                    "pattern": "invoice/{invoiceId}/edit",
+                    "target": "invoiceForm"
+                },
+                {
+                    "name": "invoiceDetail",
+                    "pattern": "invoice/{invoiceId}",
+                    "target": "invoiceDetail"
+                },
+                {
+                    "name": "issuerManager",
+                    "pattern": "issuers",
+                    "target": "issuerManager"
+                },
+                {
+                    "name": "receiverManager",
+                    "pattern": "receivers",
+                    "target": "receiverManager"
+                },
+                {
+                    "name": "catalogList",
+                    "pattern": "catalog",
+                    "target": "catalogList"
+                },
+                {
+                    "name": "catalogNew",
+                    "pattern": "catalog/new",
+                    "target": "catalogDetail"
+                },
+                {
+                    "name": "catalogDetail",
+                    "pattern": "catalog/{productId}",
+                    "target": "catalogDetail"
+                },
+                {
+                    "name": "workflowList",
+                    "pattern": "workflows",
+                    "target": "workflowList"
+                },
+                {
+                    "name": "workflowDesigner",
+                    "pattern": "workflow/{workflowId}",
+                    "target": "workflowDesigner"
+                },
+                {
+                    "name": "workflowNew",
+                    "pattern": "workflow/new",
+                    "target": "workflowDesigner"
+                },
+                {
+                    "name": "facturaE",
+                    "pattern": "invoice/{invoiceId}/facturae",
+                    "target": "facturaE"
+                }
+            ],
+            "targets": {
+                "home": {
+                    "viewId": "home",
+                    "viewName": "Home",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "dashboard": {
+                    "viewId": "dashboard",
+                    "viewName": "Dashboard",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "invoiceList": {
+                    "viewId": "invoiceList",
+                    "viewName": "InvoiceList",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "invoiceDetail": {
+                    "viewId": "invoiceDetail",
+                    "viewName": "InvoiceDetail",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "invoiceForm": {
+                    "viewId": "invoiceForm",
+                    "viewName": "InvoiceForm",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "issuerManager": {
+                    "viewId": "issuerManager",
+                    "viewName": "IssuerManager",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "receiverManager": {
+                    "viewId": "receiverManager",
+                    "viewName": "ReceiverManager",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "catalogList": {
+                    "viewId": "catalogList",
+                    "viewName": "CatalogList",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "catalogDetail": {
+                    "viewId": "catalogDetail",
+                    "viewName": "CatalogDetail",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "workflowList": {
+                    "viewId": "workflowList",
+                    "viewName": "WorkflowList",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "workflowDesigner": {
+                    "viewId": "workflowDesigner",
+                    "viewName": "WorkflowDesigner",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "facturaE": {
+                    "viewId": "facturaE",
+                    "viewName": "FacturaE",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "notFound": {
+                    "viewId": "notFound",
+                    "viewName": "NotFound"
+                }
+            }
+        }
+    }
+}

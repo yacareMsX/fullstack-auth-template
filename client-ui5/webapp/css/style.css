@@ -1,0 +1,156 @@
+/* Home Page Styles */
+.homePage {
+    background-color: #f5f5f5;
+}
+
+/* Login Page Styles */
+.loginPage,
+.loginPage .sapMPage,
+.loginPage .sapMPageBgStandard {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+    min-height: 100vh !important;
+}
+
+.loginPage .sapMPageBgStandard {
+    background-color: transparent !important;
+}
+
+/* Añadir un overlay sutil para mejorar la legibilidad */
+.loginPage::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.4) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Hero Section */
+.heroSection {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+}
+
+.heroTitle {
+    color: white !important;
+    font-size: 3.5rem !important;
+    font-weight: 300 !important;
+    margin-bottom: 0.5rem !important;
+    text-align: center;
+}
+
+.heroSubtitle {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-size: 1.5rem !important;
+    text-align: center;
+}
+
+/* Featured Section */
+.featuredSection {
+    background-color: #f5f5f5;
+    padding: 2rem !important;
+}
+
+.sectionTitle {
+    color: #333 !important;
+    font-weight: 400 !important;
+}
+
+/* Cards Container */
+.cardsContainer {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+/* Feature Cards */
+.featureCard {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 300px;
+    min-height: 280px;
+}
+
+.featureCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.cardContent {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.cardIcon {
+    margin-bottom: 0.5rem;
+}
+
+.cardTitle {
+    color: #333 !important;
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}
+
+.cardSubtitle {
+    color: #666 !important;
+    font-size: 0.875rem !important;
+}
+
+.cardDescription {
+    color: #888 !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5;
+}
+
+/* Side Navigation Styles */
+.sapTntNavLI {
+    transition: background-color 0.2s ease;
+}
+
+.sapTntNavLI:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Banner Header */
+.bannerHeader {
+    background-image: url('../img/banner.png');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bannerHeader .sapMBtn {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    color: #fff;
+}
+
+.bannerHeader .sapMBtnIcon {
+    color: #fff;
+}
+
+/* Workflow Canvas */
+.workflowCanvas .sapMScrollContScroll {
+    position: relative;
+    width: 2000px;
+    /* Canvas size */
+    height: 2000px;
+    background-image: radial-gradient(#ccc 1px, transparent 1px);
+    background-size: 20px 20px;
+    /* Grid pattern */
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Invoice Management</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #content {
+            height: 100%;
+        }
+    </style>
+    <script id="sap-ui-bootstrap" src="https://sdk.openui5.org/resources/sap-ui-core.js" data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m" data-sap-ui-resourceroots='{
+            "invoice.app": "./"
+        }' data-sap-ui-compatVersion="edge" data-sap-ui-async="true">
+        </script>
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            console.log("SAPUI5 Core initialized");
+            sap.ui.require([
+                "sap/ui/core/mvc/XMLView"
+            ], function (XMLView) {
+                console.log("Loading Login view...");
+                XMLView.create({
+                    viewName: "invoice.app.view.Login"
+                }).then(function (oView) {
+                    console.log("Login view created successfully");
+                    oView.placeAt("content");
+                }).catch(function (error) {
+                    console.error("Error creating view:", error);
+                });
+            });
+        });
+    </script>
+</head>
+
+<body class="sapUiBody" id="content">
+    <!-- Login view will be loaded here -->
+</body>
+
+</html>

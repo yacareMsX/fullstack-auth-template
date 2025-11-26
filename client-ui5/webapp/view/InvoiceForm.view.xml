@@ -1,0 +1,192 @@
+<mvc:View
+    controllerName="invoice.app.controller.InvoiceForm"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form">
+    
+    <Page 
+        title="{form>/isEdit ? 'Edit Invoice' : 'New Invoice'}" 
+        showNavButton="true" 
+        navButtonPress="onNavBack">
+        
+        <content>
+            <layout:VerticalLayout width="100%" class="sapUiContentPadding">
+                
+                <!-- Invoice Header Form -->
+                <Panel headerText="Invoice Details" class="sapUiMediumMarginBottom">
+                    <form:SimpleForm
+                        editable="true"
+                        layout="ResponsiveGridLayout"
+                        labelSpanXL="3"
+                        labelSpanL="3"
+                        labelSpanM="3"
+                        labelSpanS="12"
+                        adjustLabelSpan="false"
+                        emptySpanXL="4"
+                        emptySpanL="4"
+                        emptySpanM="4"
+                        emptySpanS="0"
+                        columnsXL="1"
+                        columnsL="1"
+                        columnsM="1"
+                        singleContainerFullSize="false">
+                        <form:content>
+                            <Label text="Number" required="true"/>
+                            <Input 
+                                value="{form>/numero}" 
+                                required="true"
+                                placeholder="Invoice number"/>
+                            
+                            <Label text="Series"/>
+                            <Input 
+                                value="{form>/serie}" 
+                                placeholder="Series (optional)"/>
+                            
+                            <Label text="Issue Date" required="true"/>
+                            <DatePicker 
+                                value="{form>/fecha_emision}" 
+                                required="true"
+                                valueFormat="yyyy-MM-dd"
+                                displayFormat="dd/MM/yyyy"/>
+                            
+                            <Label text="Due Date"/>
+                            <DatePicker 
+                                value="{form>/fecha_vencimiento}"
+                                valueFormat="yyyy-MM-dd"
+                                displayFormat="dd/MM/yyyy"/>
+                            
+                            <Label text="Issuer" required="true"/>
+                            <Select 
+                                selectedKey="{form>/id_emisor}" 
+                                required="true"
+                                items="{form>/emisores}">
+                                <core:Item key="{form>id_emisor}" text="{form>nombre}"/>
+                            </Select>
+                            
+                            <Label text="Receiver" required="true"/>
+                            <Select 
+                                selectedKey="{form>/id_receptor}" 
+                                required="true"
+                                items="{form>/receptores}">
+                                <core:Item key="{form>id_receptor}" text="{form>nombre}"/>
+                            </Select>
+                            
+                            <Label text="Payment Method"/>
+                            <Select selectedKey="{form>/metodo_pago}">
+                                <core:Item key="TRANSFERENCIA" text="TRANSFERENCIA"/>
+                                <core:Item key="TARJETA" text="TARJETA"/>
+                                <core:Item key="ADEUDO_SEPA" text="ADEUDO_SEPA"/>
+                                <core:Item key="PAYPAL" text="PAYPAL"/>
+                                <core:Item key="CONTADO" text="CONTADO"/>
+                                <core:Item key="OTRO" text="OTRO"/>
+                            </Select>
+                        </form:content>
+                    </form:SimpleForm>
+                </Panel>
+
+                <!-- Line Items -->
+                <Panel headerText="Line Items" class="sapUiMediumMarginBottom">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <Title text="Line Items" level="H4"/>
+                            <ToolbarSpacer/>
+                            <Button 
+                                text="Add from Catalog" 
+                                icon="sap-icon://product" 
+                                press="onAddFromCatalog"
+                                class="sapUiTinyMarginEnd"/>
+                            <Button 
+                                text="Add Line" 
+                                icon="sap-icon://add" 
+                                type="Emphasized"
+                                press="onAddLine"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    
+                    <Table 
+                        id="lineItemsTable"
+                        items="{form>/lineas}"
+                        mode="Delete"
+                        delete="onDeleteLine">
+                        <columns>
+                            <Column width="30%"><Text text="Description"/></Column>
+                            <Column width="10%" hAlign="End"><Text text="Qty"/></Column>
+                            <Column width="15%" hAlign="End"><Text text="Price"/></Column>
+                            <Column width="15%"><Text text="Tax"/></Column>
+                            <Column width="15%" hAlign="End"><Text text="Tax Amount"/></Column>
+                            <Column width="15%" hAlign="End"><Text text="Total"/></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Input 
+                                        value="{form>descripcion}" 
+                                        required="true"
+                                        change="onLineChange"/>
+                                    <Input 
+                                        value="{form>cantidad}" 
+                                        type="Number"
+                                        required="true"
+                                        change="onLineChange"/>
+                                    <Input 
+                                        value="{form>precio_unitario}" 
+                                        type="Number"
+                                        required="true"
+                                        change="onLineChange"/>
+                                    <Select 
+                                        selectedKey="{form>id_impuesto}"
+                                        items="{form>/impuestos}"
+                                        change="onTaxChange">
+                                        <core:Item key="{form>id_impuesto}" text="{form>codigo}"/>
+                                    </Select>
+                                    <ObjectNumber 
+                                        number="{form>importe_impuesto}" 
+                                        unit="EUR"/>
+                                    <ObjectNumber 
+                                        number="{form>total_linea}" 
+                                        unit="EUR"
+                                        emphasized="true"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                    
+                    <!-- Totals Summary -->
+                    <layout:VerticalLayout class="sapUiSmallMarginTop sapUiSmallMarginEnd" width="100%">
+                        <layout:HorizontalLayout width="100%" justifyContent="End">
+                            <Label text="Subtotal:" class="sapUiTinyMarginEnd"/>
+                            <ObjectNumber number="{form>/totals/subtotal}" unit="EUR"/>
+                        </layout:HorizontalLayout>
+                        <layout:HorizontalLayout width="100%" justifyContent="End">
+                            <Label text="Taxes:" class="sapUiTinyMarginEnd"/>
+                            <ObjectNumber number="{form>/totals/impuestos}" unit="EUR"/>
+                        </layout:HorizontalLayout>
+                        <layout:HorizontalLayout width="100%" justifyContent="End">
+                            <Label text="Total:" class="sapUiTinyMarginEnd"/>
+                            <ObjectNumber 
+                                number="{form>/totals/total}" 
+                                unit="EUR" 
+                                emphasized="true"
+                                state="Success"/>
+                        </layout:HorizontalLayout>
+                    </layout:VerticalLayout>
+                </Panel>
+
+            </layout:VerticalLayout>
+        </content>
+        
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button text="Cancel" press="onCancel"/>
+                <Button 
+                    text="{form>/isEdit ? 'Update' : 'Create'}" 
+                    type="Emphasized" 
+                    press="onSave"
+                    icon="sap-icon://save"/>
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

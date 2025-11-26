@@ -1,0 +1,11 @@
+<mvc:View
+    controllerName="invoice.app.controller.App"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true">
+    <App id="app">
+        <pages>
+            <!-- Pages will be loaded dynamically by router -->
+        </pages>
+    </App>
+</mvc:View>

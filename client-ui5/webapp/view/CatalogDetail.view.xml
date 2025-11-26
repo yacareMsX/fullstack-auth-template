@@ -1,0 +1,78 @@
+<mvc:View
+    controllerName="invoice.app.controller.CatalogDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+    
+    <Page title="{i18n>createItem}" showNavButton="true" navButtonPress="onNavBack">
+        <headerContent>
+            <Button text="Save" type="Emphasized" press="onSave"/>
+            <Button text="Cancel" press="onCancel"/>
+        </headerContent>
+        
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <f:SimpleForm
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                    title="General Information"
+                    labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                    adjustLabelSpan="false"
+                    emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+                    columnsXL="1" columnsL="1" columnsM="1"
+                    singleContainerFullSize="false">
+                    <f:content>
+                        <Label text="SKU" required="true"/>
+                        <Input value="{detail>/sku}"/>
+                        
+                        <Label text="Type" required="true"/>
+                        <Select selectedKey="{detail>/tipo}">
+                            <core:Item key="PRODUCTO" text="Product"/>
+                            <core:Item key="SERVICIO" text="Service"/>
+                        </Select>
+                        
+                        <Label text="Base Price" required="true"/>
+                        <Input value="{detail>/precio_base}" type="Number"/>
+                        
+                        <Label text="Tax"/>
+                        <Select 
+                            selectedKey="{detail>/id_impuesto}"
+                            items="{taxes>/taxes}">
+                            <core:Item key="{taxes>id_impuesto}" text="{taxes>descripcion} ({taxes>porcentaje}%)"/>
+                        </Select>
+                    </f:content>
+                </f:SimpleForm>
+                
+                <IconTabBar class="sapUiResponsiveContentPadding">
+                    <items>
+                        <IconTabFilter text="English" icon="sap-icon://translate">
+                            <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                                <f:content>
+                                    <Label text="Name" required="true"/>
+                                    <Input value="{detail>/translations/en/nombre}"/>
+                                    
+                                    <Label text="Description"/>
+                                    <TextArea value="{detail>/translations/en/descripcion}" rows="4"/>
+                                </f:content>
+                            </f:SimpleForm>
+                        </IconTabFilter>
+                        
+                        <IconTabFilter text="Spanish" icon="sap-icon://translate">
+                            <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                                <f:content>
+                                    <Label text="Nombre" required="true"/>
+                                    <Input value="{detail>/translations/es/nombre}"/>
+                                    
+                                    <Label text="Descripción"/>
+                                    <TextArea value="{detail>/translations/es/descripcion}" rows="4"/>
+                                </f:content>
+                            </f:SimpleForm>
+                        </IconTabFilter>
+                    </items>
+                </IconTabBar>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

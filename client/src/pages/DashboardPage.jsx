@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 function DashboardPage() {
@@ -43,13 +43,28 @@ function DashboardPage() {
                             borderRadius: '0.5rem',
                             fontWeight: '600',
                             cursor: 'pointer',
-                            transition: 'background-color 0.2s'
+                            transition: 'background-color 0.2s',
+                            marginRight: '1rem'
                         }}
                         onMouseOver={(e) => e.target.style.backgroundColor = '#dc2626'}
                         onMouseOut={(e) => e.target.style.backgroundColor = '#ef4444'}
                     >
                         Logout
                     </button>
+                    <Link
+                        to="/invoices"
+                        style={{
+                            padding: '0.75rem 1.5rem',
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            borderRadius: '0.5rem',
+                            textDecoration: 'none',
+                            fontWeight: '600',
+                            transition: 'background-color 0.2s'
+                        }}
+                    >
+                        📄 Invoices
+                    </Link>
                 </div>
 
                 {/* User Info Card */}

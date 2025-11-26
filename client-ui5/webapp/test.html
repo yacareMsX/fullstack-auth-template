@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>SAPUI5 Test</title>
+    <script>
+        window.addEventListener('error', function (e) {
+            console.error('Error loading:', e.target.src || e.target.href);
+        }, true);
+    </script>
+    <script id="sap-ui-bootstrap" src="https://sdk.openui5.org/resources/sap-ui-core.js" data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m" data-sap-ui-async="true">
+        </script>
+    <script>
+        console.log("Script loaded, waiting for SAPUI5...");
+
+        sap.ui.getCore().attachInit(function () {
+            console.log("✅ SAPUI5 initialized!");
+
+            sap.ui.require([
+                "sap/m/App",
+                "sap/m/Page",
+                "sap/m/Button",
+                "sap/m/Text",
+                "sap/m/MessageToast"
+            ], function (App, Page, Button, Text, MessageToast) {
+                console.log("✅ Modules loaded!");
+
+                var oText = new Text({
+                    text: "If you see this, SAPUI5 is working! 🎉"
+                }).addStyleClass("sapUiMediumMarginTop");
+
+                var oButton = new Button({
+                    text: "Click Me!",
+                    type: "Emphasized",
+                    press: function () {
+                        MessageToast.show("SAPUI5 is working perfectly!");
+                    }
+                }).addStyleClass("sapUiSmallMarginTop");
+
+                var oPage = new Page({
+                    title: "SAPUI5 Test Page",
+                    content: [oText, oButton]
+                });
+
+                var oApp = new App({
+                    pages: [oPage]
+                });
+
+                oApp.placeAt("content");
+                console.log("✅ App placed in DOM!");
+            });
+        });
+    </script>
+</head>
+
+<body class="sapUiBody" id="content">
+    <div style="padding: 20px; text-align: center;">
+        <p>Loading SAPUI5...</p>
+        <p style="color: #666; font-size: 12px;">If this message doesn't disappear, check the console for errors.</p>
+    </div>
+</body>
+
+</html>

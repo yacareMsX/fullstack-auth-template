@@ -1,0 +1,104 @@
+<mvc:View
+    controllerName="invoice.app.controller.Login"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:layout="sap.ui.layout"
+    displayBlock="true"
+    height="100%">
+    
+    <Page showHeader="false" enableScrolling="true" class="loginPage">
+        <content>
+            <FlexBox
+                width="100%"
+                height="100vh"
+                alignItems="Center"
+                justifyContent="Center"
+                direction="Column">
+                
+                <!-- Login Card -->
+                <VBox 
+                    width="400px"
+                    class="sapUiMediumMarginTop">
+                    
+                    <!-- Logo/Title -->
+                    <VBox 
+                        width="100%" 
+                        alignItems="Center"
+                        class="sapUiMediumMarginBottom">
+                        <Title 
+                            text="Invoice Management" 
+                            level="H1"
+                            class="sapUiMediumMarginBottom"/>
+                        <Text 
+                            text="SAPUI5 Application"
+                            class="sapUiTinyMarginBottom"/>
+                    </VBox>
+                    
+                    <!-- Login Form -->
+                    <VBox 
+                        width="100%"
+                        class="sapUiSmallMarginTop">
+                        
+                        <Label 
+                            text="Email" 
+                            required="true"
+                            labelFor="emailInput"/>
+                        <Input
+                            id="emailInput"
+                            type="Email"
+                            placeholder="Enter your email"
+                            value="{login>/email}"
+                            required="true"
+                            class="sapUiTinyMarginBottom"/>
+                        
+                        <Label 
+                            text="Password" 
+                            required="true"
+                            labelFor="passwordInput"
+                            class="sapUiSmallMarginTop"/>
+                        <Input
+                            id="passwordInput"
+                            type="Password"
+                            placeholder="Enter your password"
+                            value="{login>/password}"
+                            required="true"
+                            submit="onLogin"
+                            class="sapUiTinyMarginBottom"/>
+                        
+                        <!-- Error Message -->
+                        <MessageStrip
+                            visible="{login>/error}"
+                            text="{login>/errorMessage}"
+                            type="Error"
+                            showIcon="true"
+                            class="sapUiSmallMarginTop sapUiSmallMarginBottom"/>
+                        
+                        <!-- Login Button -->
+                        <Button
+                            text="Login"
+                            type="Emphasized"
+                            width="100%"
+                            press="onLogin"
+                            enabled="{= !${login>/loading}}"
+                            class="sapUiMediumMarginTop"/>
+                        
+                        <!-- Loading Indicator -->
+                        <BusyIndicator
+                            visible="{login>/loading}"
+                            class="sapUiSmallMarginTop"/>
+                        
+                    </VBox>
+                    
+                    <!-- Info Text -->
+                    <Text 
+                        text="Use your account credentials to login"
+                        class="sapUiSmallMarginTop"
+                        textAlign="Center"/>
+                    
+                </VBox>
+                
+            </FlexBox>
+        </content>
+    </Page>
+</mvc:View>
+

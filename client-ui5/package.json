@@ -1,0 +1,21 @@
+{
+    "name": "client-ui5",
+    "version": "1.0.0",
+    "description": "SAPUI5 Invoice Management Frontend",
+    "scripts": {
+        "start": "ui5 serve --port 8080 --open index.html",
+        "build": "ui5 build"
+    },
+    "devDependencies": {
+        "@ui5/cli": "^3.0.0",
+        "@sapui5/types": "^1.120.0"
+    },
+    "ui5": {
+        "dependencies": [
+            "@openui5/sap.m",
+            "@openui5/sap.ui.core",
+            "@openui5/sap.ui.layout",
+            "@openui5/themelib_sap_horizon"
+        ]
+    }
+}

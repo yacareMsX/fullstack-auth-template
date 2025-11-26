@@ -1,0 +1,159 @@
+<mvc:View
+    controllerName="invoice.app.controller.InvoiceDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:layout="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form">
+    
+    <Page 
+        title="{i18n>invoiceDetail}" 
+        showNavButton="true" 
+        navButtonPress="onNavBack">
+        
+        <content>
+            <layout:VerticalLayout width="100%" class="sapUiContentPadding">
+                
+                <!-- Header with Status -->
+                <layout:HorizontalLayout class="sapUiMediumMarginBottom">
+                    <Title 
+                        text="{detail>/numero}" 
+                        level="H2" 
+                        class="sapUiSmallMarginEnd"/>
+                    <ObjectStatus
+                        text="{detail>/estado}"
+                        state="{
+                            path: 'detail>/estado',
+                            formatter: '.formatter.statusState'
+                        }"/>
+                </layout:HorizontalLayout>
+
+                <!-- Issuer and Receiver Info -->
+                <layout:Grid defaultSpan="L6 M6 S12" class="sapUiMediumMarginBottom">
+                    <Panel headerText="{i18n>issuer}">
+                        <layout:VerticalLayout>
+                            <Title text="{detail>/emisor_nombre}" level="H4"/>
+                            <Text text="{detail>/emisor_nif}"/>
+                            <Text text="{detail>/emisor_direccion}"/>
+                            <Text text="{detail>/emisor_email}"/>
+                            <Text text="{detail>/emisor_telefono}"/>
+                        </layout:VerticalLayout>
+                    </Panel>
+                    
+                    <Panel headerText="{i18n>receiver}">
+                        <layout:VerticalLayout>
+                            <Title text="{detail>/receptor_nombre}" level="H4"/>
+                            <Text text="{detail>/receptor_nif}"/>
+                            <Text text="{detail>/receptor_direccion}"/>
+                            <Text text="{detail>/receptor_email}"/>
+                            <Text text="{detail>/receptor_telefono}"/>
+                        </layout:VerticalLayout>
+                    </Panel>
+                </layout:Grid>
+
+                <!-- Invoice Details -->
+                <Panel headerText="{i18n>invoiceDetails}" class="sapUiMediumMarginBottom">
+                    <layout:Grid defaultSpan="L3 M6 S12">
+                        <layout:VerticalLayout>
+                            <Label text="{i18n>issueDate}"/>
+                            <Text text="{
+                                path: 'detail>/fecha_emision',
+                                type: 'sap.ui.model.type.Date',
+                                formatOptions: { pattern: 'dd/MM/yyyy' }
+                            }"/>
+                        </layout:VerticalLayout>
+                        
+                        <layout:VerticalLayout>
+                            <Label text="{i18n>dueDate}"/>
+                            <Text text="{
+                                path: 'detail>/fecha_vencimiento',
+                                type: 'sap.ui.model.type.Date',
+                                formatOptions: { pattern: 'dd/MM/yyyy' }
+                            }"/>
+                        </layout:VerticalLayout>
+                        
+                        <layout:VerticalLayout>
+                            <Label text="{i18n>paymentMethod}"/>
+                            <Text text="{detail>/metodo_pago}"/>
+                        </layout:VerticalLayout>
+                    </layout:Grid>
+                </Panel>
+
+                <!-- Line Items Table -->
+                <Panel headerText="{i18n>lineItems}" class="sapUiMediumMarginBottom">
+                    <Table items="{detail>/lineas}">
+                        <columns>
+                            <Column><Text text="{i18n>description}"/></Column>
+                            <Column hAlign="End"><Text text="{i18n>quantity}"/></Column>
+                            <Column hAlign="End"><Text text="{i18n>unitPrice}"/></Column>
+                            <Column hAlign="End"><Text text="{i18n>tax}"/></Column>
+                            <Column hAlign="End"><Text text="{i18n>total}"/></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Text text="{detail>descripcion}"/>
+                                    <Text text="{detail>cantidad}"/>
+                                    <ObjectNumber 
+                                        number="{detail>precio_unitario}" 
+                                        unit="EUR"/>
+                                    <Text text="{detail>porcentaje_impuesto}%"/>
+                                    <ObjectNumber 
+                                        number="{detail>total_linea}" 
+                                        unit="EUR" 
+                                        emphasized="true"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                    
+                    <!-- Totals -->
+                    <layout:VerticalLayout class="sapUiSmallMarginTop" width="100%">
+                        <layout:HorizontalLayout width="100%" justifyContent="End">
+                            <Label text="{i18n>subtotal}:" class="sapUiTinyMarginEnd"/>
+                            <ObjectNumber number="{detail>/subtotal}" unit="EUR"/>
+                        </layout:HorizontalLayout>
+                        <layout:HorizontalLayout width="100%" justifyContent="End">
+                            <Label text="{i18n>taxes}:" class="sapUiTinyMarginEnd"/>
+                            <ObjectNumber number="{detail>/impuestos_totales}" unit="EUR"/>
+                        </layout:HorizontalLayout>
+                        <layout:HorizontalLayout width="100%" justifyContent="End">
+                            <Label text="{i18n>total}:" class="sapUiTinyMarginEnd"/>
+                            <ObjectNumber 
+                                number="{detail>/total}" 
+                                unit="EUR" 
+                                emphasized="true" 
+                                state="Success"/>
+                        </layout:HorizontalLayout>
+                    </layout:VerticalLayout>
+                </Panel>
+
+                <!-- Status Actions -->
+                <Panel headerText="{i18n>changeStatus}">
+                    <OverflowToolbar>
+                        <Button text="EMITIDA" press="onChangeStatus" type="Transparent"/>
+                        <Button text="ENVIADA" press="onChangeStatus" type="Transparent"/>
+                        <Button text="FIRMADA" press="onChangeStatus" type="Transparent"/>
+                        <Button text="PAGADA" press="onChangeStatus" type="Transparent"/>
+                        <Button text="CANCELADA" press="onChangeStatus" type="Transparent"/>
+                    </OverflowToolbar>
+                </Panel>
+
+            </layout:VerticalLayout>
+        </content>
+        
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button 
+                    text="Download PDF" 
+                    icon="sap-icon://pdf-attachment" 
+                    press="onDownloadPDF"/>
+                <Button 
+                    text="Generate XML" 
+                    icon="sap-icon://attachment-e-pub" 
+                    press="onDownloadXML"/>
+                <Button text="{i18n>edit}" type="Emphasized" press="onEdit" icon="sap-icon://edit"/>
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

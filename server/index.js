@@ -7,6 +7,9 @@ const authRoutes = require('./routes/auth');
 const googleAuthRoutes = require('./routes/google_auth');
 const passwordResetRoutes = require('./routes/password_reset');
 const userRoutes = require('./routes/user');
+const invoiceRoutes = require('./routes/invoices');
+const catalogRoutes = require('./routes/catalog');
+const workflowRoutes = require('./routes/workflows');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,10 +17,16 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api', authRoutes);
 app.use('/api/auth', googleAuthRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/catalog', catalogRoutes);
+app.use('/api/workflows', workflowRoutes);
 
 app.get('/api/health', async (req, res) => {
     try {

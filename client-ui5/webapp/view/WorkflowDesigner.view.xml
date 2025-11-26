@@ -1,0 +1,111 @@
+<mvc:View
+    controllerName="invoice.app.controller.WorkflowDesigner"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:card="sap.f.cards"
+    xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    displayBlock="true"
+    height="100%">
+    
+    <Page showHeader="false" enableScrolling="false">
+        <l:Splitter height="100%" width="100%">
+            <!-- Canvas Area -->
+            <Page title="{workflow>/name}" class="workflowCanvasPage">
+                <layoutData>
+                    <l:SplitterLayoutData size="auto" resizable="true" minSize="400px"/>
+                </layoutData>
+                
+                <headerContent>
+                    <Button icon="sap-icon://save" text="Save" press="onSave" type="Emphasized"/>
+                    <Button icon="sap-icon://play" text="Activate" press="onActivate" visible="{= !${workflow>/is_active}}"/>
+                    <Button icon="sap-icon://pause" text="Deactivate" press="onDeactivate" visible="{workflow>/is_active}"/>
+                </headerContent>
+                
+                <content>
+                    <!-- Toolbar for Nodes -->
+                    <OverflowToolbar>
+                        <Button icon="sap-icon://begin" text="Start" press="onAddStart"/>
+                        <Button icon="sap-icon://activity-items" text="Task" press="onAddTask"/>
+                        <Button icon="sap-icon://decision" text="Decision" press="onAddDecision"/>
+                        <Button icon="sap-icon://end" text="End" press="onAddEnd"/>
+                        <ToolbarSeparator/>
+                        <Button icon="sap-icon://delete" text="Delete Connection" type="Reject" press="onDeleteConnection" visible="{= !!${view>/selectedEdgeId} }"/>
+                        <ToolbarSpacer/>
+                        <Button icon="sap-icon://zoom-in" press="onZoomIn"/>
+                        <Button icon="sap-icon://zoom-out" press="onZoomOut"/>
+                    </OverflowToolbar>
+                    
+                    <!-- The Canvas Container -->
+                    <ScrollContainer
+                        id="canvasContainer"
+                        height="100%"
+                        width="100%"
+                        vertical="true"
+                        horizontal="true"
+                        class="workflowCanvas">
+                        
+                        <!-- Nodes will be added here programmatically using custom WorkflowNode control -->
+                        
+                    </ScrollContainer>
+                </content>
+            </Page>
+            
+            <!-- Properties Panel -->
+            <Page title="Properties">
+                <layoutData>
+                    <l:SplitterLayoutData size="300px" resizable="true" minSize="200px"/>
+                </layoutData>
+                
+                <content>
+                    <VBox class="sapUiSmallMargin" visible="{= !!${selectedNode>/id} }">
+                        <Title text="Node Settings" level="H3" class="sapUiSmallMarginBottom"/>
+                        
+                        <Label text="Label"/>
+                        <Input value="{selectedNode>/label}" liveChange="onNodeLabelChange"/>
+                        
+                        <Label text="Type"/>
+                        <Select selectedKey="{selectedNode>/type}" enabled="false">
+                            <core:Item key="START" text="Start Event"/>
+                            <core:Item key="TASK" text="Task"/>
+                            <core:Item key="DECISION" text="Decision"/>
+                            <core:Item key="END" text="End Event"/>
+                        </Select>
+                        
+                        <!-- Dynamic properties based on type -->
+                        <VBox visible="{= ${selectedNode>/type} === 'TASK' }">
+                            <Label text="Assignee Role"/>
+                            <Select selectedKey="{selectedNode>/properties/assignee}">
+                                <core:Item key="MANAGER" text="Manager"/>
+                                <core:Item key="FINANCE" text="Finance Team"/>
+                                <core:Item key="ADMIN" text="Administrator"/>
+                            </Select>
+                        </VBox>
+                        
+                        <VBox visible="{= ${selectedNode>/type} === 'DECISION' }">
+                            <Label text="Condition Field"/>
+                            <Select selectedKey="{selectedNode>/properties/conditionField}">
+                                <core:Item key="amount" text="Total Amount"/>
+                                <core:Item key="issuer" text="Issuer"/>
+                            </Select>
+                        </VBox>
+                        
+                        <Button text="Delete Node" type="Reject" press="onDeleteNode" class="sapUiMediumMarginTop"/>
+                    </VBox>
+                    
+                    <VBox class="sapUiSmallMargin" visible="{= !${selectedNode>/id} }">
+                        <Text text="Select a node to edit properties"/>
+                        
+                        <Title text="Workflow Settings" level="H3" class="sapUiMediumMarginTop"/>
+                        <Label text="Name"/>
+                        <Input value="{workflow>/name}"/>
+                        <Label text="Description"/>
+                        <TextArea value="{workflow>/description}" rows="3"/>
+                    </VBox>
+                </content>
+            </Page>
+        </l:Splitter>
+    </Page>
+</mvc:View>

@@ -1,0 +1,64 @@
+<mvc:View
+    controllerName="invoice.app.controller.CatalogList"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+    
+    <Page title="{i18n>catalog}" showNavButton="true" navButtonPress="onNavBack">
+        <headerContent>
+            <Button icon="sap-icon://add" text="{i18n>createNew}" press="onCreateProduct"/>
+        </headerContent>
+        
+        <content>
+            <Table
+                id="productsTable"
+                items="{catalog>/products}"
+                mode="SingleSelectMaster"
+                selectionChange="onProductSelect"
+                growing="true"
+                growingThreshold="20">
+                
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="{i18n>itemList}"/>
+                        <ToolbarSpacer/>
+                        <SearchField width="50%" search="onSearch"/>
+                    </Toolbar>
+                </headerToolbar>
+                
+                <columns>
+                    <Column width="150px">
+                        <Text text="SKU"/>
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>description}"/>
+                    </Column>
+                    <Column width="100px" hAlign="End">
+                        <Text text="{i18n>unitPrice}"/>
+                    </Column>
+                    <Column width="100px" hAlign="End">
+                        <Text text="{i18n>tax}"/>
+                    </Column>
+                </columns>
+                
+                <items>
+                    <ColumnListItem type="Navigation" press="onProductSelect">
+                        <cells>
+                            <ObjectIdentifier title="{catalog>sku}"/>
+                            <Text text="{catalog>translations/0/nombre}"/>
+                            <ObjectNumber
+                                number="{
+                                    parts: [{path: 'catalog>precio_base'}, {path: 'catalog>prices/0/moneda'}],
+                                    type: 'sap.ui.model.type.Currency',
+                                    formatOptions: {showMeasure: true}
+                                }"
+                                unit="{catalog>prices/0/moneda}"/>
+                            <Text text="{catalog>impuesto_descripcion} ({catalog>impuesto_porcentaje}%)"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

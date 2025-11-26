@@ -1,0 +1,104 @@
+<mvc:View
+    controllerName="invoice.app.controller.Shell"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:tnt="sap.tnt"
+    xmlns:core="sap.ui.core"
+    displayBlock="true"
+    height="100%">
+    
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader class="bannerHeader">
+                <Button icon="sap-icon://home" press="onNavHome" type="Transparent" tooltip="{i18n>home}"/>
+                <ToolbarSpacer/>
+                <Select change="onLanguageChange" selectedKey="en" id="languageSelect">
+                    <core:Item key="en" text="English"/>
+                    <core:Item key="es" text="Español"/>
+                </Select>
+                <Button icon="sap-icon://log" press="onLogout" type="Transparent" tooltip="{i18n>logout}"/>
+            </tnt:ToolHeader>
+        </tnt:header>
+
+        <!-- Side Navigation -->
+        <tnt:sideContent>
+            <tnt:SideNavigation
+                expanded="true"
+                itemSelect="onItemSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem
+                        text="Issue Invoices"
+                        icon="sap-icon://create-form"
+                        expanded="false">
+                        <tnt:NavigationListItem
+                            text="Invoice List"
+                            key="issueList"/>
+                        <tnt:NavigationListItem
+                            text="Create New"
+                            key="issueNew"/>
+                    </tnt:NavigationListItem>
+                    
+                    <tnt:NavigationListItem
+                        text="Receipt Invoices"
+                        icon="sap-icon://inbox"
+                        expanded="false">
+                        <tnt:NavigationListItem
+                            text="Invoice List"
+                            key="receiptList"/>
+                        <tnt:NavigationListItem
+                            text="Create New"
+                            key="receiptNew"/>
+                    </tnt:NavigationListItem>
+                    
+                    <tnt:NavigationListItem
+                        text="Catalog"
+                        icon="sap-icon://product"
+                        expanded="false">
+                        <tnt:NavigationListItem
+                            text="Create New Item"
+                            key="catalogNew"/>
+                        <tnt:NavigationListItem
+                            text="Item List"
+                            key="catalogList"/>
+                    </tnt:NavigationListItem>
+
+                    <tnt:NavigationListItem
+                        text="Workflow Designer"
+                        icon="sap-icon://process"
+                        expanded="false">
+                        <tnt:NavigationListItem
+                            text="Create Workflow"
+                            key="workflowNew"/>
+                        <tnt:NavigationListItem
+                            text="Workflow List"
+                            key="workflowList"/>
+                    </tnt:NavigationListItem>
+                    
+                    <tnt:NavigationListItem
+                        text="Config"
+                        icon="sap-icon://settings"
+                        expanded="false">
+                        <tnt:NavigationListItem
+                            text="Issuers"
+                            key="issuers"/>
+                        <tnt:NavigationListItem
+                            text="Receivers"
+                            key="receivers"/>
+                        <tnt:NavigationListItem
+                            text="Taxes"
+                            key="taxes"/>
+                    </tnt:NavigationListItem>
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        
+        <!-- Main Content -->
+        <tnt:mainContents>
+            <NavContainer id="shellNavContainer" height="100%">
+                <pages>
+                    <mvc:XMLView viewName="invoice.app.view.Home"/>
+                </pages>
+            </NavContainer>
+        </tnt:mainContents>
+    </tnt:ToolPage>
+</mvc:View>
