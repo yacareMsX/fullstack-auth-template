@@ -1,87 +1,101 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
+    "sap/m/MessageToast",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator",
-    "invoice/app/model/formatter"
-], function (Controller, JSONModel, Filter, FilterOperator, formatter) {
+    "sap/ui/model/FilterOperator"
+], function (Controller, JSONModel, MessageToast, Filter, FilterOperator) {
     "use strict";
 
     return Controller.extend("invoice.app.controller.CatalogList", {
-        formatter: formatter,
 
         onInit: function () {
-            var oViewModel = new JSONModel({
-                products: []
-            });
-            this.getView().setModel(oViewModel, "catalog");
-
             var oRouter = this.getOwnerComponent().getRouter();
             oRouter.getRoute("catalogList").attachPatternMatched(this._onRouteMatched, this);
+
+            var oModel = new JSONModel({
+                products: []
+            });
+            this.getView().setModel(oModel, "catalog");
         },
 
         _onRouteMatched: function () {
             this._loadProducts();
         },
 
-        _loadProducts: function () {
+        _loadProducts: function (sQuery) {
             var that = this;
             var sToken = localStorage.getItem("auth_token");
-            var oModel = this.getView().getModel("catalog");
+            var sUrl = "/api/catalog/products";
 
-            fetch("http://localhost:3000/api/catalog/products", {
-                headers: {
-                    "Authorization": "Bearer " + sToken
-                }
+            // Get current language
+            var sLang = sap.ui.getCore().getConfiguration().getLanguage().split("-")[0];
+            sUrl += "?lang=" + sLang;
+
+            if (sQuery) {
+                sUrl += "&search=" + encodeURIComponent(sQuery);
+            }
+
+            fetch(sUrl, {
+                headers: { "Authorization": "Bearer " + sToken }
             })
-                .then(function (response) {
-                    return response.json();
+                .then(res => res.json())
+                .then(data => {
+                    that.getView().getModel("catalog").setProperty("/products", data);
                 })
-                .then(function (data) {
-                    oModel.setProperty("/products", data);
-                })
-                .catch(function (error) {
-                    console.error("Error loading products:", error);
+                .catch(err => {
+                    console.error("Error loading catalog:", err);
+                    MessageToast.show("Error loading catalog");
                 });
         },
 
         onSearch: function (oEvent) {
-            var sQuery = oEvent.getParameter("query");
-            var oTable = this.byId("productsTable");
-            var oBinding = oTable.getBinding("items");
+            var aFilters = [];
+            var sQuery = this.byId("searchFilter").getValue();
+            var sSku = this.byId("skuFilter").getValue();
+            var sName = this.byId("nameFilter").getValue();
+            var sStatus = this.byId("statusFilter").getSelectedKey();
 
             if (sQuery) {
-                var aFilters = [
-                    new Filter("sku", FilterOperator.Contains, sQuery),
-                    // We can't easily filter by translation name in client-side JSON model if it's nested deep,
-                    // but let's try to filter by the first translation name since that's what we show
-                    new Filter("translations/0/nombre", FilterOperator.Contains, sQuery)
-                ];
-                oBinding.filter(new Filter({
-                    filters: aFilters,
+                aFilters.push(new Filter({
+                    filters: [
+                        new Filter("sku", FilterOperator.Contains, sQuery),
+                        new Filter("nombre", FilterOperator.Contains, sQuery)
+                    ],
                     and: false
                 }));
-            } else {
-                oBinding.filter([]);
             }
+
+            if (sSku) {
+                aFilters.push(new Filter("sku", FilterOperator.Contains, sSku));
+            }
+
+            if (sName) {
+                aFilters.push(new Filter("nombre", FilterOperator.Contains, sName));
+            }
+
+            if (sStatus) {
+                var bActive = sStatus === "true";
+                aFilters.push(new Filter("activo", FilterOperator.EQ, bActive));
+            }
+
+            var oTable = this.byId("catalogTable");
+            var oBinding = oTable.getBinding("items");
+            oBinding.filter(aFilters);
         },
 
         onCreateProduct: function () {
             this.getOwnerComponent().getRouter().navTo("catalogNew");
         },
 
-        onProductSelect: function (oEvent) {
-            var oItem = oEvent.getParameter("listItem") || oEvent.getSource();
-            var oContext = oItem.getBindingContext("catalog");
-            var sProductId = oContext.getProperty("id_producto");
+        onProductPress: function (oEvent) {
+            var oItem = oEvent.getParameter("listItem");
+            var sPath = oItem.getBindingContext("catalog").getPath();
+            var oProduct = this.getView().getModel("catalog").getProperty(sPath);
 
             this.getOwnerComponent().getRouter().navTo("catalogDetail", {
-                productId: sProductId
+                productId: oProduct.id_producto
             });
-        },
-
-        onNavBack: function () {
-            this.getOwnerComponent().getRouter().navTo("home");
         }
     });
 });

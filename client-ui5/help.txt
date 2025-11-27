@@ -1,0 +1,33 @@
+ui5 serve
+
+Start a web server for the current project
+
+Options:
+  -h, --help                       Show help  [boolean]
+  -v, --version                    Show version number  [boolean]
+  -c, --config                     Path to project configuration file in YAML format  [string]
+      --dependency-definition      Path to a YAML file containing the project's dependency tree. This option will disable resolution of node package dependencies.  [string]
+      --workspace-config           Path to workspace configuration file in YAML format  [string]
+  -w, --workspace                  Name of the workspace configuration to use  [string] [default: "default"]
+      --loglevel, --log-level      Set the logging level  [string] [choices: "silent", "error", "warn", "info", "perf", "verbose", "silly"] [default: "info"]
+      --verbose                    Enable verbose logging.  [boolean] [default: false]
+      --perf                       Enable performance measurements and related logging.  [boolean] [default: false]
+      --silent                     Disable all log output.  [boolean] [default: false]
+  -p, --port                       Port to bind on (default for HTTP: 8080, HTTP/2: 8443)  [number]
+  -o, --open                       Open web server root directory in default browser. Optionally, supplied relative path will be appended to the root URL  [string]
+      --h2                         Shortcut for enabling the HTTP/2 protocol for the web server  [boolean] [default: false]
+      --simple-index               Use a simplified view for the server directory listing  [boolean] [default: false]
+      --accept-remote-connections  Accept remote connections. By default the server only accepts connections from localhost  [boolean] [default: false]
+      --key                        Path to the private key  [string] [default: "/Users/iprieto/.ui5/server/server.key"]
+      --cert                       Path to the certificate  [string] [default: "/Users/iprieto/.ui5/server/server.crt"]
+      --sap-csp-policies           Always send content security policies 'sap-target-level-1' and 'sap-target-level-3' in report-only mode  [boolean] [default: false]
+      --serve-csp-reports          Collects and serves CSP reports upon request to '/.ui5/csp/csp-reports.json'  [boolean] [default: false]
+      --framework-version          Overrides the framework version defined by the project. Takes the same value as the version part of "ui5 use"  [string]
+      --cache-mode                 Cache mode to use when consuming SNAPSHOT versions of framework dependencies. The 'Default' behavior is to invalidate the cache after 9 hours. 'Force' uses the cache only and does not create any requests. 'Off' invalidates any existing cache and updates from the repository  [string] [choices: "Default", "Force", "Off"] [default: "Default"]
+
+Examples:
+  ui5 serve                                                            Start a web server for the current project
+  ui5 serve --h2                                                       Enable the HTTP/2 protocol for the web server (requires SSL certificate)
+  ui5 serve --config /path/to/ui5.yaml                                 Use the project configuration from a custom path
+  ui5 serve --dependency-definition /path/to/projectDependencies.yaml  Use a static dependency definition file
+  ui5 serve --port 1337 --open tests/QUnit.html                        Listen to port 1337 and launch default browser with http://localhost:1337/test/QUnit.html

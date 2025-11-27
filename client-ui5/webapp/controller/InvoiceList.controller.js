@@ -41,7 +41,7 @@ sap.ui.define([
             var oModel = this.getView().getModel("invoiceList");
             var sTipo = oModel.getProperty("/tipo");
 
-            var sUrl = "http://localhost:3000/api/invoices/facturas?tipo=" + sTipo;
+            var sUrl = "/api/invoices/facturas?tipo=" + sTipo;
 
             if (sStatus) {
                 sUrl += "&estado=" + sStatus;
@@ -56,35 +56,69 @@ sap.ui.define([
                     return response.json();
                 })
                 .then(function (data) {
-                    oModel.setProperty("/invoices", data);
+                    // Convert date strings to Date objects
+                    var aInvoices = data.map(function (invoice) {
+                        if (invoice.fecha_emision) {
+                            invoice.fecha_emision = new Date(invoice.fecha_emision);
+                        }
+                        return invoice;
+                    });
+                    oModel.setProperty("/invoices", aInvoices);
                 })
                 .catch(function (error) {
                     console.error("Error loading invoices:", error);
                 });
         },
 
-        onFilterChange: function (oEvent) {
-            var sStatus = oEvent.getParameter("selectedItem").getKey();
-            this._loadInvoices(sStatus || null);
-        },
+
 
         onSearch: function (oEvent) {
-            var sQuery = oEvent.getParameter("query");
-            var oTable = this.byId("invoicesTable");
-            var oBinding = oTable.getBinding("items");
+            var aFilters = [];
+            var sQuery = this.byId("searchFilter").getValue();
+            var sNumber = this.byId("numberFilter").getValue();
+            var sIssuer = this.byId("issuerFilter").getValue();
+            var sReceiver = this.byId("receiverFilter").getValue();
+            var sStatus = this.byId("statusFilter").getSelectedKey();
+            var oDateRange = this.byId("dateFilter");
+            var dDateStart = oDateRange.getDateValue();
+            var dDateEnd = oDateRange.getSecondDateValue();
 
             if (sQuery) {
-                var aFilters = [
-                    new Filter("numero", FilterOperator.Contains, sQuery),
-                    new Filter("receptor_nombre", FilterOperator.Contains, sQuery)
-                ];
-                oBinding.filter(new Filter({
-                    filters: aFilters,
+                aFilters.push(new Filter({
+                    filters: [
+                        new Filter("numero", FilterOperator.Contains, sQuery),
+                        new Filter("emisor_nombre", FilterOperator.Contains, sQuery),
+                        new Filter("receptor_nombre", FilterOperator.Contains, sQuery)
+                    ],
                     and: false
                 }));
-            } else {
-                oBinding.filter([]);
             }
+
+            if (sNumber) {
+                aFilters.push(new Filter("numero", FilterOperator.Contains, sNumber));
+            }
+
+            if (sIssuer) {
+                aFilters.push(new Filter("emisor_nombre", FilterOperator.Contains, sIssuer));
+            }
+
+            if (sReceiver) {
+                aFilters.push(new Filter("receptor_nombre", FilterOperator.Contains, sReceiver));
+            }
+
+            if (sStatus) {
+                aFilters.push(new Filter("estado", FilterOperator.EQ, sStatus));
+            }
+
+            if (dDateStart && dDateEnd) {
+                aFilters.push(new Filter("fecha_emision", FilterOperator.BT, dDateStart, dDateEnd));
+            } else if (dDateStart) {
+                aFilters.push(new Filter("fecha_emision", FilterOperator.GE, dDateStart));
+            }
+
+            var oTable = this.byId("invoicesTable");
+            var oBinding = oTable.getBinding("items");
+            oBinding.filter(aFilters);
         },
 
         onInvoiceSelect: function (oEvent) {

@@ -84,7 +84,7 @@
                 },
                 {
                     "name": "invoiceNew",
-                    "pattern": "invoice/new",
+                    "pattern": "invoice/new/:tipo:",
                     "target": "invoiceForm"
                 },
                 {
@@ -128,19 +128,44 @@
                     "target": "workflowList"
                 },
                 {
-                    "name": "workflowDesigner",
-                    "pattern": "workflow/{workflowId}",
+                    "name": "workflowNew",
+                    "pattern": "workflow/new",
                     "target": "workflowDesigner"
                 },
                 {
-                    "name": "workflowNew",
-                    "pattern": "workflow/new",
+                    "name": "workflowDesigner",
+                    "pattern": "workflow/{workflowId}",
                     "target": "workflowDesigner"
                 },
                 {
                     "name": "facturaE",
                     "pattern": "invoice/{invoiceId}/facturae",
                     "target": "facturaE"
+                },
+                {
+                    "name": "ubl21",
+                    "pattern": "invoice/{invoiceId}/ubl21",
+                    "target": "ubl21"
+                },
+                {
+                    "name": "scanInvoice",
+                    "pattern": "scan-invoice",
+                    "target": "scanInvoice"
+                },
+                {
+                    "name": "originList",
+                    "pattern": "admin/origins",
+                    "target": "originList"
+                },
+                {
+                    "name": "apiDocs",
+                    "pattern": "api-docs",
+                    "target": "apiDocs"
+                },
+                {
+                    "name": "auditLog",
+                    "pattern": "audit-log",
+                    "target": "auditLog"
                 }
             ],
             "targets": {
@@ -216,9 +241,39 @@
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },
+                "ubl21": {
+                    "viewId": "ubl21",
+                    "viewName": "FacturaUBL",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "scanInvoice": {
+                    "viewId": "scanInvoice",
+                    "viewName": "ScanInvoice",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "originList": {
+                    "viewId": "originList",
+                    "viewName": "OriginList",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "apiDocs": {
+                    "viewId": "apiDocs",
+                    "viewName": "ApiDocs",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
                 "notFound": {
                     "viewId": "notFound",
                     "viewName": "NotFound"
+                },
+                "auditLog": {
+                    "viewId": "auditLog",
+                    "viewName": "AuditLog",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
                 }
             }
         }

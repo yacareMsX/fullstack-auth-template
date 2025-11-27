@@ -36,7 +36,7 @@ sap.ui.define([
 
             var that = this;
 
-            fetch("http://localhost:3000/api/login", {
+            fetch("/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -60,7 +60,7 @@ sap.ui.define([
                     oModel.setProperty("/loading", false);
 
                     // Redirect to main application
-                    window.location.href = "index.html";
+                    window.location.href = "index.html#/";
                 })
                 .catch(function (error) {
                     console.error("Login error:", error);

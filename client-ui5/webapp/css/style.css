@@ -4,10 +4,11 @@
 }
 
 /* Login Page Styles */
+/* Login Page Styles */
 .loginPage,
 .loginPage .sapMPage,
 .loginPage .sapMPageBgStandard {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+    background-image: url('../img/login_bg.png') !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -19,18 +20,45 @@
     background-color: transparent !important;
 }
 
-/* Añadir un overlay sutil para mejorar la legibilidad */
-.loginPage::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.4) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.4) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
+.loginContainer {
+    background: rgba(0, 0, 0, 0.4);
+    /* Overlay to darken background */
+    backdrop-filter: blur(2px);
+}
+
+.loginCard {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.loginTitle {
+    color: #ffffff !important;
+    font-weight: 300 !important;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.loginLabel {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.loginInput .sapMInputBaseInner {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: none !important;
+    border-radius: 4px;
+}
+
+.loginButton .sapMBtnInner {
+    border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Hero Section */
@@ -129,9 +157,7 @@
 
 /* Banner Header */
 .bannerHeader {
-    background-image: url('../img/banner.png');
-    background-size: cover;
-    background-position: center;
+    background-color: #354a5f !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -141,7 +167,12 @@
 }
 
 .bannerHeader .sapMBtnIcon {
+    color: #fff !important;
+}
+
+.bannerHeader .sapMTitle {
     color: #fff;
+    font-weight: 300;
 }
 
 /* Workflow Canvas */
@@ -153,4 +184,121 @@
     background-image: radial-gradient(#ccc 1px, transparent 1px);
     background-size: 20px 20px;
     /* Grid pattern */
+}
+
+/* Dashboard Styles */
+.tileLayout {
+    width: 16rem !important;
+    height: 9.5rem !important;
+    padding-bottom: 0 !important;
+}
+
+/* Force internal content to be visible */
+.tileLayout .sapMGTContent {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.kpiValue {
+    margin-top: 0.5rem !important;
+    display: block;
+}
+
+.kpiValue .sapMObjectNumberText,
+.kpiValue .sapMObjectNumberUnit {
+    font-family: "72", Arial, Helvetica, sans-serif !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.5 !important;
+    padding-bottom: 0.2rem !important;
+    letter-spacing: -0.5px;
+}
+
+/* Home Navigation Bar Styles */
+.homePage .sapMPageHeader,
+.homePage .sapMBar-CTX,
+.homeNavBar,
+.homeNavBar.sapMBar,
+.homeNavBar .sapMBarContainer,
+.homeNavBar .sapMBarLeft,
+.homeNavBar .sapMBarRight,
+.homeNavBar .sapMBarMiddle,
+.homePage>header.sapMPageHeader {
+    background-color: #354a5f !important;
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
+}
+
+.homePage .sapMPageHeader::before,
+.homePage .sapMPageHeader::after,
+.homeNavBar::before,
+.homeNavBar::after,
+.homeNavBar .sapMBar::after,
+.homePage>header.sapMPageHeader::after {
+    display: none !important;
+    content: none !important;
+    border: none !important;
+    height: 0 !important;
+}
+
+/* Universal focus removal for navigation links */
+.homeNavButton,
+.homeNavButton:link,
+.homeNavButton:visited,
+.homeNavButton:hover,
+.homeNavButton:active,
+.homeNavButton:focus {
+    outline: none !important;
+    text-decoration: none !important;
+    text-shadow: none !important;
+    background-color: transparent !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.homeNavButton {
+    color: #ffffff !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    padding: 0.5rem 1.5rem !important;
+    margin: 0 !important;
+    opacity: 0.8;
+    line-height: normal !important;
+    display: inline-block !important;
+}
+
+.homeNavButton:hover {
+    text-decoration: underline !important;
+    opacity: 1;
+    color: #ffffff !important;
+}
+
+/* Remove SAPUI5 default focus visualization */
+.homeNavButton.sapMBtn:focus,
+.homeNavButton.sapMBtn.sapMFocusable:focus,
+.homeNavButton.sapMBtn:focus .sapMBtnInner,
+.homeNavButton.sapMBtn.sapMBtnDefault:focus {
+    outline: none !important;
+    outline-width: 0 !important;
+    outline-offset: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.homeNavButton.sapMBtn:focus::before,
+.homeNavButton.sapMBtn:focus::after,
+.homeNavButton.sapMBtn .sapMBtnInner:focus::before,
+.homeNavButton.sapMBtn .sapMBtnInner:focus::after {
+    content: none !important;
+    display: none !important;
+    border: none !important;
+}
+
+.homeNavButton .sapMBtnInner:active,
+.homeNavButton.sapMBtnActive .sapMBtnInner {
+    background: transparent !important;
 }

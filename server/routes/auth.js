@@ -2,8 +2,42 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
 const { generateToken, getTokenExpirationTime } = require('../utils/jwt');
+const { logAction } = require('../utils/audit');
+const { authenticateToken } = require('../middleware/auth');
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password, firstName, lastName, nif]
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               nif:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Missing required fields
+ *       409:
+ *         description: Email already exists
+ */
 router.post('/register', async (req, res) => {
     const { email, password, firstName, lastName, nif, phone, addressLine1, addressLine2, city, stateProvince, postalCode, country, dateOfBirth, bio } = req.body;
 
@@ -79,7 +113,37 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login endpoint
+/**
+ * @swagger
+ * /api/login:
+ *   post:
+ *     summary: Login a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
+ */
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -115,6 +179,13 @@ router.post('/login', async (req, res) => {
         const token = generateToken(user.id, user.email, user.role);
         const expiresIn = getTokenExpirationTime();
 
+        // Log action
+        try {
+            await logAction(user.id, 'LOGIN', 'AUTH', null, { email: user.email }, req.ip);
+        } catch (logErr) {
+            console.error('Failed to log login action:', logErr);
+        }
+
         res.json({
             message: 'Login successful',
             token,
@@ -129,6 +200,16 @@ router.post('/login', async (req, res) => {
         });
     } catch (err) {
         console.error('Login error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.post('/logout', authenticateToken, async (req, res) => {
+    try {
+        await logAction(req.user.userId, 'LOGOUT', 'AUTH', null, { email: req.user.email }, req.ip);
+        res.json({ message: 'Logout successful' });
+    } catch (err) {
+        console.error('Logout error:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

@@ -13,14 +13,19 @@
         <ColumnListItem>
             <cells>
                 <ObjectIdentifier title="{catalog>sku}"/>
-                <Text text="{catalog>translations/0/nombre}"/>
+                <Text text="{
+                    parts: [
+                        {path: 'catalog>nombre'},
+                        {path: 'catalog>sku'}
+                    ],
+                    formatter: '.formatter.productName'
+                }"/>
                 <ObjectNumber
                     number="{
-                        parts: [{path: 'catalog>precio_base'}, {path: 'catalog>prices/0/moneda'}],
-                        type: 'sap.ui.model.type.Currency',
-                        formatOptions: {showMeasure: true}
+                        path: 'catalog>precio_base',
+                        formatter: '.formatter.catalogPrice'
                     }"
-                    unit="{catalog>prices/0/moneda}"/>
+                    unit="EUR"/>
             </cells>
         </ColumnListItem>
         <columns>

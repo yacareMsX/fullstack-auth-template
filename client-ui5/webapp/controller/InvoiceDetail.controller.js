@@ -13,20 +13,27 @@ sap.ui.define([
             var oRouter = this.getOwnerComponent().getRouter();
             oRouter.getRoute("invoiceDetail").attachPatternMatched(this._onObjectMatched, this);
 
-            var oViewModel = new JSONModel({});
+            var oViewModel = new JSONModel({
+                pdfPanelSize: "0%",
+                pdfSource: ""
+            });
             this.getView().setModel(oViewModel, "detail");
         },
 
         _onObjectMatched: function (oEvent) {
             var sInvoiceId = oEvent.getParameter("arguments").invoiceId;
             this._loadInvoiceDetail(sInvoiceId);
+            // Reset PDF view
+            var oModel = this.getView().getModel("detail");
+            oModel.setProperty("/pdfPanelSize", "0%");
+            oModel.setProperty("/pdfSource", "");
         },
 
         _loadInvoiceDetail: function (sInvoiceId) {
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("http://localhost:3000/api/invoices/facturas/" + sInvoiceId, {
+            fetch("/api/invoices/facturas/" + sInvoiceId, {
                 headers: {
                     "Authorization": "Bearer " + sToken
                 }
@@ -35,8 +42,19 @@ sap.ui.define([
                     return response.json();
                 })
                 .then(function (data) {
+                    // Convert date strings to Date objects for proper formatting
+                    if (data.fecha_emision) {
+                        data.fecha_emision = new Date(data.fecha_emision);
+                    }
+                    if (data.fecha_vencimiento) {
+                        data.fecha_vencimiento = new Date(data.fecha_vencimiento);
+                    }
+
                     var oModel = that.getView().getModel("detail");
-                    oModel.setData(data);
+                    // Merge data to preserve view properties like pdfPanelSize
+                    var oCurrentData = oModel.getData();
+                    var oNewData = Object.assign({}, oCurrentData, data);
+                    oModel.setData(oNewData);
                 })
                 .catch(function (error) {
                     console.error("Error loading invoice detail:", error);
@@ -51,7 +69,7 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("http://localhost:3000/api/invoices/facturas/" + sInvoiceId + "/estado", {
+            fetch("/api/invoices/facturas/" + sInvoiceId + "/estado", {
                 method: "PATCH",
                 headers: {
                     "Authorization": "Bearer " + sToken,
@@ -72,15 +90,20 @@ sap.ui.define([
                 });
         },
 
-        onDownloadPDF: function () {
+        onViewPDF: function () {
             var oModel = this.getView().getModel("detail");
+            var sCurrentSize = oModel.getProperty("/pdfPanelSize");
+
+            // Toggle visibility
+            if (sCurrentSize !== "0%") {
+                oModel.setProperty("/pdfPanelSize", "0%");
+                return;
+            }
+
             var sInvoiceId = oModel.getProperty("/id_factura");
             var sToken = localStorage.getItem("auth_token");
+            var sUrl = "/api/invoices/facturas/" + sInvoiceId + "/pdf";
 
-            // Open PDF in new window
-            var sUrl = "http://localhost:3000/api/invoices/facturas/" + sInvoiceId + "/pdf";
-
-            // Create a temporary link to download the PDF
             fetch(sUrl, {
                 headers: {
                     "Authorization": "Bearer " + sToken
@@ -93,28 +116,32 @@ sap.ui.define([
                     return response.blob();
                 })
                 .then(function (blob) {
-                    // Create download link
                     var url = window.URL.createObjectURL(blob);
-                    var a = document.createElement('a');
-                    a.href = url;
-                    a.download = "invoice_" + oModel.getProperty("/numero") + ".pdf";
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-
-                    MessageToast.show("PDF downloaded successfully");
+                    // Append parameters to hide navigation pane and toolbar
+                    url += "#navpanes=0&scrollbar=0";
+                    console.log("PDF Blob URL:", url);
+                    oModel.setProperty("/pdfSource", url);
+                    oModel.setProperty("/pdfPanelSize", "50%");
+                    console.log("PDF Panel Size set to 50%");
                 })
                 .catch(function (error) {
                     console.error("Error downloading PDF:", error);
-                    MessageToast.show("Error downloading PDF");
+                    MessageToast.show("Error loading PDF");
                 });
         },
 
-        onDownloadXML: function () {
+        onGenerateFacturaE: function () {
             var oModel = this.getView().getModel("detail");
             var sInvoiceId = oModel.getProperty("/id_factura");
             this.getOwnerComponent().getRouter().navTo("facturaE", {
+                invoiceId: sInvoiceId
+            });
+        },
+
+        onGenerateUBL: function () {
+            var oModel = this.getView().getModel("detail");
+            var sInvoiceId = oModel.getProperty("/id_factura");
+            this.getOwnerComponent().getRouter().navTo("ubl21", {
                 invoiceId: sInvoiceId
             });
         },

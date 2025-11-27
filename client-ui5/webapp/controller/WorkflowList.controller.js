@@ -23,7 +23,7 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("http://localhost:3000/api/workflows", {
+            fetch("/api/workflows", {
                 headers: { "Authorization": "Bearer " + sToken }
             })
                 .then(res => res.json())
@@ -76,7 +76,7 @@ sap.ui.define([
             MessageBox.confirm("Are you sure you want to delete this workflow?", {
                 onClose: function (sAction) {
                     if (sAction === "OK") {
-                        fetch("http://localhost:3000/api/workflows/" + oWorkflow.id, {
+                        fetch("/api/workflows/" + oWorkflow.id, {
                             method: "DELETE",
                             headers: { "Authorization": "Bearer " + sToken }
                         })

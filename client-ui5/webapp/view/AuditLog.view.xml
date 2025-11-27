@@ -1,0 +1,88 @@
+<mvc:View
+    controllerName="invoice.app.controller.AuditLog"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    height="100%">
+
+    <Page title="{i18n>auditLog}" showNavButton="true" navButtonPress="onNavBack">
+        <headerContent>
+            <Button icon="sap-icon://refresh" press="onRefresh" tooltip="Refresh"/>
+        </headerContent>
+        <content>
+            <Panel expandable="true" expanded="true" headerText="{i18n>filters}" width="auto" class="sapUiResponsiveMargin">
+                <content>
+                    <l:Grid defaultSpan="L4 M6 S12">
+                        <VBox>
+                            <Label text="{i18n>action}"/>
+                            <Input id="actionFilter" placeholder="LOGIN, CREATE_INVOICE..."/>
+                        </VBox>
+                        <VBox>
+                            <Label text="{i18n>user}"/>
+                            <Input id="userFilter" placeholder="User ID"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="{i18n>date}"/>
+                            <DateRangeSelection id="dateFilter" displayFormat="yyyy-MM-dd"/>
+                        </VBox>
+                        <VBox justifyContent="End">
+                            <Button text="{i18n>search}" type="Emphasized" press="onSearch" icon="sap-icon://search"/>
+                        </VBox>
+                    </l:Grid>
+                </content>
+            </Panel>
+
+            <Table
+                id="auditTable"
+                items="{audit>/}"
+                growing="true"
+                growingThreshold="20"
+                growingScrollToLoad="true"
+                width="auto"
+                class="sapUiResponsiveMargin">
+                <columns>
+                    <Column width="12em">
+                        <Text text="{i18n>date}"/>
+                    </Column>
+                    <Column width="10em">
+                        <Text text="{i18n>user}"/>
+                    </Column>
+                    <Column width="12em">
+                        <Text text="{i18n>action}"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="{i18n>description}"/>
+                    </Column>
+                    <Column minScreenWidth="Desktop" demandPopin="true" width="10em">
+                        <Text text="IP"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{
+                                path: 'audit>created_at',
+                                formatter: '.formatter.formatDate'
+                            }"/>
+                            <ObjectIdentifier
+                                title="{audit>author_name}"
+                                text="{audit>author_email}"/>
+                            <ObjectStatus
+                                text="{audit>action}"
+                                state="{
+                                    path: 'audit>action',
+                                    formatter: '.formatter.auditState'
+                                }"/>
+                            <Text text="{
+                                path: 'audit>details',
+                                formatter: '.formatter.jsonStringify'
+                            }" maxLines="2" wrapping="true"/>
+                            <Text text="{audit>ip_address}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

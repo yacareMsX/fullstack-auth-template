@@ -1,0 +1,22 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Dialog
+		title="Gemini Raw JSON Response"
+		contentWidth="600px"
+		contentHeight="500px"
+		resizable="true"
+        verticalScrolling="true">
+		<content>
+			<TextArea
+				value="{jsonViewer>/jsonContent}"
+				width="100%"
+                rows="25"
+				editable="false"
+                growing="true"/>
+		</content>
+		<endButton>
+			<Button text="Close" press="onCloseJsonViewer"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

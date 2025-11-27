@@ -6,57 +6,99 @@
     xmlns:core="sap.ui.core"
     displayBlock="true">
     
-    <Page showHeader="false" class="homePage">
-        <content>
-            <layout:VerticalLayout width="100%">
-                
-                <!-- Hero Section -->
-                <VBox 
-                    height="280px"
-                    justifyContent="Center"
-                    alignItems="Center"
-                    class="heroSection">
-                    <Title 
-                        text="Invoice Management" 
-                        level="H1"
-                        class="heroTitle"/>
-                    <Text 
-                        text="Explore and manage your invoices"
-                        class="heroSubtitle"/>
-                </VBox>
-
-                <!-- Featured Controls Section -->
-                <layout:VerticalLayout width="100%" class="sapUiContentPadding featuredSection">
-                    <Title text="Featured Controls" level="H3" class="sapUiMediumMarginBottom sectionTitle"/>
-                    
-                    <layout:HorizontalLayout class="cardsContainer">
-                        
-                        <!-- Issue Invoices Card -->
-                        <GenericTile 
-                            header="Issue Invoices" 
-                            subheader="Manage outgoing invoices"
-                            press="onNavigateToIssueInvoices"
-                            class="featureCard sapUiMediumMarginEnd">
-                            <TileContent>
-                                <ImageContent src="sap-icon://create-form"/>
-                            </TileContent>
-                        </GenericTile>
-                        
-                        <!-- Receipt Invoices Card -->
-                        <GenericTile 
-                            header="Receipt Invoices" 
-                            subheader="Manage incoming invoices"
-                            press="onNavigateToReceiptInvoices"
-                            class="featureCard">
-                            <TileContent>
-                                <ImageContent src="sap-icon://inbox"/>
-                            </TileContent>
-                        </GenericTile>
-                        
+    <Page showHeader="true" class="homePage">
+        <customHeader>
+            <Bar class="homeNavBar">
+                <contentLeft>
+                    <layout:HorizontalLayout>
+                        <Link 
+                            text="{i18n>sectionInvoices}" 
+                            press="onSectionNavigate" 
+                            class="homeNavButton">
+                            <customData>
+                                <core:CustomData key="section" value="invoices"/>
+                            </customData>
+                        </Link>
+                        <Link 
+                            text="{i18n>sectionReporting}" 
+                            press="onSectionNavigate" 
+                            class="homeNavButton">
+                            <customData>
+                                <core:CustomData key="section" value="reporting"/>
+                            </customData>
+                        </Link>
+                        <Link 
+                            text="{i18n>sectionStatutory}" 
+                            press="onSectionNavigate" 
+                            class="homeNavButton">
+                            <customData>
+                                <core:CustomData key="section" value="statutory"/>
+                            </customData>
+                        </Link>
                     </layout:HorizontalLayout>
+                </contentLeft>
+            </Bar>
+        </customHeader>
+        <content>
+            <ScrollContainer id="homeScrollContainer" height="100%" width="100%" vertical="true">
+                <layout:VerticalLayout width="100%" class="sapUiContentPadding">
+                    
+                    <!-- Invoices Section -->
+                    <VBox id="invoicesSection">
+                        <Title text="{i18n>sectionInvoices}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+                        <layout:HorizontalLayout allowWrapping="true">
+                            <GenericTile header="{i18n>tileEinvoiceFace}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://document-text"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tileTbai}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://official-service"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tileLeyCC}" press="onNavigateToDashboard" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://bbyd-dashboard"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tileEinvoicePolonia}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://world"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tileEinvoiceFrancia}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://world"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tileEinvoiceBelgica}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://world"/></TileContent>
+                            </GenericTile>
+                        </layout:HorizontalLayout>
+                    </VBox>
+
+                    <!-- Reporting Section -->
+                    <VBox id="reportingSection">
+                        <Title text="{i18n>sectionReporting}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+                        <layout:HorizontalLayout allowWrapping="true">
+                            <GenericTile header="{i18n>tileSii}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://bar-chart"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tileVerifactu}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://receipt"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tileFranceReporting}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://line-chart"/></TileContent>
+                            </GenericTile>
+                        </layout:HorizontalLayout>
+                    </VBox>
+
+                    <!-- Statutory Reporting Section -->
+                    <VBox id="statutorySection">
+                        <Title text="{i18n>sectionStatutory}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+                        <layout:HorizontalLayout allowWrapping="true">
+                            <GenericTile header="{i18n>tile301}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://form"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tile322}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://form"/></TileContent>
+                            </GenericTile>
+                        </layout:HorizontalLayout>
+                    </VBox>
+                    
                 </layout:VerticalLayout>
-                
-            </layout:VerticalLayout>
+            </ScrollContainer>
         </content>
     </Page>
 </mvc:View>

@@ -10,13 +10,15 @@
     <tnt:ToolPage id="toolPage">
         <tnt:header>
             <tnt:ToolHeader class="bannerHeader">
-                <Button icon="sap-icon://home" press="onNavHome" type="Transparent" tooltip="{i18n>home}"/>
+                <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" tooltip="Menu" class="sapUiSmallMarginEnd" visible="{ui>/menuVisible}"/>
+                <Button icon="sap-icon://nav-back" type="Transparent" press="onNavBack" tooltip="Back" class="sapUiSmallMarginEnd" visible="{ui>/backButtonVisible}"/>
+                <Title text="{ui>/headerTitle}" level="H2" class="sapUiSmallMarginBegin"/>
                 <ToolbarSpacer/>
-                <Select change="onLanguageChange" selectedKey="en" id="languageSelect">
-                    <core:Item key="en" text="English"/>
-                    <core:Item key="es" text="Español"/>
-                </Select>
-                <Button icon="sap-icon://log" press="onLogout" type="Transparent" tooltip="{i18n>logout}"/>
+                <Button icon="sap-icon://search" type="Transparent" tooltip="{i18n>search}"/>
+                <Button icon="sap-icon://sys-help-2" type="Transparent" tooltip="Help"/>
+                <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications"/>
+                <Avatar id="languageAvatar" src="img/flag_en.png" displaySize="XS" press="onLanguagePress" class="sapUiSmallMarginBeginEnd" tooltip="Language"/>
+                <Avatar src="img/profile_pic.png" displaySize="XS" press="onProfilePress" class="sapUiSmallMarginBegin" tooltip="Profile"/>
             </tnt:ToolHeader>
         </tnt:header>
 
@@ -24,69 +26,101 @@
         <tnt:sideContent>
             <tnt:SideNavigation
                 expanded="true"
-                itemSelect="onItemSelect">
+                itemSelect="onItemSelect"
+                visible="{ui>/sidebarVisible}">
                 <tnt:NavigationList>
                     <tnt:NavigationListItem
-                        text="Issue Invoices"
+                        text="Dashboard"
+                        icon="sap-icon://bbyd-dashboard"
+                        key="dashboard"/>
+
+                    <tnt:NavigationListItem
+                        text="{i18n>issueInvoices}"
                         icon="sap-icon://create-form"
                         expanded="false">
                         <tnt:NavigationListItem
-                            text="Invoice List"
+                            text="{i18n>invoiceList}"
                             key="issueList"/>
                         <tnt:NavigationListItem
-                            text="Create New"
+                            text="{i18n>createNew}"
                             key="issueNew"/>
                     </tnt:NavigationListItem>
                     
                     <tnt:NavigationListItem
-                        text="Receipt Invoices"
+                        text="{i18n>receiptInvoices}"
                         icon="sap-icon://inbox"
                         expanded="false">
                         <tnt:NavigationListItem
-                            text="Invoice List"
+                            text="{i18n>invoiceList}"
                             key="receiptList"/>
                         <tnt:NavigationListItem
-                            text="Create New"
+                            text="{i18n>createNew}"
                             key="receiptNew"/>
+                        <tnt:NavigationListItem
+                            text="{i18n>newScanningInvoice}"
+                            key="scanInvoice"/>
+                        <tnt:NavigationListItem
+                            text="{i18n>uploadExcel}"
+                            key="uploadExcel"/>
                     </tnt:NavigationListItem>
                     
                     <tnt:NavigationListItem
-                        text="Catalog"
+                        text="{i18n>catalog}"
                         icon="sap-icon://product"
                         expanded="false">
                         <tnt:NavigationListItem
-                            text="Create New Item"
+                            text="{i18n>createItem}"
                             key="catalogNew"/>
                         <tnt:NavigationListItem
-                            text="Item List"
+                            text="{i18n>itemList}"
                             key="catalogList"/>
                     </tnt:NavigationListItem>
 
                     <tnt:NavigationListItem
-                        text="Workflow Designer"
+                        text="{i18n>workflowDesignerTitle}"
                         icon="sap-icon://process"
                         expanded="false">
                         <tnt:NavigationListItem
-                            text="Create Workflow"
+                            text="{i18n>createWorkflow}"
                             key="workflowNew"/>
                         <tnt:NavigationListItem
-                            text="Workflow List"
+                            text="{i18n>workflowListTitle}"
                             key="workflowList"/>
                     </tnt:NavigationListItem>
                     
                     <tnt:NavigationListItem
-                        text="Config"
+                        text="{i18n>config}"
                         icon="sap-icon://settings"
                         expanded="false">
                         <tnt:NavigationListItem
-                            text="Issuers"
+                            text="{i18n>issuers}"
                             key="issuers"/>
                         <tnt:NavigationListItem
-                            text="Receivers"
+                            text="{i18n>receivers}"
                             key="receivers"/>
                         <tnt:NavigationListItem
-                            text="Taxes"
+                            text="{i18n>taxes}"
                             key="taxes"/>
+                    </tnt:NavigationListItem>
+
+                    <tnt:NavigationListItem
+                        text="{i18n>admin}"
+                        icon="sap-icon://action-settings"
+                        expanded="false">
+                        <tnt:NavigationListItem
+                            text="{i18n>origins}"
+                            key="originList"/>
+                    </tnt:NavigationListItem>
+
+                    <tnt:NavigationListItem text="{i18n>audit}" icon="sap-icon://shield" expanded="false">
+                        <tnt:NavigationListItem text="{i18n>auditLog}" key="auditLog"/>
+                    </tnt:NavigationListItem>
+
+                    <tnt:NavigationListItem
+                        text="APIs"
+                        icon="sap-icon://api"
+                        expanded="false">
+                        <tnt:NavigationListItem text="{i18n>apiDocs}" icon="sap-icon://learning-assistant" key="apiDocs"/>
                     </tnt:NavigationListItem>
                 </tnt:NavigationList>
             </tnt:SideNavigation>

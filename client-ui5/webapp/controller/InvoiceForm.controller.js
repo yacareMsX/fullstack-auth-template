@@ -5,18 +5,216 @@ sap.ui.define([
     "sap/m/MessageBox",
     "sap/ui/core/Fragment",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
-], function (Controller, JSONModel, MessageToast, MessageBox, Fragment, Filter, FilterOperator) {
+    "sap/ui/model/FilterOperator",
+    "sap/m/Dialog",
+    "sap/m/TextArea",
+    "sap/m/Button",
+    "invoice/app/model/formatter"
+], function (Controller, JSONModel, MessageToast, MessageBox, Fragment, Filter, FilterOperator, Dialog, TextArea, Button, formatter) {
     "use strict";
 
     return Controller.extend("invoice.app.controller.InvoiceForm", {
+        formatter: formatter,
 
         onInit: function () {
             var oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("invoiceNew").attachPatternMatched(this._onNewInvoice, this);
+            oRouter.getRoute("invoiceNew").attachPatternMatched(this._onRouteMatched, this);
             oRouter.getRoute("invoiceEdit").attachPatternMatched(this._onEditInvoice, this);
 
             this._initializeModel();
+        },
+
+        _onRouteMatched: function (oEvent) {
+            var sRouteName = oEvent.getParameter("name");
+            var oArgs = oEvent.getParameter("arguments");
+
+            // If it's the new invoice route
+            if (sRouteName === "invoiceNew") {
+                console.log("DEBUG: InvoiceForm - Route invoiceNew matched");
+
+                this._onNewInvoice(oEvent).then(function () {
+                    console.log("DEBUG: Data loaded, checking for pending scan...");
+
+                    // Determine type based on route argument 'tipo'
+                    // If tipo is RECEIPT, set codigo_tipo to '02'
+                    if (oArgs.tipo === "RECEIPT") {
+                        this.getView().getModel("form").setProperty("/codigo_tipo", "02");
+                    } else {
+                        this.getView().getModel("form").setProperty("/codigo_tipo", "01");
+                    }
+
+                    // Check for pending scan data in global model
+                    var oScannedModel = this.getOwnerComponent().getModel("scannedData");
+                    var bPendingProcess = oScannedModel && oScannedModel.getProperty("/pendingProcess");
+
+                    console.log("DEBUG: pendingProcess flag:", bPendingProcess);
+
+                    if (bPendingProcess) {
+                        console.log("DEBUG: Processing scanned data...");
+
+                        // Clear the flag to prevent re-processing on reload (optional, but good practice)
+                        oScannedModel.setProperty("/pendingProcess", false);
+
+                        var oScannedData = oScannedModel.getData();
+                        console.log("DEBUG: scannedData content:", oScannedData);
+
+                        var oModel = this.getView().getModel("form"); // Use 'form' model consistently
+                        console.log("DEBUG: form model:", oModel);
+
+                        if (oModel) {
+                            var oData = oModel.getData();
+                            // Merge scanned data
+                            // We map fields carefully
+                            oModel.setProperty("/codigo_tipo", "02"); // Force Receipt type for scanned invoices
+                            oModel.setProperty("/id_origen", 3); // Set Origin to Scanner (3)
+                            if (oScannedData.numero) oModel.setProperty("/numero", oScannedData.numero);
+                            if (oScannedData.fecha_emision) oModel.setProperty("/fecha_emision", oScannedData.fecha_emision);
+
+                            // --- SMART MAPPING START ---
+
+                            // 1. Map Issuer (Emisor)
+                            var aEmisores = oModel.getProperty("/emisores") || [];
+                            var sEmisorNif = oScannedData.emisor_nif;
+                            var sEmisorName = oScannedData.emisor_nombre;
+
+                            console.log("DEBUG: Smart Mapping Emisor - Input:", { nif: sEmisorNif, name: sEmisorName });
+                            console.log("DEBUG: Available Emisores:", aEmisores.length);
+
+                            var oFoundEmisor = aEmisores.find(e =>
+                                (sEmisorNif && e.nif && e.nif.toUpperCase() === sEmisorNif.toUpperCase()) ||
+                                (sEmisorName && e.nombre && e.nombre.toUpperCase().includes(sEmisorName.toUpperCase()))
+                            );
+                            if (oFoundEmisor) {
+                                oModel.setProperty("/id_emisor", oFoundEmisor.id_emisor);
+                                console.log("DEBUG: Matched Emisor ID:", oFoundEmisor.id_emisor, "Name:", oFoundEmisor.nombre);
+                            } else {
+                                console.warn("DEBUG: Could not match Emisor. User must select manually.");
+                            }
+
+                            // 2. Map Receiver (Receptor)
+                            var aReceptores = oModel.getProperty("/receptores") || [];
+                            var sReceptorNif = oScannedData.receptor_nif;
+                            var sReceptorName = oScannedData.receptor_nombre;
+
+                            console.log("DEBUG: Smart Mapping Receptor - Input:", { nif: sReceptorNif, name: sReceptorName });
+                            console.log("DEBUG: Available Receptores:", aReceptores.length);
+
+                            var oFoundReceptor = aReceptores.find(r =>
+                                (sReceptorNif && r.nif && r.nif.toUpperCase() === sReceptorNif.toUpperCase()) ||
+                                (sReceptorName && r.nombre && r.nombre.toUpperCase().includes(sReceptorName.toUpperCase()))
+                            );
+                            if (oFoundReceptor) {
+                                oModel.setProperty("/id_receptor", oFoundReceptor.id_receptor);
+                                console.log("DEBUG: Matched Receptor ID:", oFoundReceptor.id_receptor, "Name:", oFoundReceptor.nombre);
+                            } else {
+                                console.warn("DEBUG: Could not match Receptor. User must select manually.");
+                                // Fallback: If it's a Receipt (02) and we have receivers, default to the first one
+                                // This assumes the user is scanning for their primary company
+                                if (oModel.getProperty("/codigo_tipo") === "02" && aReceptores.length > 0) {
+                                    oModel.setProperty("/id_receptor", aReceptores[0].id_receptor);
+                                    console.log("DEBUG: Auto-selected default Receptor:", aReceptores[0].nombre);
+                                    sap.m.MessageToast.show("Auto-selected receiver: " + aReceptores[0].nombre);
+                                }
+                            }
+
+                            // 3. Map Lines and Taxes
+                            if (oScannedData.lineas && Array.isArray(oScannedData.lineas)) {
+                                var aImpuestos = oModel.getProperty("/impuestos") || [];
+                                // Default to 21% (IVA General) if we can't guess, or try to infer
+                                var oDefaultTax = aImpuestos.find(t => t.porcentaje === 21) || aImpuestos[0];
+
+                                var aMappedLines = oScannedData.lineas.map(function (line) {
+                                    // Try to find a matching tax if the scan provided a rate
+                                    var fScanRate = parseFloat(line.porcentaje_impuesto);
+                                    var oTax = null;
+                                    if (!isNaN(fScanRate)) {
+                                        oTax = aImpuestos.find(t => Math.abs(t.porcentaje - fScanRate) < 0.1);
+                                    }
+                                    if (!oTax) oTax = oDefaultTax;
+
+                                    return {
+                                        descripcion: line.descripcion || "Item",
+                                        cantidad: parseFloat(line.cantidad) || 1,
+                                        precio_unitario: parseFloat(line.precio_unitario) || 0,
+                                        id_impuesto: oTax ? oTax.id_impuesto : "",
+                                        porcentaje_impuesto: oTax ? oTax.porcentaje : 0,
+                                        importe_impuesto: 0, // Will be calculated
+                                        total_linea: 0 // Will be calculated
+                                    };
+                                });
+                                oModel.setProperty("/lineas", aMappedLines);
+
+                                // Trigger calculation for each line to update totals
+                                this._calculateLineTotals();
+                            }
+                            // --- SMART MAPPING END ---
+
+                            // Set file data for viewer
+                            if (oScannedData.fileUrl) {
+                                oModel.setProperty("/fileUrl", oScannedData.fileUrl);
+                                oModel.setProperty("/mimeType", oScannedData.mimeType);
+                                oModel.setProperty("/rawJson", oScannedData.rawJson);
+                                oModel.setProperty("/pdfPanelSize", "40%");
+                            }
+
+                            this._calculateTotals();
+                            sap.m.MessageToast.show("Datos cargados del escaneo");
+                        }
+                    }
+                }.bind(this));
+            }
+        }
+        ,
+
+
+
+        onViewJson: function () {
+            var oModel = this.getView().getModel("form");
+            var oJson = oModel.getProperty("/rawJson");
+
+            console.log("DEBUG: onViewJson called");
+
+            if (!oJson) {
+                MessageToast.show("No JSON data available");
+                return;
+            }
+
+            var sJsonString = JSON.stringify(oJson, null, 2);
+
+            // Create a dedicated model for the viewer
+            var oViewerModel = new JSONModel({
+                jsonContent: sJsonString
+            });
+
+            if (!this._pJsonDialog) {
+                this._pJsonDialog = Fragment.load({
+                    id: this.getView().getId(),
+                    name: "invoice.app.view.JsonViewerDialog",
+                    controller: this
+                }).then(function (oDialog) {
+                    this.getView().addDependent(oDialog);
+                    return oDialog;
+                }.bind(this));
+            }
+
+            this._pJsonDialog.then(function (oDialog) {
+                oDialog.setModel(oViewerModel, "jsonViewer");
+                oDialog.open();
+            });
+        },
+
+        onCloseJsonViewer: function () {
+            this._pJsonDialog.then(function (oDialog) {
+                oDialog.close();
+            });
+        },
+
+        onCancel: function () {
+            if (this._bFromScan) {
+                this.getOwnerComponent().getRouter().navTo("scanInvoice");
+            } else {
+                this.onNavBack();
+            }
         },
 
         _initializeModel: function () {
@@ -28,7 +226,10 @@ sap.ui.define([
                 fecha_vencimiento: "",
                 id_emisor: "",
                 id_receptor: "",
+
                 metodo_pago: "TRANSFERENCIA",
+                codigo_tipo: "01", // Default to Issue (01)
+                id_origen: 1, // Default to Manual (1)
                 lineas: [{
                     descripcion: "",
                     cantidad: 1,
@@ -40,39 +241,45 @@ sap.ui.define([
                 }],
                 emisores: [],
                 receptores: [],
+                origenes: [],
                 impuestos: [],
                 totals: {
                     subtotal: 0,
                     impuestos: 0,
                     total: 0
-                }
+                },
+                pdfPanelSize: "0%"
             });
             this.getView().setModel(oViewModel, "form");
 
-            this._loadFormData();
+            return this._loadFormData();
         },
 
         _loadFormData: function () {
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            Promise.all([
-                fetch("http://localhost:3000/api/invoices/emisores", {
+            return Promise.all([
+                fetch("/api/invoices/emisores", {
                     headers: { "Authorization": "Bearer " + sToken }
                 }).then(r => r.json()),
-                fetch("http://localhost:3000/api/invoices/receptores", {
+                fetch("/api/invoices/receptores", {
                     headers: { "Authorization": "Bearer " + sToken }
                 }).then(r => r.json()),
-                fetch("http://localhost:3000/api/invoices/impuestos?activo=true", {
+                fetch("/api/invoices/impuestos?activo=true", {
+                    headers: { "Authorization": "Bearer " + sToken }
+                }).then(r => r.json()),
+                fetch("/api/admin/origenes", {
                     headers: { "Authorization": "Bearer " + sToken }
                 }).then(r => r.json())
-            ]).then(function ([emisores, receptores, impuestos]) {
+            ]).then(function ([emisores, receptores, impuestos, origenes]) {
                 console.log("Emisores loaded:", emisores);
                 console.log("Receptores loaded:", receptores);
                 var oModel = that.getView().getModel("form");
                 oModel.setProperty("/emisores", emisores);
                 oModel.setProperty("/receptores", receptores);
                 oModel.setProperty("/impuestos", impuestos);
+                oModel.setProperty("/origenes", origenes);
             }).catch(function (error) {
                 console.error("Error loading form data:", error);
                 MessageToast.show("Error loading form data");
@@ -80,7 +287,7 @@ sap.ui.define([
         },
 
         _onNewInvoice: function () {
-            this._initializeModel();
+            return this._initializeModel();
         },
 
         _onEditInvoice: function (oEvent) {
@@ -92,7 +299,7 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("http://localhost:3000/api/invoices/facturas/" + sInvoiceId, {
+            fetch("/api/invoices/facturas/" + sInvoiceId, {
                 headers: { "Authorization": "Bearer " + sToken }
             })
                 .then(function (response) {
@@ -109,6 +316,8 @@ sap.ui.define([
                     oModel.setProperty("/id_emisor", data.id_emisor);
                     oModel.setProperty("/id_receptor", data.id_receptor);
                     oModel.setProperty("/metodo_pago", data.metodo_pago || "TRANSFERENCIA");
+                    oModel.setProperty("/codigo_tipo", data.codigo_tipo || "01");
+                    oModel.setProperty("/id_origen", 3); // Set Origin to Scanner (3)
                     oModel.setProperty("/lineas", data.lineas || []);
                     that._calculateTotals();
                 })
@@ -139,8 +348,9 @@ sap.ui.define([
                     oCatalogModel = new JSONModel();
                     oView.setModel(oCatalogModel, "catalog");
 
+                    var sCurrentLang = sap.ui.getCore().getConfiguration().getLanguage().split("-")[0];
                     var sToken = localStorage.getItem("auth_token");
-                    fetch("http://localhost:3000/api/catalog/products", {
+                    fetch("/api/catalog/products?lang=" + sCurrentLang, {
                         headers: { "Authorization": "Bearer " + sToken }
                     })
                         .then(res => res.json())
@@ -171,17 +381,8 @@ sap.ui.define([
                 var oContext = oItem.getBindingContext("catalog");
                 var oProduct = oContext.getObject();
 
-                // Find translation
-                var sCurrentLang = sap.ui.getCore().getConfiguration().getLanguage().split("-")[0]; // e.g. "en" or "es"
-                var sDesc = oProduct.sku; // Fallback
-
-                if (oProduct.translations && oProduct.translations.length > 0) {
-                    // Try to find current lang, then EN, then first
-                    var oTrans = oProduct.translations.find(t => t.codigo_idioma === sCurrentLang) ||
-                        oProduct.translations.find(t => t.codigo_idioma === 'en') ||
-                        oProduct.translations[0];
-                    if (oTrans) sDesc = oTrans.nombre;
-                }
+                // Use the name returned by the API (which is already localized)
+                var sDesc = oProduct.nombre || oProduct.sku;
 
                 aLineas.push({
                     descripcion: sDesc,
@@ -253,14 +454,39 @@ sap.ui.define([
             this._calculateTotals();
         },
 
+        _parseNumber: function (vValue) {
+            if (!vValue) return 0;
+            if (typeof vValue === 'number') return vValue;
+
+            // If it's a string
+            var sValue = vValue.toString();
+
+            // Check if it looks like Spanish format (has dots as thousands separator or comma as decimal)
+            // Example: "5.000" -> 5000, "5.000,00" -> 5000.00, "5,50" -> 5.50
+            if (sValue.includes('.') && sValue.includes(',')) {
+                // "5.000,00" -> remove dots, replace comma with dot
+                sValue = sValue.replace(/\./g, '').replace(',', '.');
+            } else if (sValue.includes(',') && !sValue.includes('.')) {
+                // "5,50" -> replace comma with dot
+                sValue = sValue.replace(',', '.');
+            } else if (sValue.includes('.') && sValue.indexOf('.') === sValue.lastIndexOf('.') && sValue.length - sValue.indexOf('.') === 4) {
+                // "5.000" -> remove dot (thousands separator)
+                // Heuristic: if only one dot and 3 digits after it, assume thousands separator
+                sValue = sValue.replace(/\./g, '');
+            }
+
+            return parseFloat(sValue) || 0;
+        },
+
         _calculateLineTotals: function () {
             var oModel = this.getView().getModel("form");
             var aLineas = oModel.getProperty("/lineas");
 
+            var that = this;
             aLineas.forEach(function (linea, index) {
-                var fCantidad = parseFloat(linea.cantidad) || 0;
-                var fPrecio = parseFloat(linea.precio_unitario) || 0;
-                var fPorcentaje = parseFloat(linea.porcentaje_impuesto) || 0;
+                var fCantidad = that._parseNumber(linea.cantidad);
+                var fPrecio = that._parseNumber(linea.precio_unitario);
+                var fPorcentaje = that._parseNumber(linea.porcentaje_impuesto);
 
                 var fSubtotal = fCantidad * fPrecio;
                 var fImpuesto = fSubtotal * (fPorcentaje / 100);
@@ -277,12 +503,13 @@ sap.ui.define([
 
             var fSubtotal = 0;
             var fImpuestos = 0;
+            var that = this;
 
             aLineas.forEach(function (linea) {
-                var fCantidad = parseFloat(linea.cantidad) || 0;
-                var fPrecio = parseFloat(linea.precio_unitario) || 0;
+                var fCantidad = that._parseNumber(linea.cantidad);
+                var fPrecio = that._parseNumber(linea.precio_unitario);
                 fSubtotal += fCantidad * fPrecio;
-                fImpuestos += parseFloat(linea.importe_impuesto) || 0;
+                fImpuestos += that._parseNumber(linea.importe_impuesto);
             });
 
             var fTotal = fSubtotal + fImpuestos;
@@ -341,9 +568,19 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
             var sUrl = oData.isEdit
-                ? "http://localhost:3000/api/invoices/facturas/" + oData.id_factura
-                : "http://localhost:3000/api/invoices/facturas";
+                ? "/api/invoices/facturas/" + oData.id_factura
+                : "/api/invoices/facturas";
             var sMethod = oData.isEdit ? "PUT" : "POST";
+
+            // Client-side validation
+            if (!oData.id_emisor || oData.id_emisor === "") {
+                MessageBox.error("Issuer (Emisor) is missing. Please select one from the dropdown list.");
+                return;
+            }
+            if (!oData.id_receptor || oData.id_receptor === "") {
+                MessageBox.error("Receiver (Receptor) is missing. Please select one from the dropdown list.");
+                return;
+            }
 
             var oPayload = {
                 numero: oData.numero,
@@ -353,8 +590,12 @@ sap.ui.define([
                 id_emisor: oData.id_emisor,
                 id_receptor: oData.id_receptor,
                 metodo_pago: oData.metodo_pago,
+                codigo_tipo: oData.codigo_tipo || "01",
+                id_origen: oData.id_origen,
                 lineas: oData.lineas
             };
+
+            console.log("DEBUG: Saving invoice payload:", oPayload);
 
             fetch(sUrl, {
                 method: sMethod,
@@ -364,8 +605,12 @@ sap.ui.define([
                 },
                 body: JSON.stringify(oPayload)
             })
-                .then(function (response) {
-                    return response.json();
+                .then(async function (response) {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.details || data.error || "Unknown error");
+                    }
+                    return data;
                 })
                 .then(function (data) {
                     MessageToast.show(oData.isEdit ? "Invoice updated successfully" : "Invoice created successfully");
@@ -375,12 +620,16 @@ sap.ui.define([
                 })
                 .catch(function (error) {
                     console.error("Error saving invoice:", error);
-                    MessageBox.error("Error saving invoice");
+                    MessageBox.error("Error saving invoice: " + error.message);
                 });
         },
 
         onCancel: function () {
-            this.getOwnerComponent().getRouter().navTo("invoiceList");
+            if (this._bFromScan) {
+                this.getOwnerComponent().getRouter().navTo("scanInvoice");
+            } else {
+                this.getOwnerComponent().getRouter().navTo("invoiceList");
+            }
         },
 
         onNavBack: function () {

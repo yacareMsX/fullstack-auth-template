@@ -23,7 +23,7 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("http://localhost:3000/api/invoices/emisores", {
+            fetch("/api/invoices/emisores", {
                 headers: { "Authorization": "Bearer " + sToken }
             })
                 .then(function (response) { return response.json(); })
@@ -112,8 +112,8 @@ sap.ui.define([
             }
 
             var sUrl = sId
-                ? "http://localhost:3000/api/invoices/emisores/" + sId
-                : "http://localhost:3000/api/invoices/emisores";
+                ? "/api/invoices/emisores/" + sId
+                : "/api/invoices/emisores";
             var sMethod = sId ? "PUT" : "POST";
 
             console.log("Saving issuer:", sMethod, sUrl, oData);
@@ -163,7 +163,7 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("http://localhost:3000/api/invoices/emisores/" + sId, {
+            fetch("/api/invoices/emisores/" + sId, {
                 method: "DELETE",
                 headers: { "Authorization": "Bearer " + sToken }
             })

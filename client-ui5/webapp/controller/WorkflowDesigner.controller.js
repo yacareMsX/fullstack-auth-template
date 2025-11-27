@@ -223,7 +223,7 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("http://localhost:3000/api/workflows/" + sId, {
+            fetch("/api/workflows/" + sId, {
                 headers: { "Authorization": "Bearer " + sToken }
             })
                 .then(res => res.json())
@@ -697,8 +697,8 @@ sap.ui.define([
 
             // 1. Create/Update Workflow Metadata
             var sUrl = oData.id
-                ? "http://localhost:3000/api/workflows/" + oData.id
-                : "http://localhost:3000/api/workflows";
+                ? "/api/workflows/" + oData.id
+                : "/api/workflows";
             var sMethod = oData.id ? "PUT" : "POST";
 
             fetch(sUrl, {
@@ -726,7 +726,7 @@ sap.ui.define([
                     console.log("Edges:", oData.edges);
 
                     // 2. Save Graph (Nodes & Edges)
-                    return fetch("http://localhost:3000/api/workflows/" + workflowData.id + "/graph", {
+                    return fetch("/api/workflows/" + workflowData.id + "/graph", {
                         method: "PUT",
                         headers: {
                             "Authorization": "Bearer " + sToken,

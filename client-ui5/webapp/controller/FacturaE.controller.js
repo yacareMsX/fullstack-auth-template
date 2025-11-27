@@ -29,7 +29,7 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("http://localhost:3000/api/invoices/facturas/" + sInvoiceId, {
+            fetch("/api/invoices/facturas/" + sInvoiceId, {
                 headers: {
                     "Authorization": "Bearer " + sToken
                 }

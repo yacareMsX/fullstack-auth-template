@@ -6,32 +6,34 @@
     displayBlock="true"
     height="100%">
     
-    <Page showHeader="false" enableScrolling="true" class="loginPage">
+    <Page showHeader="false" enableScrolling="false" class="loginPage">
         <content>
             <FlexBox
                 width="100%"
-                height="100vh"
+                height="100%"
                 alignItems="Center"
                 justifyContent="Center"
-                direction="Column">
+                direction="Column"
+                class="loginContainer">
                 
                 <!-- Login Card -->
                 <VBox 
                     width="400px"
-                    class="sapUiMediumMarginTop">
+                    class="loginCard sapUiLargeMargin">
                     
-                    <!-- Logo/Title -->
+                    <!-- Logo -->
                     <VBox 
                         width="100%" 
                         alignItems="Center"
                         class="sapUiMediumMarginBottom">
+                        <Image
+                            src="https://www.t4sadvance.com/wp-content/uploads/2024/02/T4S-ONE-1-New2024_allwhite-V2.png"
+                            width="200px"
+                            class="sapUiSmallMarginBottom"/>
                         <Title 
-                            text="Invoice Management" 
-                            level="H1"
-                            class="sapUiMediumMarginBottom"/>
-                        <Text 
-                            text="SAPUI5 Application"
-                            class="sapUiTinyMarginBottom"/>
+                            text="Compliance Hub" 
+                            level="H3"
+                            class="loginTitle"/>
                     </VBox>
                     
                     <!-- Login Form -->
@@ -42,20 +44,19 @@
                         <Label 
                             text="Email" 
                             required="true"
-                            labelFor="emailInput"/>
+                            class="loginLabel"/>
                         <Input
                             id="emailInput"
                             type="Email"
                             placeholder="Enter your email"
                             value="{login>/email}"
                             required="true"
-                            class="sapUiTinyMarginBottom"/>
+                            class="loginInput sapUiTinyMarginBottom"/>
                         
                         <Label 
                             text="Password" 
                             required="true"
-                            labelFor="passwordInput"
-                            class="sapUiSmallMarginTop"/>
+                            class="loginLabel sapUiSmallMarginTop"/>
                         <Input
                             id="passwordInput"
                             type="Password"
@@ -63,7 +64,7 @@
                             value="{login>/password}"
                             required="true"
                             submit="onLogin"
-                            class="sapUiTinyMarginBottom"/>
+                            class="loginInput sapUiTinyMarginBottom"/>
                         
                         <!-- Error Message -->
                         <MessageStrip
@@ -80,7 +81,7 @@
                             width="100%"
                             press="onLogin"
                             enabled="{= !${login>/loading}}"
-                            class="sapUiMediumMarginTop"/>
+                            class="loginButton sapUiMediumMarginTop"/>
                         
                         <!-- Loading Indicator -->
                         <BusyIndicator
@@ -88,12 +89,6 @@
                             class="sapUiSmallMarginTop"/>
                         
                     </VBox>
-                    
-                    <!-- Info Text -->
-                    <Text 
-                        text="Use your account credentials to login"
-                        class="sapUiSmallMarginTop"
-                        textAlign="Center"/>
                     
                 </VBox>
                 

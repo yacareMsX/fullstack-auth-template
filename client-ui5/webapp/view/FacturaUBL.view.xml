@@ -1,0 +1,50 @@
+<mvc:View
+    controllerName="invoice.app.controller.FacturaUBL"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:layout="sap.ui.layout">
+    
+    <Page 
+        title="UBL 2.1 XML" 
+        showNavButton="true" 
+        navButtonPress="onNavBack">
+        
+        <content>
+            <layout:VerticalLayout width="100%" class="sapUiContentPadding">
+                <Title text="{i18n>generatedXML}" level="H2" class="sapUiMediumMarginBottom"/>
+                
+                <TextArea 
+                    value="{ubl>/xml}" 
+                    editable="false" 
+                    width="100%" 
+                    rows="20" 
+                    growing="true"
+                    class="sapUiSmallMarginBottom"
+                    wrapping="Off"/>
+                    
+            </layout:VerticalLayout>
+        </content>
+        
+        <footer>
+            <OverflowToolbar>
+                <Button 
+                    text="{i18n>validateXML}" 
+                    icon="sap-icon://validate" 
+                    press="onValidateXML"/>
+                <ToolbarSpacer/>
+                <Button 
+                    text="{i18n>copyClipboard}" 
+                    icon="sap-icon://copy" 
+                    press="onCopyClipboard"/>
+                <Button 
+                    text="{i18n>downloadFile}" 
+                    icon="sap-icon://download" 
+                    press="onDownloadFile"/>
+                <Button 
+                    text="{i18n>sendEmail}" 
+                    icon="sap-icon://email" 
+                    press="onSendEmail"/>
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

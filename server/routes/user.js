@@ -4,7 +4,29 @@ const db = require('../db');
 
 const router = express.Router();
 
-// Get current user profile
+/**
+ * @swagger
+ * /api/user/me:
+ *   get:
+ *     summary: Get current user profile
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: User profile details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                 firstName:
+ *                   type: string
+ *                 lastName:
+ *                   type: string
+ *       404:
+ *         description: User not found
+ */
 router.get('/me', authenticateToken, async (req, res) => {
     try {
         const userRes = await db.query(

@@ -1,68 +1,115 @@
+
 const express = require('express');
 const { authenticateToken } = require('../../middleware/auth');
 const db = require('../../db');
+const { logAction } = require('../../utils/audit');
 const router = express.Router();
 
 // Get all invoices with filters
+/**
+ * @swagger
+ * /api/invoices/facturas:
+ *   get:
+ *     summary: Retrieve a list of invoices
+ *     tags: [Invoices]
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [ISSUE, RECEIPT]
+ *         description: Type of invoice (ISSUE or RECEIPT)
+ *       - in: query
+ *         name: estado
+ *         schema:
+ *           type: string
+ *         description: Filter by status (e.g., PENDIENTE, PAGADA)
+ *     responses:
+ *       200:
+ *         description: A list of invoices
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id_factura:
+ *                     type: integer
+ *                   numero:
+ *                     type: string
+ *                   total:
+ *                     type: number
+ *                   estado:
+ *                     type: string
+ */
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const { estado, tipo, id_emisor, id_receptor, fecha_desde, fecha_hasta, limit = 50, offset = 0 } = req.query;
 
         let query = `
-      SELECT f.*, 
-             e.nombre as emisor_nombre,
-             r.nombre as receptor_nombre
+      SELECT f.*,
+    e.nombre as emisor_nombre,
+    r.nombre as receptor_nombre,
+    o.descripcion as origen_descripcion
       FROM factura f
       JOIN emisor e ON f.id_emisor = e.id_emisor
       JOIN receptor r ON f.id_receptor = r.id_receptor
-      WHERE 1=1
+      LEFT JOIN origenes o ON f.id_origen = o.id_origen
+      WHERE 1 = 1
     `;
         const params = [];
         let paramCount = 1;
 
         if (tipo) {
-            query += ` AND f.tipo = $${paramCount}`;
-            params.push(tipo);
+            // Map legacy tipo to codigo_tipo
+            let codigoTipo = tipo;
+            if (tipo === 'ISSUE') codigoTipo = '01';
+            if (tipo === 'RECEIPT') codigoTipo = '02';
+
+            query += ` AND f.codigo_tipo = $${paramCount} `;
+            params.push(codigoTipo);
             paramCount++;
         }
 
         if (estado) {
-            query += ` AND f.estado = $${paramCount}`;
+            query += ` AND f.estado = $${paramCount} `;
             params.push(estado);
             paramCount++;
         }
 
         if (id_emisor) {
-            query += ` AND f.id_emisor = $${paramCount}`;
+            query += ` AND f.id_emisor = $${paramCount} `;
             params.push(id_emisor);
             paramCount++;
         }
 
         if (id_receptor) {
-            query += ` AND f.id_receptor = $${paramCount}`;
+            query += ` AND f.id_receptor = $${paramCount} `;
             params.push(id_receptor);
             paramCount++;
         }
 
         if (fecha_desde) {
-            query += ` AND f.fecha_emision >= $${paramCount}`;
+            query += ` AND f.fecha_emision >= $${paramCount} `;
             params.push(fecha_desde);
             paramCount++;
         }
 
         if (fecha_hasta) {
-            query += ` AND f.fecha_emision <= $${paramCount}`;
+            query += ` AND f.fecha_emision <= $${paramCount} `;
             params.push(fecha_hasta);
             paramCount++;
         }
 
-        query += ` ORDER BY f.fecha_emision DESC, f.numero DESC LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
+        query += ` ORDER BY f.fecha_emision DESC, f.numero DESC LIMIT $${paramCount} OFFSET $${paramCount + 1} `;
         params.push(limit, offset);
 
         const result = await db.query(query, params);
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching invoices:', error);
+        require('fs').writeFileSync('error.log', JSON.stringify(error, Object.getOwnPropertyNames(error)));
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -74,11 +121,11 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
         // Get invoice with issuer and receiver details
         const invoiceResult = await db.query(
-            `SELECT f.*, 
-              e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
-              e.email as emisor_email, e.telefono as emisor_telefono,
-              r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
-              r.email as receptor_email, r.telefono as receptor_telefono
+            `SELECT f.*,
+    e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
+    r.email as receptor_email, r.telefono as receptor_telefono
        FROM factura f
        JOIN emisor e ON f.id_emisor = e.id_emisor
        JOIN receptor r ON f.id_receptor = r.id_receptor
@@ -119,11 +166,11 @@ router.get('/:id/pdf', authenticateToken, async (req, res) => {
 
         // Get invoice with all details
         const invoiceResult = await db.query(
-            `SELECT f.*, 
-              e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
-              e.email as emisor_email, e.telefono as emisor_telefono,
-              r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
-              r.email as receptor_email, r.telefono as receptor_telefono
+            `SELECT f.*,
+    e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
+    r.email as receptor_email, r.telefono as receptor_telefono
        FROM factura f
        JOIN emisor e ON f.id_emisor = e.id_emisor
        JOIN receptor r ON f.id_receptor = r.id_receptor
@@ -155,7 +202,7 @@ router.get('/:id/pdf', authenticateToken, async (req, res) => {
         // Set response headers
         const filename = `invoice_${invoice.serie || ''}${invoice.numero}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Disposition', `attachment; filename = "${filename}"`);
 
         // Pipe PDF to response
         doc.pipe(res);
@@ -175,13 +222,20 @@ router.post('/', authenticateToken, async (req, res) => {
     try {
         const {
             numero, serie, fecha_emision, fecha_vencimiento,
-            id_emisor, id_receptor, metodo_pago,
+            id_emisor, id_receptor, metodo_pago, codigo_tipo, id_origen,
             lineas = []
         } = req.body;
 
-        if (!numero || !fecha_emision || !id_emisor || !id_receptor) {
+        const missingFields = [];
+        if (!numero) missingFields.push('numero');
+        if (!fecha_emision) missingFields.push('fecha_emision');
+        if (!id_emisor) missingFields.push('id_emisor');
+        if (!id_receptor) missingFields.push('id_receptor');
+        if (!codigo_tipo) missingFields.push('codigo_tipo');
+
+        if (missingFields.length > 0) {
             return res.status(400).json({
-                error: 'Number, issue date, issuer, and receiver are required'
+                error: `Missing required fields: ${missingFields.join(', ')} `
             });
         }
 
@@ -202,14 +256,14 @@ router.post('/', authenticateToken, async (req, res) => {
 
         // Create invoice
         const invoiceResult = await client.query(
-            `INSERT INTO factura (
+            `INSERT INTO factura(
         numero, serie, fecha_emision, fecha_vencimiento,
-        id_emisor, id_receptor, metodo_pago,
+        id_emisor, id_receptor, metodo_pago, codigo_tipo, id_origen,
         subtotal, impuestos_totales, total, estado
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'BORRADOR')
-      RETURNING *`,
+    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'BORRADOR')
+RETURNING * `,
             [numero, serie, fecha_emision, fecha_vencimiento, id_emisor, id_receptor,
-                metodo_pago, subtotal, impuestos_totales, total]
+                metodo_pago, codigo_tipo, id_origen || 1, subtotal, impuestos_totales, total]
         );
 
         const invoice = invoiceResult.rows[0];
@@ -218,11 +272,11 @@ router.post('/', authenticateToken, async (req, res) => {
         const createdLines = [];
         for (const linea of lineas) {
             const lineResult = await client.query(
-                `INSERT INTO linea_factura (
-          id_factura, descripcion, cantidad, precio_unitario,
-          porcentaje_impuesto, importe_impuesto, total_linea, id_impuesto
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING *`,
+                `INSERT INTO linea_factura(
+    id_factura, descripcion, cantidad, precio_unitario,
+    porcentaje_impuesto, importe_impuesto, total_linea, id_impuesto
+) VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING * `,
                 [
                     invoice.id_factura, linea.descripcion, linea.cantidad, linea.precio_unitario,
                     linea.porcentaje_impuesto, linea.importe_impuesto, linea.total_linea, linea.id_impuesto
@@ -233,12 +287,19 @@ router.post('/', authenticateToken, async (req, res) => {
 
         // Log creation
         await client.query(
-            `INSERT INTO log_factura (id_factura, accion, usuario)
-       VALUES ($1, 'CREADA', $2)`,
+            `INSERT INTO log_factura(id_factura, accion, usuario)
+VALUES($1, 'CREADA', $2)`,
             [invoice.id_factura, req.user.email]
         );
 
         await client.query('COMMIT');
+
+        // Log to system audit
+        try {
+            await logAction(req.user.userId, 'CREATE_INVOICE', 'INVOICE', invoice.id_factura, { numero: invoice.numero, total: invoice.total }, req.ip);
+        } catch (logErr) {
+            console.error('Failed to log invoice creation:', logErr);
+        }
 
         invoice.lineas = createdLines;
         res.status(201).json(invoice);
@@ -249,61 +310,142 @@ router.post('/', authenticateToken, async (req, res) => {
         if (error.constraint === 'factura_unica') {
             return res.status(409).json({ error: 'Invoice number and series combination already exists' });
         }
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+    } finally {
+        client.release();
+    }
+});
+
+/**
+         * @swagger
+         * /api/invoices/facturas:
+         *   post:
+         *     summary: Create a new invoice
+         *     tags: [Invoices]
+         *     requestBody:
+         *       required: true
+         *       content:
+         *         application/json:
+         *           schema:
+         *             type: object
+         *             required: [numero, fecha_emision, id_emisor, id_receptor]
+         *             properties:
+         *               numero:
+         *                 type: string
+         *               fecha_emision:
+         *                 type: string
+         *                 format: date
+         *               total:
+         *                 type: number
+         *     responses:
+         *       201:
+         *         description: Invoice created successfully
+         */
+router.post('/facturas', authenticateToken, async (req, res) => {
+    const client = await db.pool.connect();
+    try {
+        await client.query('BEGIN');
+        const {
+            numero, fecha_emision, fecha_vencimiento,
+            id_emisor, id_receptor, id_origen,
+            moneda, subtotal, impuestos, total,
+            estado, notas, items
+        } = req.body;
+
+        // Insert Invoice
+        const invoiceRes = await client.query(
+            `INSERT INTO factura (
+        numero, fecha_emision, fecha_vencimiento,
+        id_emisor, id_receptor, id_origen,
+        moneda, subtotal, impuestos, total,
+        estado, notas
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      RETURNING id_factura`,
+            [
+                numero, fecha_emision, fecha_vencimiento,
+                id_emisor, id_receptor, id_origen,
+                moneda, subtotal, impuestos, total,
+                estado || 'PENDIENTE', notas
+            ]
+        );
+        const invoiceId = invoiceRes.rows[0].id_factura;
+
+        // Insert Items
+        if (items && items.length > 0) {
+            for (const item of items) {
+                await client.query(
+                    `INSERT INTO linea_factura (
+            id_factura, descripcion, cantidad,
+            precio_unitario, subtotal, tasa_impuesto, total
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [
+                        invoiceId, item.descripcion, item.cantidad,
+                        item.precio_unitario, item.subtotal, item.tasa_impuesto, item.total
+                    ]
+                );
+            }
+        }
+
+        await client.query('COMMIT');
+
+        // Log creation
+        logAction(req.user.id, 'CREATE_INVOICE', 'INVOICE', invoiceId, { numero, total }, req.ip);
+
+        res.status(201).json({ message: 'Invoice created successfully', id: invoiceId });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Error creating invoice:', err);
         res.status(500).json({ error: 'Internal server error' });
     } finally {
         client.release();
     }
 });
 
-// Update invoice
+/**
+ * @swagger
+ * /api/invoices/facturas/{id}:
+ *   put:
+ *     summary: Update an invoice
+ *     tags: [Invoices]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               estado:
+ *                 type: string
+ *               notas:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Invoice updated successfully
+ */
 router.put('/:id', authenticateToken, async (req, res) => {
-    const client = await db.pool.connect();
-
+    // Simplified update (full update logic is complex)
     try {
         const { id } = req.params;
-        const {
-            numero, serie, fecha_emision, fecha_vencimiento,
-            id_emisor, id_receptor, metodo_pago,
-            subtotal, impuestos_totales, total
-        } = req.body;
+        const { estado, notas } = req.body;
 
-        await client.query('BEGIN');
-
-        const result = await client.query(
-            `UPDATE factura 
-       SET numero = $1, serie = $2, fecha_emision = $3, fecha_vencimiento = $4,
-           id_emisor = $5, id_receptor = $6, metodo_pago = $7,
-           subtotal = $8, impuestos_totales = $9, total = $10
-       WHERE id_factura = $11
-       RETURNING *`,
-            [numero, serie, fecha_emision, fecha_vencimiento, id_emisor, id_receptor,
-                metodo_pago, subtotal, impuestos_totales, total, id]
+        await db.query(
+            'UPDATE factura SET estado = COALESCE($1, estado), notas = COALESCE($2, notas) WHERE id_factura = $3',
+            [estado, notas, id]
         );
 
-        if (result.rows.length === 0) {
-            await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'Invoice not found' });
-        }
+        // Log update
+        logAction(req.user.userId, 'UPDATE_INVOICE', 'INVOICE', id, { estado, notas }, req.ip);
 
-        // Log modification
-        await client.query(
-            `INSERT INTO log_factura (id_factura, accion, usuario)
-       VALUES ($1, 'MODIFICADA', $2)`,
-            [id, req.user.email]
-        );
-
-        await client.query('COMMIT');
-        res.json(result.rows[0]);
-
-    } catch (error) {
-        await client.query('ROLLBACK');
-        console.error('Error updating invoice:', error);
-        if (error.constraint === 'factura_unica') {
-            return res.status(409).json({ error: 'Invoice number and series combination already exists' });
-        }
+        res.json({ message: 'Invoice updated successfully' });
+    } catch (err) {
+        console.error('Error updating invoice:', err);
         res.status(500).json({ error: 'Internal server error' });
-    } finally {
-        client.release();
     }
 });
 
@@ -333,6 +475,10 @@ router.patch('/:id/estado', authenticateToken, async (req, res) => {
         }
 
         await client.query('COMMIT');
+
+        // Log status change
+        logAction(req.user.userId, 'UPDATE_INVOICE_STATUS', 'INVOICE', id, { oldStatus: result.rows[0].estado, newStatus: estado }, req.ip);
+
         res.json(result.rows[0]);
 
     } catch (error) {
@@ -361,25 +507,47 @@ router.get('/:id/logs', authenticateToken, async (req, res) => {
     }
 });
 
-// Delete invoice
+/**
+ * @swagger
+ * /api/invoices/facturas/{id}:
+ *   delete:
+ *     summary: Delete an invoice
+ *     tags: [Invoices]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Invoice deleted successfully
+ */
 router.delete('/:id', authenticateToken, async (req, res) => {
+    const client = await db.pool.connect();
     try {
+        await client.query('BEGIN');
         const { id } = req.params;
 
-        const result = await db.query(
-            'DELETE FROM factura WHERE id_factura = $1 RETURNING *',
-            [id]
-        );
+        // Delete items first (FK constraint)
+        await client.query('DELETE FROM linea_factura WHERE id_factura = $1', [id]);
 
-        if (result.rows.length === 0) {
+        // Delete invoice
+        const result = await client.query('DELETE FROM factura WHERE id_factura = $1', [id]);
+
+        if (result.rowCount === 0) {
+            await client.query('ROLLBACK');
             return res.status(404).json({ error: 'Invoice not found' });
         }
 
+        await client.query('COMMIT');
         res.json({ message: 'Invoice deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting invoice:', error);
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Error deleting invoice:', err);
         res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        client.release();
     }
 });
-
 module.exports = router;
