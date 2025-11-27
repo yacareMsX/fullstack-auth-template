@@ -1,0 +1,11 @@
+---
+applications:
+  - name: compliance-hub-server
+    path: ./server
+    memory: 256M
+    buildpack: nodejs_buildpack
+    command: node index.js
+    services:
+      - my-postgres-db  # Replace with your actual PostgreSQL service name in BTP
+    env:
+      NODE_ENV: production
