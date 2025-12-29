@@ -47,8 +47,13 @@ sap.ui.define([
             var formData = new FormData();
             formData.append("invoiceFile", file);
 
+            var sToken = localStorage.getItem("auth_token");
+
             fetch("/api/scan", {
                 method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + sToken
+                },
                 body: formData
             })
                 .then(function (response) {

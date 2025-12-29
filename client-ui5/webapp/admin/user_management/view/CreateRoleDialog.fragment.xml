@@ -1,0 +1,31 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Dialog title="{newRole>/dialogTitle}">
+        <content>
+            <f:SimpleForm 
+                editable="true"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                adjustLabelSpan="false"
+                emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+                columnsXL="1" columnsL="1" columnsM="1"
+                singleContainerFullSize="false">
+                <f:content>
+                    <Label text="{i18n>name}" required="true"/>
+                    <Input value="{newRole>/name}" editable="{= !${newRole>/isViewMode}}"/>
+                    
+                    <Label text="{i18n>description}" required="true"/>
+                    <TextArea value="{newRole>/description}" rows="3" editable="{= !${newRole>/isViewMode}}"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <beginButton>
+            <Button text="{i18n>save}" type="Emphasized" press="onSaveRole" visible="{= !${newRole>/isViewMode}}"/>
+        </beginButton>
+        <endButton>
+            <Button text="{i18n>cancel}" press="onCancelRole"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

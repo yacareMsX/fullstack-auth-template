@@ -35,6 +35,14 @@
                                 <core:CustomData key="section" value="statutory"/>
                             </customData>
                         </Link>
+                        <Link 
+                            text="Gestión de Usuarios" 
+                            press="onSectionNavigate" 
+                            class="homeNavButton">
+                            <customData>
+                                <core:CustomData key="section" value="userManagement"/>
+                            </customData>
+                        </Link>
                     </layout:HorizontalLayout>
                 </contentLeft>
             </Bar>
@@ -93,6 +101,16 @@
                             </GenericTile>
                             <GenericTile header="{i18n>tile322}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://form"/></TileContent>
+                            </GenericTile>
+                        </layout:HorizontalLayout>
+                    </VBox>
+
+                    <!-- User Management Section -->
+                    <VBox id="userManagementSection">
+                        <Title text="Gestión de Usuarios" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+                        <layout:HorizontalLayout allowWrapping="true">
+                            <GenericTile header="Gestión de Usuarios" press="onNavigateToUserManagement" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://user-settings"/></TileContent>
                             </GenericTile>
                         </layout:HorizontalLayout>
                     </VBox>

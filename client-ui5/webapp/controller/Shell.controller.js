@@ -11,11 +11,16 @@ sap.ui.define([
             // Initialize UI model for shell state
             var oUIModel = new sap.ui.model.json.JSONModel({
                 sidebarVisible: true,
+                sidebarVisible: true,
                 menuVisible: true,
                 headerTitle: "Compliance Hub",
-                backButtonVisible: false
+                backButtonVisible: false,
+                themeIcon: "sap-icon://show" // Default icon
             });
             this.getView().setModel(oUIModel, "ui");
+
+            // Initialize Theme
+            this._initTheme();
 
             // Check authentication
             var sToken = localStorage.getItem("auth_token");
@@ -43,6 +48,54 @@ sap.ui.define([
             // Auto-collapse side navigation on phone
             if (sap.ui.Device.system.phone) {
                 this.byId("toolPage").setSideExpanded(false);
+            }
+        },
+
+        _initTheme: function () {
+            var sTheme = localStorage.getItem("theme");
+            if (!sTheme) {
+                sTheme = "sap_horizon";
+            }
+            sap.ui.getCore().applyTheme(sTheme);
+            this._updateThemeIcon(sTheme);
+        },
+
+        onThemeToggle: function () {
+            var sCurrentTheme = sap.ui.getCore().getConfiguration().getTheme();
+            var sNewTheme = (sCurrentTheme === "sap_horizon_dark") ? "sap_horizon" : "sap_horizon_dark";
+
+            sap.ui.getCore().applyTheme(sNewTheme);
+            localStorage.setItem("theme", sNewTheme);
+            this._updateThemeIcon(sNewTheme);
+        },
+
+        _updateThemeIcon: function (sTheme) {
+            var sIcon = (sTheme === "sap_horizon_dark") ? "sap-icon://light-mode" : "sap-icon://show";
+            // 'show' resembles an eye/look, used here as generic if dark mode icon not perfect, 
+            // but sap-icon://light-mode is clear for switching BACK to light.
+            // Using logic: If Dark -> Show Light Icon. If Light -> Show Dark Icon? 
+            // Standard toggle behavior: Icon indicates what clicking will DO, or current state.
+            // Let's make it indicate what it IS:
+            // Dark Mode = Moon? Light Mode = Sun?
+            // Let's use generic toggles.
+
+            // Better:
+            // If Light (sap_horizon) -> Show Moon (Enter Dark) -> sap-icon://moon (if avail) or sap-icon://hide
+            // If Dark (sap_horizon_dark) -> Show Sun (Enter Light) -> sap-icon://light-mode (if avail) or sap-icon://show
+
+            // Checking common icons: 
+            // sap-icon://light-mode (Sun-like)
+            // sap-icon://custom/dark-mode (requires registration). 
+            // Let's use simple ones. 
+            // Light Theme active -> Button shows Moon (to switch to dark) -> sap-icon://sleep
+            // Dark Theme active -> Button shows Sun (to switch to light) -> sap-icon://light-mode
+
+            if (sTheme === "sap_horizon_dark") {
+                this.getView().getModel("ui").setProperty("/themeIcon", "sap-icon://light-mode");
+            } else {
+                this.getView().getModel("ui").setProperty("/themeIcon", "sap-icon://show"); // Placeholder for "Dark" intent if Moon not sure. 
+                // Actually 'sap-icon://palette' is a safe semantic for "Theme".
+                this.getView().getModel("ui").setProperty("/themeIcon", "sap-icon://palette");
             }
         },
 
@@ -144,6 +197,9 @@ sap.ui.define([
                     break;
                 case "auditLog":
                     oRouter.navTo("auditLog");
+                    break;
+                case "xmlMapping":
+                    oRouter.navTo("xmlMapping");
                     break;
             }
 

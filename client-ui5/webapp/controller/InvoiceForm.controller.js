@@ -222,14 +222,27 @@ sap.ui.define([
                 isEdit: false,
                 numero: "",
                 serie: "",
-                fecha_emision: new Date().toISOString().split('T')[0],
-                fecha_vencimiento: "",
+                fecha_emision: new Date(),
+                fecha_vencimiento: new Date(),
+                fecha_pago: new Date(),
                 id_emisor: "",
                 id_receptor: "",
 
-                metodo_pago: "TRANSFERENCIA",
-                codigo_tipo: "01", // Default to Issue (01)
-                id_origen: 1, // Default to Manual (1)
+                condiciones_pago: "Net 30",
+                moneda: "EUR",
+                estado: "Draft",
+                tipo_factura: "F1",
+
+                // Fields for display binding
+                emisor_nombre: "",
+                emisor_direccion: "",
+                receptor_nombre: "",
+                receptor_direccion: "",
+
+                // Tax Info
+                id_impuesto_global: "",
+                retencion: "0",
+
                 lineas: [{
                     descripcion: "",
                     cantidad: 1,
@@ -253,6 +266,71 @@ sap.ui.define([
             this.getView().setModel(oViewModel, "form");
 
             return this._loadFormData();
+        },
+
+        onClientSelect: function (oEvent) {
+            var oSelectedItem = oEvent.getParameter("selectedItem");
+            if (!oSelectedItem) {
+                // User might have cleared selection or typed something custom
+                return;
+            }
+            var sClientId = oSelectedItem.getKey();
+
+            // Since 'receptores' is already loaded in the model via _loadFormData
+            // We just look it up.
+            // Note: In _loadFormData we perform fetch("/api/invoices/receptores"), so 'receptores' is available.
+            // The backend response for receptores is array of { id_receptor, nombre, nif, direccion... } 
+
+            var oModel = this.getView().getModel("form");
+            var aReceptores = oModel.getProperty("/receptores");
+
+            // ID might be number or string, handle loose equality just in case
+            var oClient = aReceptores.find(function (c) { return c.id_receptor == sClientId; });
+
+            if (oClient) {
+                oModel.setProperty("/receptor_nombre", oClient.nombre);
+                oModel.setProperty("/receptor_direccion", oClient.direccion);
+                oModel.setProperty("/receptor_nif", oClient.nif);
+                // Emails/phones if available
+            }
+        },
+
+        onGenerateNumber: function () {
+            var that = this;
+            var sToken = localStorage.getItem("auth_token");
+
+            fetch("/api/invoices/facturas/next-number", {
+                headers: { "Authorization": "Bearer " + sToken }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.nextNumber) {
+                        that.getView().getModel("form").setProperty("/numero", data.nextNumber);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error generating number", err);
+                    sap.m.MessageToast.show("Error generating invoice number");
+                });
+        },
+
+        onIssuerSelect: function (oEvent) {
+            var oSelectedItem = oEvent.getParameter("selectedItem");
+            if (!oSelectedItem) {
+                return;
+            }
+            var sIssuerId = oSelectedItem.getKey();
+
+            var oModel = this.getView().getModel("form");
+            var aEmisores = oModel.getProperty("/emisores");
+
+            var oIssuer = aEmisores.find(function (e) { return e.id_emisor == sIssuerId; });
+
+            if (oIssuer) {
+                oModel.setProperty("/emisor_nombre", oIssuer.nombre);
+                oModel.setProperty("/emisor_direccion", oIssuer.direccion);
+                oModel.setProperty("/emisor_nif", oIssuer.nif);
+            }
         },
 
         _loadFormData: function () {
@@ -280,6 +358,28 @@ sap.ui.define([
                 oModel.setProperty("/receptores", receptores);
                 oModel.setProperty("/impuestos", impuestos);
                 oModel.setProperty("/origenes", origenes);
+
+                // Set default VAT to 21% if found
+                if (impuestos && impuestos.length > 0) {
+                    // Fix: Use fuzzy comparison for percentage as it might be string from DB
+                    var oDefaultVat = impuestos.find(function (t) {
+                        return Math.abs(parseFloat(t.porcentaje) - 21.0) < 0.1;
+                    });
+
+                    if (oDefaultVat) {
+                        oModel.setProperty("/id_impuesto_global", oDefaultVat.id_impuesto);
+                    } else {
+                        // Fallback to first if 21% not found
+                        oModel.setProperty("/id_impuesto_global", impuestos[0].id_impuesto);
+                    }
+
+                    // Trigger calculation to update any existing lines with the default tax
+                    // Use setTimeout to ensure model update is processed
+                    setTimeout(function () {
+                        that._calculateLineTotals();
+                        that._calculateTotals();
+                    }, 0);
+                }
             }).catch(function (error) {
                 console.error("Error loading form data:", error);
                 MessageToast.show("Error loading form data");
@@ -325,6 +425,13 @@ sap.ui.define([
                     console.error("Error loading invoice:", error);
                     MessageToast.show("Error loading invoice");
                 });
+        },
+
+        onProductValueHelp: function (oEvent) {
+            var oSource = oEvent.getSource();
+            this._sCurrentLinePath = oSource.getBindingContext("form").getPath();
+
+            this.onAddFromCatalog(); // Reuse the dialog opener
         },
 
         onAddFromCatalog: function () {
@@ -374,26 +481,49 @@ sap.ui.define([
             var oModel = this.getView().getModel("form");
             var aLineas = oModel.getProperty("/lineas");
 
-            // If the last line is empty, remove it (optional UX improvement)
-            // For now, just append.
+            if (!aSelectedItems || aSelectedItems.length === 0) {
+                return;
+            }
 
-            aSelectedItems.forEach(function (oItem) {
-                var oContext = oItem.getBindingContext("catalog");
-                var oProduct = oContext.getObject();
-
-                // Use the name returned by the API (which is already localized)
+            // Helper to create a line item object from product
+            var fnCreateLine = function (oProduct) {
                 var sDesc = oProduct.nombre || oProduct.sku;
-
-                aLineas.push({
+                return {
                     descripcion: sDesc,
                     cantidad: 1,
                     precio_unitario: parseFloat(oProduct.precio_base),
                     id_impuesto: oProduct.id_impuesto,
                     porcentaje_impuesto: parseFloat(oProduct.impuesto_porcentaje) || 0,
-                    importe_impuesto: 0, // Will be calculated
-                    total_linea: 0 // Will be calculated
+                    importe_impuesto: 0,
+                    total_linea: 0
+                };
+            };
+
+            // If triggered from Value Help on a specific line
+            if (this._sCurrentLinePath) {
+                var oFirstItem = aSelectedItems[0];
+                var oContext = oFirstItem.getBindingContext("catalog");
+                var oProduct = oContext.getObject();
+
+                // Overwrite current line
+                var oNewLineData = fnCreateLine(oProduct);
+                oModel.setProperty(this._sCurrentLinePath, oNewLineData);
+
+                // If more items were selected, append them
+                for (var i = 1; i < aSelectedItems.length; i++) {
+                    var oItem = aSelectedItems[i];
+                    var oCtx = oItem.getBindingContext("catalog");
+                    aLineas.push(fnCreateLine(oCtx.getObject()));
+                }
+
+                this._sCurrentLinePath = null; // Reset
+            } else {
+                // Fallback (shouldn't happen with button removed, but good for robustness)
+                aSelectedItems.forEach(function (oItem) {
+                    var oContext = oItem.getBindingContext("catalog");
+                    aLineas.push(fnCreateLine(oContext.getObject()));
                 });
-            });
+            }
 
             oModel.setProperty("/lineas", aLineas);
             this._calculateLineTotals();
@@ -478,46 +608,95 @@ sap.ui.define([
             return parseFloat(sValue) || 0;
         },
 
+        onGlobalTaxChange: function () {
+            this._calculateLineTotals();
+            this._calculateTotals();
+        },
+
+        onRetentionChange: function () {
+            this._calculateTotals();
+        },
+
         _calculateLineTotals: function () {
             var oModel = this.getView().getModel("form");
             var aLineas = oModel.getProperty("/lineas");
+            var aImpuestos = oModel.getProperty("/impuestos") || [];
 
-            var that = this;
-            aLineas.forEach(function (linea, index) {
-                var fCantidad = that._parseNumber(linea.cantidad);
-                var fPrecio = that._parseNumber(linea.precio_unitario);
-                var fPorcentaje = that._parseNumber(linea.porcentaje_impuesto);
+            aLineas.forEach(function (oLinea) {
+                var nCantidad = parseFloat(oLinea.cantidad) || 0;
+                var nPrecio = parseFloat(oLinea.precio_unitario) || 0;
 
-                var fSubtotal = fCantidad * fPrecio;
-                var fImpuesto = fSubtotal * (fPorcentaje / 100);
-                var fTotal = fSubtotal + fImpuesto;
+                // Find tax rate for this line
+                var nTaxRate = 0;
+                if (oLinea.id_impuesto) {
+                    var oTax = aImpuestos.find(function (t) { return t.id_impuesto == oLinea.id_impuesto; });
+                    if (oTax) {
+                        nTaxRate = parseFloat(oTax.porcentaje);
+                        oLinea.porcentaje_impuesto = nTaxRate; // Ensure rate is stored
+                    }
+                }
 
-                oModel.setProperty("/lineas/" + index + "/importe_impuesto", fImpuesto.toFixed(2));
-                oModel.setProperty("/lineas/" + index + "/total_linea", fTotal.toFixed(2));
+                // Calculate
+                var nSubtotal = nCantidad * nPrecio;
+                var nTaxAmount = nSubtotal * (nTaxRate / 100);
+
+                // Round to 2 decimals
+                oLinea.importe_impuesto = parseFloat(nTaxAmount.toFixed(2));
+                oLinea.total_linea = parseFloat((nSubtotal + nTaxAmount).toFixed(2));
             });
+
+            oModel.setProperty("/lineas", aLineas);
         },
 
         _calculateTotals: function () {
             var oModel = this.getView().getModel("form");
             var aLineas = oModel.getProperty("/lineas");
+            var nRetentionRate = parseFloat(oModel.getProperty("/retencion") || 0);
 
-            var fSubtotal = 0;
-            var fImpuestos = 0;
-            var that = this;
+            var nSubtotal = 0;
+            var oTaxMap = {};
 
-            aLineas.forEach(function (linea) {
-                var fCantidad = that._parseNumber(linea.cantidad);
-                var fPrecio = that._parseNumber(linea.precio_unitario);
-                fSubtotal += fCantidad * fPrecio;
-                fImpuestos += that._parseNumber(linea.importe_impuesto);
+            aLineas.forEach(function (oLinea) {
+                var nQty = parseFloat(oLinea.cantidad) || 0;
+                var nPrice = parseFloat(oLinea.precio_unitario) || 0;
+                var nRate = parseFloat(oLinea.porcentaje_impuesto) || 0;
+                var nTaxAmt = parseFloat(oLinea.importe_impuesto) || 0;
+
+                nSubtotal += (nQty * nPrice);
+
+                // Aggregate tax by rate
+                if (!oTaxMap[nRate]) {
+                    oTaxMap[nRate] = 0;
+                }
+                oTaxMap[nRate] += nTaxAmt;
             });
 
-            var fTotal = fSubtotal + fImpuestos;
+            // Build tax breakdown
+            var aTaxBreakdown = [];
+            var nTotalTax = 0;
+            for (var sRate in oTaxMap) {
+                if (oTaxMap.hasOwnProperty(sRate)) {
+                    var nAmt = oTaxMap[sRate];
+                    aTaxBreakdown.push({
+                        rate: sRate,
+                        showRate: parseFloat(sRate),
+                        amount: nAmt.toFixed(2)
+                    });
+                    nTotalTax += nAmt;
+                }
+            }
+            // Sort desc
+            aTaxBreakdown.sort(function (a, b) { return b.showRate - a.showRate; });
+
+            var nRetentionAmount = nSubtotal * (nRetentionRate / 100);
+            var nTotal = nSubtotal + nTotalTax - nRetentionAmount;
 
             oModel.setProperty("/totals", {
-                subtotal: fSubtotal.toFixed(2),
-                impuestos: fImpuestos.toFixed(2),
-                total: fTotal.toFixed(2)
+                subtotal: nSubtotal.toFixed(2),
+                impuestos: nTotalTax.toFixed(2),
+                taxBreakdown: aTaxBreakdown,
+                retention: nRetentionAmount.toFixed(2),
+                total: nTotal.toFixed(2)
             });
         },
 

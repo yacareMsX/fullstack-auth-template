@@ -37,6 +37,8 @@ app.use('/api/catalog', catalogRoutes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/scan', scanRoutes);
 app.use('/api/admin/origenes', origenesRoutes);
+app.use('/api/admin/users', require('./routes/admin/users'));
+app.use('/api/admin/roles', require('./routes/admin/roles'));
 app.use('/api/audit', require('./routes/audit'));
 
 app.get('/api/health', async (req, res) => {

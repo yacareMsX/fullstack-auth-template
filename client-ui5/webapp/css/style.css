@@ -1,6 +1,6 @@
 /* Home Page Styles */
 .homePage {
-    background-color: #f5f5f5;
+    background-color: var(--sapBackgroundColor, #f5f5f5);
 }
 
 /* Login Page Styles */
@@ -83,12 +83,12 @@
 
 /* Featured Section */
 .featuredSection {
-    background-color: #f5f5f5;
+    background-color: var(--sapBackgroundColor, #f5f5f5);
     padding: 2rem !important;
 }
 
 .sectionTitle {
-    color: #333 !important;
+    color: var(--sapTextColor, #333) !important;
     font-weight: 400 !important;
 }
 
@@ -157,21 +157,21 @@
 
 /* Banner Header */
 .bannerHeader {
-    background-color: #354a5f !important;
+    background-color: var(--sapShellColor, #354a5f);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .bannerHeader .sapMBtn {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    color: #fff;
+    color: var(--sapShell_TextColor, #fff);
 }
 
 .bannerHeader .sapMBtnIcon {
-    color: #fff !important;
+    color: var(--sapShell_TextColor, #fff) !important;
 }
 
 .bannerHeader .sapMTitle {
-    color: #fff;
+    color: var(--sapShell_TextColor, #fff);
     font-weight: 300;
 }
 
@@ -224,7 +224,7 @@
 .homeNavBar .sapMBarRight,
 .homeNavBar .sapMBarMiddle,
 .homePage>header.sapMPageHeader {
-    background-color: #354a5f !important;
+    background-color: var(--sapShellColor, #354a5f);
     border: none !important;
     border-top: none !important;
     border-bottom: none !important;
@@ -261,7 +261,7 @@
 }
 
 .homeNavButton {
-    color: #ffffff !important;
+    color: var(--sapShell_TextColor, #fff) !important;
     font-size: 0.875rem !important;
     font-weight: 400 !important;
     padding: 0.5rem 1.5rem !important;
@@ -274,7 +274,7 @@
 .homeNavButton:hover {
     text-decoration: underline !important;
     opacity: 1;
-    color: #ffffff !important;
+    color: var(--sapShell_TextColor, #fff) !important;
 }
 
 /* Remove SAPUI5 default focus visualization */
@@ -301,4 +301,22 @@
 .homeNavButton .sapMBtnInner:active,
 .homeNavButton.sapMBtnActive .sapMBtnInner {
     background: transparent !important;
+}
+
+/* Card-like Section for Forms */
+.cardLikeSection {
+    background: var(--sapGroup_ContentBackground, white);
+    border-radius: var(--sapElement_BorderCornerRadius, 8px);
+    box-shadow: var(--sapContent_Shadow0, 0 1px 4px rgba(0, 0, 0, 0.1));
+    padding: 1.5rem;
+    border: 1px solid var(--sapGroup_ContentBorderColor, #e5e5e5);
+    height: 100%;
+    /* Ensure full height in grid */
+    box-sizing: border-box;
+}
+
+.cardLikeSection .sectionHeader {
+    border-bottom: 1px solid var(--sapGroup_TitleBorderColor, #eee);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem !important;
 }

@@ -179,6 +179,12 @@ router.post('/login', async (req, res) => {
         const token = generateToken(user.id, user.email, user.role);
         const expiresIn = getTokenExpirationTime();
 
+        // Update session tracking
+        await db.query(
+            'UPDATE users SET is_online = true, last_connection = NOW() WHERE id = $1',
+            [user.id]
+        );
+
         // Log action
         try {
             await logAction(user.id, 'LOGIN', 'AUTH', null, { email: user.email }, req.ip);
@@ -206,6 +212,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', authenticateToken, async (req, res) => {
     try {
+        await db.query('UPDATE users SET is_online = false WHERE id = $1', [req.user.userId]);
         await logAction(req.user.userId, 'LOGOUT', 'AUTH', null, { email: req.user.email }, req.ip);
         res.json({ message: 'Logout successful' });
     } catch (err) {

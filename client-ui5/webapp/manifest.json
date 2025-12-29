@@ -166,9 +166,20 @@
                     "name": "auditLog",
                     "pattern": "audit-log",
                     "target": "auditLog"
+                },
+                {
+                    "name": "xmlMapping",
+                    "pattern": "mapping/xml",
+                    "target": "xmlMapping"
                 }
             ],
             "targets": {
+                "xmlMapping": {
+                    "viewId": "xmlMapping",
+                    "viewName": "XmlMapping",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
                 "home": {
                     "viewId": "home",
                     "viewName": "Home",

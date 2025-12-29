@@ -1,0 +1,107 @@
+<mvc:View
+    controllerName="user.management.controller.Users"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    height="100%">
+    
+    <Page title="{i18n>userManagementTitle}" showNavButton="false">
+        <content>
+            <Panel expandable="true" expanded="true" headerText="{i18n>filterTitle}" width="auto" class="sapUiResponsiveMargin">
+                <content>
+                    <l:Grid defaultSpan="L4 M6 S12">
+                        <l:content>
+                            <VBox>
+                                <Label text="{i18n>searchLabel}"/>
+                                <SearchField id="searchField" search="onSearch" width="100%" placeholder="{i18n>searchPlaceholder}"/>
+                            </VBox>
+                            <VBox>
+                                <Label text="{i18n>roleLabel}"/>
+                                <Select id="roleFilter" forceSelection="false" width="100%" change="onSearch" items="{/roles}">
+                                    <core:Item key="{key}" text="{text}"/>
+                                </Select>
+                            </VBox>
+                            <VBox>
+                                <Label text="{i18n>statusLabel}"/>
+                                <Select id="statusFilter" forceSelection="false" width="100%" change="onSearch">
+                                    <core:Item key="true" text="{i18n>active}"/>
+                                    <core:Item key="false" text="{i18n>inactive}"/>
+                                </Select>
+                            </VBox>
+                        </l:content>
+                    </l:Grid>
+                    <Toolbar>
+                        <ToolbarSpacer/>
+                        <Button text="{i18n>clearFilters}" press="onClearFilters" type="Transparent"/>
+                        <Button text="{i18n>applyFilters}" press="onSearch" type="Emphasized"/>
+                    </Toolbar>
+                </content>
+            </Panel>
+
+            <Table id="usersTable"
+                inset="false"
+                items="{/users}"
+                mode="SingleSelectLeft"
+                selectionChange="onSelectionChange"
+                class="sapUiResponsiveMargin"
+                width="auto">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="{i18n>userListTitle} ({= ${/users}.length || 0})"/>
+                        <ToolbarSpacer/>
+                        <Button text="{i18n>create}" icon="sap-icon://add" press="onCreate" type="Transparent"/>
+                        <Button id="btnView" text="{i18n>view}" icon="sap-icon://show" press="onViewUser" enabled="false" type="Transparent"/>
+                        <Button id="btnModify" text="{i18n>modify}" icon="sap-icon://edit" press="onModify" enabled="false" type="Transparent"/>
+                        <Button id="btnBlock" text="{i18n>block}" icon="sap-icon://locked" press="onBlock" enabled="false" type="Transparent"/>
+                        <Button id="btnUnblock" text="{i18n>unblock}" icon="sap-icon://unlocked" press="onUnblock" enabled="false" type="Transparent"/>
+                        <Button id="btnDelete" text="{i18n>delete}" icon="sap-icon://delete" press="onDelete" enabled="false" type="Transparent"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column width="50px">
+                        <Text text="ID" />
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>name}" />
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="{i18n>email}" />
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="{i18n>role}" />
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="{i18n>lastConnection}" />
+                    </Column>
+                    <Column hAlign="Center" width="80px">
+                        <Text text="{i18n>onlineStatus}" />
+                    </Column>
+                    <Column hAlign="End" width="100px">
+                        <Text text="{i18n>status}" />
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{id}" />
+                            <ObjectIdentifier title="{first_name} {last_name}" />
+                            <Text text="{email}" />
+                            <Text text="{role}" />
+                            <Text text="{path: 'last_connection', type: 'sap.ui.model.type.DateTime', formatOptions: { style: 'medium' }}" />
+                            <ObjectStatus
+                                icon="{= ${is_online} ? 'sap-icon://connected' : 'sap-icon://disconnected'}"
+                                state="{= ${is_online} ? 'Success' : 'Indication05'}"
+                                tooltip="{= ${is_online} ? 'Online' : 'Offline'}" />
+                            <ObjectStatus
+                                text="{= ${is_active} ? ${i18n>active} : ${i18n>inactive}}"
+                                state="{= ${is_active} ? 'Success' : 'Error'}"
+                                icon="{= ${is_active} ? 'sap-icon://sys-enter-2' : 'sap-icon://error'}" />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

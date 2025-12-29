@@ -43,6 +43,37 @@ const router = express.Router();
  *                   estado:
  *                     type: string
  */
+// Get next invoice number
+router.get('/next-number', authenticateToken, async (req, res) => {
+    try {
+        // Find the latest invoice number with the specific prefix
+        const result = await db.query(
+            "SELECT numero FROM factura WHERE numero LIKE 'INV-ISUE-%' ORDER BY numero DESC LIMIT 1"
+        );
+
+        let nextSequence = 1;
+        if (result.rows.length > 0) {
+            const lastNumber = result.rows[0].numero;
+            // Expected format: INV-ISUE-000000000001
+            const parts = lastNumber.split('-');
+            if (parts.length === 3) {
+                const currentSeq = parseInt(parts[2], 10);
+                if (!isNaN(currentSeq)) {
+                    nextSequence = currentSeq + 1;
+                }
+            }
+        }
+
+        const paddedSeq = nextSequence.toString().padStart(12, '0');
+        const nextNumber = `INV-ISUE-${paddedSeq}`;
+
+        res.json({ nextNumber });
+    } catch (error) {
+        console.error('Error generating next number:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const { estado, tipo, id_emisor, id_receptor, fecha_desde, fecha_hasta, limit = 50, offset = 0 } = req.query;
@@ -316,6 +347,90 @@ VALUES($1, 'CREADA', $2)`,
     }
 });
 
+// Update Invoice Fields
+router.put('/:id', authenticateToken, async (req, res) => {
+    const client = await db.pool.connect();
+    try {
+        await client.query('BEGIN');
+        const { id } = req.params;
+        const {
+            numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion,
+            id_emisor, id_receptor, estado, metodo_pago,
+            subtotal, impuestos_totales, total, tipo,
+            lineas = []
+        } = req.body;
+
+        // Update Invoice
+        const updateResult = await client.query(
+            `UPDATE factura SET
+                numero = $1,
+                serie = $2,
+                fecha_emision = $3,
+                fecha_vencimiento = $4,
+                fecha_operacion = $5,
+                id_emisor = $6,
+                id_receptor = $7,
+                estado = $8,
+                metodo_pago = $9,
+                subtotal = $10,
+                impuestos_totales = $11,
+                total = $12,
+                tipo = $13
+            WHERE id_factura = $14
+            RETURNING *`,
+            [
+                numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion || null,
+                id_emisor, id_receptor, estado, metodo_pago,
+                subtotal, impuestos_totales, total, tipo,
+                id
+            ]
+        );
+
+        if (updateResult.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        // Delete existing lines and insert new ones
+        await client.query('DELETE FROM linea_factura WHERE id_factura = $1', [id]);
+
+        const createdLines = [];
+        for (const linea of lineas) {
+            const lineResult = await client.query(
+                `INSERT INTO linea_factura(
+                    id_factura, descripcion, cantidad, precio_unitario,
+                    porcentaje_impuesto, importe_impuesto, total_linea, id_impuesto
+                ) VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+                RETURNING *`,
+                [
+                    id, linea.descripcion, linea.cantidad, linea.precio_unitario,
+                    linea.porcentaje_impuesto, linea.importe_impuesto, linea.total_linea, linea.id_impuesto
+                ]
+            );
+            createdLines.push(lineResult.rows[0]);
+        }
+
+        await client.query('COMMIT');
+
+        // Log update
+        logAction(req.user.userId, 'UPDATE_INVOICE', 'INVOICE', id, { numero, total }, req.ip);
+
+        const updatedInvoice = updateResult.rows[0];
+        updatedInvoice.lineas = createdLines;
+        res.json(updatedInvoice);
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error updating invoice:', error);
+        if (error.constraint === 'factura_unica') {
+            return res.status(409).json({ error: 'Invoice number and series combination already exists' });
+        }
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+    } finally {
+        client.release();
+    }
+});
+
 /**
          * @swagger
          * /api/invoices/facturas:
@@ -349,23 +464,23 @@ router.post('/facturas', authenticateToken, async (req, res) => {
             numero, fecha_emision, fecha_vencimiento,
             id_emisor, id_receptor, id_origen,
             moneda, subtotal, impuestos, total,
-            estado, notas, items
+            estado, notas, items, serie, metodo_pago, tipo, pdf_path
         } = req.body;
 
         // Insert Invoice
         const invoiceRes = await client.query(
             `INSERT INTO factura (
-        numero, fecha_emision, fecha_vencimiento,
+        numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion,
         id_emisor, id_receptor, id_origen,
         moneda, subtotal, impuestos, total,
-        estado, notas
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        estado, notas, metodo_pago, tipo, pdf_path
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
       RETURNING id_factura`,
             [
-                numero, fecha_emision, fecha_vencimiento,
+                numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion || null,
                 id_emisor, id_receptor, id_origen,
                 moneda, subtotal, impuestos, total,
-                estado || 'PENDIENTE', notas
+                estado || 'PENDIENTE', notas, metodo_pago, tipo || 'ISSUE', pdf_path
             ]
         );
         const invoiceId = invoiceRes.rows[0].id_factura;

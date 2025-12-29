@@ -37,6 +37,11 @@ sap.ui.define([
             this.getOwnerComponent().getRouter().navTo("dashboard");
         },
 
+        onNavigateToUserManagement: function () {
+            // Navigate to the standalone app
+            window.location.href = "admin/user_management/index.html";
+        },
+
         onGenericTilePress: function (oEvent) {
             var sTileHeader = oEvent.getSource().getHeader();
             sap.m.MessageToast.show("Funcionalidad '" + sTileHeader + "' próximamente disponible");
@@ -62,6 +67,9 @@ sap.ui.define([
                     break;
                 case "statutory":
                     oSection = this.byId("statutorySection");
+                    break;
+                case "userManagement":
+                    oSection = this.byId("userManagementSection");
                     break;
             }
 

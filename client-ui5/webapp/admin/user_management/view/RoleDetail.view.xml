@@ -1,0 +1,38 @@
+<mvc:View
+    controllerName="user.management.controller.RoleDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">
+
+    <Page id="roleDetailPage" title="{i18n>usersInRole}" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <Table id="usersInRoleTable"
+                items="{/users}"
+                growing="true"
+                growingThreshold="20">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="{i18n>userListTitle} ({/roleName})" level="H3"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column width="3rem"><Text text="ID"/></Column>
+                    <Column><Text text="{i18n>email}"/></Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>name}"/></Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>status}"/></Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{id}"/>
+                            <Text text="{email}"/>
+                            <Text text="{first_name} {last_name}"/>
+                            <ObjectStatus 
+                                text="{= ${is_active} ? ${i18n>active} : ${i18n>inactive}}"
+                                state="{= ${is_active} ? 'Success' : 'Error'}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

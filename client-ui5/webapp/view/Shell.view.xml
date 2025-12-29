@@ -14,6 +14,7 @@
                 <Button icon="sap-icon://nav-back" type="Transparent" press="onNavBack" tooltip="Back" class="sapUiSmallMarginEnd" visible="{ui>/backButtonVisible}"/>
                 <Title text="{ui>/headerTitle}" level="H2" class="sapUiSmallMarginBegin"/>
                 <ToolbarSpacer/>
+                <Button icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="Toggle Dark Mode" class="sapUiSmallMarginEnd"/>
                 <Button icon="sap-icon://search" type="Transparent" tooltip="{i18n>search}"/>
                 <Button icon="sap-icon://sys-help-2" type="Transparent" tooltip="Help"/>
                 <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications"/>
@@ -101,6 +102,15 @@
                         <tnt:NavigationListItem
                             text="{i18n>taxes}"
                             key="taxes"/>
+                    </tnt:NavigationListItem>
+
+                    <tnt:NavigationListItem
+                        text="{i18n>mappingTool}"
+                        icon="sap-icon://opportunity"
+                        expanded="false">
+                        <tnt:NavigationListItem
+                            text="{i18n>xmlMapping}"
+                            key="xmlMapping"/>
                     </tnt:NavigationListItem>
 
                     <tnt:NavigationListItem
