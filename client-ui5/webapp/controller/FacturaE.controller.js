@@ -44,7 +44,7 @@ sap.ui.define([
                 })
                 .catch(function (error) {
                     console.error("Error loading invoice:", error);
-                    MessageToast.show("Error loading invoice data");
+                    MessageToast.show(that.getResourceBundle().getText("errorLoadingInvoice"));
                 });
         },
 
@@ -211,10 +211,9 @@ sap.ui.define([
 
                 // Inform user
                 MessageBox.information(
-                    "Se va a abrir AutoFirma. Por favor, siga las instrucciones en la aplicación.\n\n" +
-                    "El fichero firmado se guardará en su ordenador.",
+                    this.getResourceBundle().getText("autoFirmaInstructions"),
                     {
-                        title: "Lanzando AutoFirma",
+                        title: this.getResourceBundle().getText("launchingAutoFirma"),
                         actions: [MessageBox.Action.OK],
                         onClose: function () {
                             // Launch AutoFirma
@@ -224,12 +223,12 @@ sap.ui.define([
                 );
             } catch (e) {
                 console.error("Error launching AutoFirma", e);
-                MessageBox.error("Error al preparar la firma: " + e.message);
+                MessageBox.error(this.getResourceBundle().getText("autoFirmaError") + " " + e.message);
             }
         },
 
         onSendAEAT: function () {
-            MessageToast.show("Funcionalidad no disponible en esta versión (Requiere certificado real)");
+            MessageToast.show(this.getResourceBundle().getText("featureNotAvailable"));
         },
 
         onDownloadFile: function () {
@@ -247,17 +246,17 @@ sap.ui.define([
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
 
-            MessageToast.show("Fichero descargado: " + sFileName);
+            MessageToast.show(this.getResourceBundle().getText("downloadedFile") + " " + sFileName);
         },
 
         onCopyClipboard: function () {
             var sXML = this.getView().getModel("facturae").getProperty("/xml");
             navigator.clipboard.writeText(sXML).then(function () {
-                MessageToast.show("XML copiado al portapapeles");
-            }, function (err) {
+                MessageToast.show(this.getResourceBundle().getText("xmlCopied"));
+            }.bind(this), function (err) {
                 console.error("Could not copy text: ", err);
-                MessageToast.show("Error al copiar al portapapeles");
-            });
+                MessageToast.show(this.getResourceBundle().getText("copyError"));
+            }.bind(this));
         },
 
         onValidateXML: function () {
@@ -266,27 +265,31 @@ sap.ui.define([
             var bValid = true;
             var aErrors = [];
 
-            if (!sXML.includes("<fe:Facturae")) aErrors.push("Falta etiqueta raíz Facturae");
-            if (!sXML.includes("<BatchIdentifier>")) aErrors.push("Falta identificador de lote");
-            if (!sXML.includes("<TotalAmount>")) aErrors.push("Faltan importes totales");
+            if (!sXML.includes("<fe:Facturae")) aErrors.push(this.getResourceBundle().getText("rootTagError"));
+            if (!sXML.includes("<BatchIdentifier>")) aErrors.push(this.getResourceBundle().getText("batchIdError"));
+            if (!sXML.includes("<TotalAmount>")) aErrors.push(this.getResourceBundle().getText("totalAmountError"));
 
             if (aErrors.length === 0) {
-                MessageBox.success("El XML tiene una estructura válida (FacturaE 3.2.1)");
+                MessageBox.success(this.getResourceBundle().getText("validateSuccess"));
             } else {
-                MessageBox.error("Errores de validación:\n" + aErrors.join("\n"));
+                MessageBox.error(this.getResourceBundle().getText("validateError") + "\n" + aErrors.join("\n"));
             }
+        },
+
+        getResourceBundle: function () {
+            return this.getOwnerComponent().getModel("i18n").getResourceBundle();
         },
 
         onSendEmail: function () {
             var oInvoice = this.getView().getModel("facturae").getProperty("/invoice");
-            var sSubject = "FacturaE: " + (oInvoice ? oInvoice.numero : "Nueva Factura");
+            var sSubject = "FacturaE: " + (oInvoice ? oInvoice.numero : this.getResourceBundle().getText("newInvoice"));
             var sBody = "Adjunto encontrará el XML de la factura.\n\nSaludos.";
 
             // Mailto link (cannot attach file directly via mailto, but can open client)
             var sMailto = "mailto:?subject=" + encodeURIComponent(sSubject) + "&body=" + encodeURIComponent(sBody);
             window.location.href = sMailto;
 
-            MessageToast.show("Abriendo cliente de correo...");
+            MessageToast.show(this.getResourceBundle().getText("openingMail"));
         },
 
         onNavBack: function () {

@@ -1,0 +1,47 @@
+<mvc:View
+    controllerName="invoice.app.controller.InvoiceCountryDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Page title="{detailView>/title}" showNavButton="true" navButtonPress=".onNavBack">
+        <content>
+            <f:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                title="{i18n>countryInfo}"
+                labelSpanXL="3"
+                labelSpanL="3"
+                labelSpanM="3"
+                labelSpanS="12"
+                adjustLabelSpan="false"
+                emptySpanXL="4"
+                emptySpanL="4"
+                emptySpanM="4"
+                emptySpanS="0"
+                columnsXL="1"
+                columnsL="1"
+                columnsM="1"
+                singleContainerFullSize="false">
+                <f:content>
+                    <Label text="ID" visible="{= !${detailView>/isNew}}"/>
+                    <Text text="{invoiceCountry>/id}" visible="{= !${detailView>/isNew}}"/>
+
+                    <Label text="{i18n>country}" required="true"/>
+                    <Input value="{invoiceCountry>/pais}"/>
+
+                    <Label text="{i18n>region}"/>
+                    <Input value="{invoiceCountry>/region}"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button text="{i18n>save}" type="Emphasized" press=".onSave"/>
+                <Button text="{i18n>delete}" type="Reject" press=".onDelete" visible="{= !${detailView>/isNew}}"/>
+                <Button text="{i18n>cancel}" press=".onNavBack"/>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

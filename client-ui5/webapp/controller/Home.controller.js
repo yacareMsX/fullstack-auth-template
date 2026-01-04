@@ -42,6 +42,21 @@ sap.ui.define([
             window.location.href = "admin/user_management/index.html";
         },
 
+        onNavigateToCountries: function () {
+            // Navigate to the Global Configuration app, countries section
+            window.location.href = "admin/user_management/index.html?section=countries";
+        },
+
+        onNavigateToWorkflow: function () {
+            // Navigate to Process Designer app, workflow section
+            window.location.href = "admin/process_designer/index.html?section=workflow";
+        },
+
+        onNavigateToXmlDesign: function () {
+            // Navigate to Process Designer app, mapping section
+            window.location.href = "admin/process_designer/index.html?section=mapping";
+        },
+
         onGenericTilePress: function (oEvent) {
             var sTileHeader = oEvent.getSource().getHeader();
             sap.m.MessageToast.show("Funcionalidad '" + sTileHeader + "' próximamente disponible");
@@ -70,6 +85,9 @@ sap.ui.define([
                     break;
                 case "userManagement":
                     oSection = this.byId("userManagementSection");
+                    break;
+                case "processDesigner":
+                    oSection = this.byId("processDesignerSection");
                     break;
             }
 

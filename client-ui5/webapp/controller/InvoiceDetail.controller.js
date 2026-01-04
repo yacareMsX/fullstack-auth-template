@@ -76,9 +76,39 @@ sap.ui.define([
             ])
                 .then(function ([invoiceData, taxData]) {
                     // Convert date strings
+                    // Convert date strings
                     if (invoiceData.fecha_emision) invoiceData.fecha_emision = new Date(invoiceData.fecha_emision);
                     if (invoiceData.fecha_vencimiento) invoiceData.fecha_vencimiento = new Date(invoiceData.fecha_vencimiento);
-                    if (invoiceData.fecha_pago) invoiceData.fecha_pago = new Date(invoiceData.fecha_pago);
+                    if (invoiceData.fecha_pago) {
+                        invoiceData.fecha_pago = new Date(invoiceData.fecha_pago);
+                    } else if (invoiceData.fecha_vencimiento) {
+                        // Fallback: If no payment date, show due date in that slot if intended, 
+                        // or user expects Due Date.
+                        invoiceData.fecha_pago = invoiceData.fecha_vencimiento;
+                    }
+
+                    if (invoiceData.fecha_operacion) {
+                        invoiceData.fecha_operacion = new Date(invoiceData.fecha_operacion);
+                    } else if (invoiceData.fecha_emision) {
+                        // Fallback: Operation Date defaults to Issue Date if not explicitly set
+                        invoiceData.fecha_operacion = new Date(invoiceData.fecha_emision);
+                    }
+
+                    // Map Invoice Type (SQL: codigo_tipo or tipo) -> UI: F1, F2, R1
+                    // Default to F1 if unknown or missing
+                    var sType = invoiceData.codigo_tipo || invoiceData.tipo;
+                    var typeMap = {
+                        "01": "F1", "02": "F2",
+                        "ISSUE": "F1", "RECEIPT": "F1", // Assuming ISSUE is standard Factura
+                        "F1": "F1", "F2": "F2", "R1": "R1"
+                    };
+                    invoiceData.tipo_factura = typeMap[sType] || "F1";
+
+                    // Ensure flattened fields from SQL are available
+                    // SQL returns: receptor_nombre, receptor_nif, etc.
+                    // The view binds to {detail>/receptor_nombre}
+
+                    console.log("Loaded Invoice Data:", invoiceData);
 
                     var oModel = that.getView().getModel("detail");
                     // Preserve view props

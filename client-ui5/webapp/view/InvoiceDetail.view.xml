@@ -186,10 +186,10 @@
                                 <columns>
                                     <Column><Text text="{i18n>description}"/></Column>
                                     <Column hAlign="End" width="100px"><Text text="{i18n>qty}"/></Column>
-                                    <Column hAlign="End" width="100px"><Text text="{i18n>price}"/></Column>
+                                    <Column hAlign="End" width="120px"><Text text="{i18n>price}"/></Column>
                                     <Column hAlign="End" width="80px"><Text text="{i18n>tax}"/></Column>
-                                    <Column hAlign="End" width="100px"><Text text="{i18n>taxAmount}"/></Column>
-                                    <Column hAlign="End" width="100px"><Text text="{i18n>total}"/></Column>
+                                    <Column hAlign="End" width="140px"><Text text="{i18n>taxAmount}"/></Column>
+                                    <Column hAlign="End" width="150px"><Text text="{i18n>total}"/></Column>
                                 </columns>
                                 <items>
                                     <ColumnListItem>

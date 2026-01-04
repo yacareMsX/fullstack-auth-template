@@ -766,6 +766,7 @@ sap.ui.define([
                 serie: oData.serie,
                 fecha_emision: oData.fecha_emision,
                 fecha_vencimiento: oData.fecha_vencimiento,
+                fecha_operacion: oData.fecha_operacion, // Added Operation Date
                 id_emisor: oData.id_emisor,
                 id_receptor: oData.id_receptor,
                 metodo_pago: oData.metodo_pago,

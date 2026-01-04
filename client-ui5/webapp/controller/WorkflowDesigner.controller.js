@@ -16,9 +16,7 @@ sap.ui.define([
     return Controller.extend("invoice.app.controller.WorkflowDesigner", {
 
         onInit: function () {
-            var oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("workflowDesigner").attachPatternMatched(this._onRouteMatched, this);
-            oRouter.getRoute("workflowNew").attachPatternMatched(this._onNewWorkflow, this);
+            // --- Model Initialization (MUST be first) ---
 
             // Model for the workflow being edited
             var oModel = new JSONModel({
@@ -37,10 +35,26 @@ sap.ui.define([
 
             // Model for view state
             var oViewModel = new JSONModel({
-                isConnectMode: false, // Legacy, can be removed or kept for other purposes
+                isConnectMode: false, // Legacy
                 connectingNodeId: null
             });
             this.getView().setModel(oViewModel, "view");
+
+            // --- Router / Navigation Logic ---
+
+            // Check if router exists (main app) or not (standalone reuse)
+            var oComponent = this.getOwnerComponent();
+            var oRouter = oComponent ? oComponent.getRouter() : null;
+
+            if (oRouter && oRouter.getRoute("workflowDesigner")) {
+                oRouter.getRoute("workflowDesigner").attachPatternMatched(this._onRouteMatched, this);
+                oRouter.getRoute("workflowNew").attachPatternMatched(this._onNewWorkflow, this);
+            } else {
+                // Reuse scenario: Setup default state
+                this._onNewWorkflow();
+            }
+
+            // --- Event Listeners ---
 
             // Global mouse move for temp connection line
             this._fnOnDocMouseMove = this._onDocMouseMove.bind(this);

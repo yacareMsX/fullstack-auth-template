@@ -171,6 +171,16 @@
                     "name": "xmlMapping",
                     "pattern": "mapping/xml",
                     "target": "xmlMapping"
+                },
+                {
+                    "name": "invoiceCountryList",
+                    "pattern": "config/countries",
+                    "target": "invoiceCountryList"
+                },
+                {
+                    "name": "invoiceCountryDetail",
+                    "pattern": "config/countries/{countryId}",
+                    "target": "invoiceCountryDetail"
                 }
             ],
             "targets": {
@@ -283,6 +293,18 @@
                 "auditLog": {
                     "viewId": "auditLog",
                     "viewName": "AuditLog",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "invoiceCountryList": {
+                    "viewId": "invoiceCountryList",
+                    "viewName": "InvoiceCountriesList",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "invoiceCountryDetail": {
+                    "viewId": "invoiceCountryDetail",
+                    "viewName": "InvoiceCountryDetail",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 }

@@ -1,0 +1,79 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <VBox class="sapUiSmallMargin">
+        <!-- Section 1: Account Info (Full Width) -->
+        <f:SimpleForm 
+            title="{i18n>accountInfo}"
+            editable="{= !${newUser>/isViewMode}}"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+            columnsXL="1" columnsL="1" columnsM="1"
+            singleContainerFullSize="false">
+            <f:content>
+                <Label text="{i18n>email}" required="true"/>
+                <Input value="{newUser>/email}" type="Email" placeholder="example@domain.com" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>role}" required="true"/>
+                <Select selectedKey="{newUser>/role_id}" forceSelection="false" width="100%" items="{/roles}" enabled="{= !${newUser>/isViewMode}}">
+                    <core:Item key="{key}" text="{text}"/>
+                </Select>
+            </f:content>
+        </f:SimpleForm>
+
+        <!-- Section 2: Personal and Contact Info (Two Columns) -->
+        <f:SimpleForm 
+            editable="{= !${newUser>/isViewMode}}"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0"
+            columnsXL="2" columnsL="2" columnsM="1"
+            singleContainerFullSize="false">
+            <f:content>
+                <!-- Column 1: Personal Info -->
+                <core:Title text="{i18n>personalInfo}" icon="sap-icon://employee"/>
+                <Label text="{i18n>firstName}" required="true"/>
+                <Input value="{newUser>/firstName}" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>lastName}" required="true"/>
+                <Input value="{newUser>/lastName}" editable="{= !${newUser>/isViewMode}}"/>
+
+                <Label text="{i18n>nif}" required="true"/>
+                <Input value="{newUser>/nif}" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>dateOfBirth}"/>
+                <DatePicker value="{newUser>/dateOfBirth}" valueFormat="yyyy-MM-dd" displayFormat="long" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>bio}"/>
+                <TextArea value="{newUser>/bio}" rows="3" editable="{= !${newUser>/isViewMode}}" placeholder="Breve descripción..."/>
+
+                <!-- Column 2: Contact Info -->
+                <core:Title text="{i18n>contactInfo}" icon="sap-icon://contacts"/>
+                <Label text="{i18n>phone}"/>
+                <Input value="{newUser>/phone}" editable="{= !${newUser>/isViewMode}}"/>
+
+                <Label text="{i18n>addressLine1}"/>
+                <Input value="{newUser>/addressLine1}" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>addressLine2}"/>
+                <Input value="{newUser>/addressLine2}" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>city}"/>
+                <Input value="{newUser>/city}" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>stateProvince}"/>
+                <Input value="{newUser>/stateProvince}" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>postalCode}"/>
+                <Input value="{newUser>/postalCode}" editable="{= !${newUser>/isViewMode}}"/>
+                
+                <Label text="{i18n>country}"/>
+                <Input value="{newUser>/country}" editable="{= !${newUser>/isViewMode}}"/>
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

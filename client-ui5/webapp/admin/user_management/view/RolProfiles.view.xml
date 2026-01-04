@@ -1,0 +1,48 @@
+<mvc:View
+    controllerName="user.management.controller.RolProfiles"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.f">
+
+    <Page title="{i18n>profilesTitle}" showHeader="true">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <!-- Toolbar -->
+                <OverflowToolbar>
+                    <Title text="{i18n>profilesListTitle}" level="H3"/>
+                    <ToolbarSpacer/>
+                    <SearchField id="searchProfile" width="30%" search="onSearch" placeholder="{i18n>searchPlaceholder}"/>
+                    <Button text="{i18n>clearFilters}" icon="sap-icon://clear-filter" press="onClearFilters"/>
+                    <ToolbarSeparator/>
+                    <Button id="btnCreate" text="{i18n>create}" icon="sap-icon://add" type="Emphasized" press="onCreate"/>
+                    <Button id="btnModify" text="{i18n>modify}" icon="sap-icon://edit" press="onModify" enabled="false"/>
+                    <Button id="btnDelete" text="{i18n>delete}" icon="sap-icon://delete" type="Reject" press="onDelete" enabled="false"/>
+                </OverflowToolbar>
+
+                <!-- Profiles Table -->
+                <Table id="profilesTable"
+                    items="{/profiles}"
+                    mode="SingleSelectLeft"
+                    selectionChange="onSelectionChange"
+                    growing="true"
+                    growingThreshold="20">
+                    <columns>
+                        <Column width="3rem"><Text text="ID"/></Column>
+                        <Column><Text text="{i18n>profileName}"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>description}"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Text text="{id}"/>
+                                <ObjectIdentifier title="{name}"/>
+                                <Text text="{description}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

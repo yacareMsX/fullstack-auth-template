@@ -19,34 +19,40 @@
                 <Avatar src="../../../img/profile_pic.png" displaySize="XS" class="sapUiSmallMarginBegin" tooltip="{i18n>profile}"/>
             </tnt:ToolHeader>
         </tnt:header>
+        <tnt:sideContent>
+            <tnt:SideNavigation itemSelect="onItemSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem text="{i18n>usersAndRoles}" icon="sap-icon://user-settings" expanded="true">
+                        <tnt:NavigationListItem text="{i18n>users}" key="users"/>
+                        <tnt:NavigationListItem text="{i18n>roles}" key="roles"/>
+                        <tnt:NavigationListItem text="{i18n>profiles}" key="profiles"/>
+                        <tnt:NavigationListItem text="{i18n>authObjects}" key="auth"/>
+                    </tnt:NavigationListItem>
+                    <tnt:NavigationListItem text="{i18n>countryManagement}" icon="sap-icon://world" expanded="true">
+                        <tnt:NavigationListItem text="{i18n>countriesConfig}" key="countries"/>
+                    </tnt:NavigationListItem>
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
         <tnt:mainContents>
-            <SplitApp id="userMgmtSplitApp" initialDetail="detailUnderConstruction" initialMaster="masterPage">
-                <masterPages>
-                    <Page id="masterPage" title="Opciones" showHeader="false">
-                        <List itemPress="onListItemPress" mode="SingleSelectMaster">
-                            <StandardListItem title="{i18n>users}" type="Active" custom:key="users" icon="sap-icon://user-settings"/>
-                            <StandardListItem title="{i18n>roles}" type="Active" custom:key="roles" icon="sap-icon://role"/>
-                            <StandardListItem title="{i18n>profiles}" type="Active" custom:key="profiles" icon="sap-icon://badge"/>
-                            <StandardListItem title="{i18n>authObjects}" type="Active" custom:key="auth" icon="sap-icon://key"/>
-                        </List>
-                        <!-- Footer removed as back button is now in header -->
-                    </Page>
-                </masterPages>
-                <detailPages>
-                    <Page id="detailUnderConstruction" title="Detalle">
-                        <content>
-                            <MessagePage
-                                text="{i18n>underConstruction}"
-                                description="{i18n>underConstructionDesc}"
-                                icon="sap-icon://construction"
-                                showHeader="false"/>
-                        </content>
-                    </Page>
-                    <mvc:XMLView id="usersDetail" viewName="user.management.view.Users"/>
-                    <mvc:XMLView id="rolesDetail" viewName="user.management.view.Roles"/>
-                    <mvc:XMLView id="roleDetailInfo" viewName="user.management.view.RoleDetail"/>
-                </detailPages>
-            </SplitApp>
+            <NavContainer id="userMgmtNavContainer" initialPage="detailUnderConstruction">
+                <Page id="detailUnderConstruction" title="Detalle">
+                    <content>
+                        <MessagePage
+                            text="{i18n>underConstruction}"
+                            description="{i18n>underConstructionDesc}"
+                            icon="sap-icon://construction"
+                            showHeader="false"/>
+                    </content>
+                </Page>
+                <mvc:XMLView id="usersDetail" viewName="user.management.view.Users"/>
+                <mvc:XMLView id="userDetailInfo" viewName="user.management.view.UserDetail"/>
+                <mvc:XMLView id="rolesDetail" viewName="user.management.view.Roles"/>
+                <mvc:XMLView id="roleDetailInfo" viewName="user.management.view.RoleDetail"/>
+                <mvc:XMLView id="authDetail" viewName="user.management.view.AuthObjects"/>
+                <mvc:XMLView id="profilesDetail" viewName="user.management.view.RolProfiles"/>
+                <mvc:XMLView id="countriesDetail" viewName="invoice.app.view.InvoiceCountriesList"/>
+            </NavContainer>
         </tnt:mainContents>
     </tnt:ToolPage>
 </mvc:View>

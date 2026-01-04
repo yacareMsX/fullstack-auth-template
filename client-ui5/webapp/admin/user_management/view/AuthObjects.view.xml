@@ -1,0 +1,50 @@
+<mvc:View
+    controllerName="user.management.controller.AuthObjects"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.f">
+
+    <Page title="{i18n>authObjectsTitle}" showHeader="true">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <!-- Toolbar -->
+                <OverflowToolbar>
+                    <Title text="{i18n>authObjectsListTitle}" level="H3"/>
+                    <ToolbarSpacer/>
+                    <SearchField id="searchAuthObject" width="30%" search="onSearch" placeholder="{i18n>searchPlaceholder}"/>
+                    <Button text="{i18n>clearFilters}" icon="sap-icon://clear-filter" press="onClearFilters"/>
+                    <ToolbarSeparator/>
+                    <Button id="btnCreate" text="{i18n>create}" icon="sap-icon://add" type="Emphasized" press="onCreate"/>
+                    <Button id="btnModify" text="{i18n>modify}" icon="sap-icon://edit" press="onModify" enabled="false"/>
+                    <Button id="btnDelete" text="{i18n>delete}" icon="sap-icon://delete" type="Reject" press="onDelete" enabled="false"/>
+                </OverflowToolbar>
+
+                <!-- Auth Objects Table -->
+                <Table id="authObjectsTable"
+                    items="{/authObjects}"
+                    mode="SingleSelectLeft"
+                    selectionChange="onSelectionChange"
+                    growing="true"
+                    growingThreshold="20">
+                    <columns>
+                        <Column width="3rem"><Text text="ID"/></Column>
+                        <Column><Text text="{i18n>authObjectCode}"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>authObjectType}"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>description}"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Text text="{id}"/>
+                                <ObjectIdentifier title="{code}"/>
+                                <Text text="{object_type}"/>
+                                <Text text="{description}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

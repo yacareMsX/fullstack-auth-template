@@ -62,10 +62,13 @@ sap.ui.define([
 
         _getSplitApp: function () {
             var oControl = this.getView();
-            while (oControl && oControl.getMetadata().getName() !== "sap.m.SplitApp") {
+            while (oControl) {
+                if (oControl.getDetailPages && oControl.toDetail) {
+                    return oControl;
+                }
                 oControl = oControl.getParent();
             }
-            return oControl;
+            return null;
         }
 
     });

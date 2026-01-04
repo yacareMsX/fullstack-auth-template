@@ -201,6 +201,9 @@ sap.ui.define([
                 case "xmlMapping":
                     oRouter.navTo("xmlMapping");
                     break;
+                case "invoiceCountryList":
+                    oRouter.navTo("invoiceCountryList");
+                    break;
             }
 
             // Auto-collapse on mobile after selection

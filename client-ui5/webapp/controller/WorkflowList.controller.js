@@ -11,8 +11,15 @@ sap.ui.define([
     return Controller.extend("invoice.app.controller.WorkflowList", {
 
         onInit: function () {
-            var oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("workflowList").attachPatternMatched(this._onRouteMatched, this);
+            var oComponent = this.getOwnerComponent();
+            var oRouter = oComponent ? oComponent.getRouter() : null;
+
+            if (oRouter && oRouter.getRoute("workflowList")) {
+                oRouter.getRoute("workflowList").attachPatternMatched(this._onRouteMatched, this);
+            } else {
+                // Reuse scenario: direct load
+                this._loadWorkflows();
+            }
         },
 
         _onRouteMatched: function () {

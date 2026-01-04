@@ -1,0 +1,102 @@
+{
+    "_version": "1.59.0",
+    "sap.app": {
+        "id": "process.designer",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "title": "{{appTitle}}",
+        "description": "Process Designer",
+        "applicationVersion": {
+            "version": "1.0.0"
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "rootView": {
+            "viewName": "process.designer.view.Main",
+            "type": "XML",
+            "id": "app"
+        },
+        "dependencies": {
+            "minUI5Version": "1.120.0",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.tnt": {}
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "process.designer.i18n.i18n"
+                }
+            }
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "invoice.app.view",
+                "controlId": "processNavContainer",
+                "controlAggregation": "pages",
+                "transition": "slide",
+                "bypassed": {
+                    "target": "notFound"
+                }
+            },
+            "routes": [
+                {
+                    "name": "default",
+                    "pattern": "",
+                    "target": "workflowList"
+                },
+                {
+                    "name": "workflowList",
+                    "pattern": "workflow",
+                    "target": "workflowList"
+                },
+                {
+                    "name": "workflowNew",
+                    "pattern": "workflow/new",
+                    "target": "workflowDesigner"
+                },
+                {
+                    "name": "workflowDesigner",
+                    "pattern": "workflow/{workflowId}",
+                    "target": "workflowDesigner"
+                },
+                {
+                    "name": "xmlMapping",
+                    "pattern": "mapping",
+                    "target": "xmlMapping"
+                }
+            ],
+            "targets": {
+                "workflowList": {
+                    "viewId": "workflowList",
+                    "viewName": "WorkflowList"
+                },
+                "workflowDesigner": {
+                    "viewId": "workflowDesigner",
+                    "viewName": "WorkflowDesigner"
+                },
+                "xmlMapping": {
+                    "viewId": "xmlMapping",
+                    "viewName": "XmlMapping"
+                },
+                "notFound": {
+                    "viewId": "notFound",
+                    "viewName": "NotFound"
+                }
+            }
+        }
+    }
+}

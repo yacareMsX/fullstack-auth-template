@@ -14,6 +14,28 @@ sap.ui.define([
             this.getView().setModel(oUIModel, "ui");
 
             this._initTheme();
+            this._handleDeepLink();
+        },
+
+        _handleDeepLink: function () {
+            // Check for 'section' query parameter
+            var oParams = new URLSearchParams(window.location.search);
+            var sSection = oParams.get("section");
+
+            if (sSection) {
+                // Set selected item in sidebar
+                var oToolPage = this.byId("toolPage");
+                // Note: SideNavigation is in sideContent aggregation. 
+                // Since we didn't give it an ID, we access it via aggregation getter if possible or just assume logic works
+                // But setting selected key is good relevant to UX.
+                var oSideNav = oToolPage.getSideContent();
+                if (oSideNav) {
+                    oSideNav.setSelectedKey(sSection);
+
+                    // Manually handle selection if needed, but we also want to trigger navigation
+                    this._navToSection(sSection);
+                }
+            }
         },
 
         _initTheme: function () {
@@ -50,18 +72,31 @@ sap.ui.define([
             // Optional: Toggle sidebar if we wanted to support collapsing the SplitApp master
         },
 
-        onListItemPress: function (oEvent) {
-            var oItem = oEvent.getParameter("listItem");
-            var sKey = oItem.data("key");
-            var oSplitApp = this.byId("userMgmtSplitApp");
+        onItemSelect: function (oEvent) {
+            var oItem = oEvent.getParameter("item");
+            var sKey = oItem.getKey();
+            this._navToSection(sKey);
+        },
+
+        _navToSection: function (sKey) {
+            var oNavContainer = this.byId("userMgmtNavContainer");
 
             if (sKey === "users") {
-                oSplitApp.toDetail(this.createId("usersDetail"));
+                oNavContainer.to(this.createId("usersDetail"));
             } else if (sKey === "roles") {
-                oSplitApp.toDetail(this.createId("rolesDetail"));
+                oNavContainer.to(this.createId("rolesDetail"));
+            } else if (sKey === "auth") {
+                oNavContainer.to(this.createId("authDetail"));
+            } else if (sKey === "profiles") {
+                oNavContainer.to(this.createId("profilesDetail"));
+            } else if (sKey === "countries") {
+                oNavContainer.to(this.createId("countriesDetail"));
             } else {
-                oSplitApp.toDetail(this.createId("detailUnderConstruction"));
-                MessageToast.show("Opción seleccionada: " + sKey + ". Funcionalidad en construcción.");
+                // If it's a group header or other item without specific handler
+                if (sKey) {
+                    oNavContainer.to(this.createId("detailUnderConstruction"));
+                    MessageToast.show("Opción seleccionada: " + sKey + ". Funcionalidad en construcción.");
+                }
             }
         }
     });

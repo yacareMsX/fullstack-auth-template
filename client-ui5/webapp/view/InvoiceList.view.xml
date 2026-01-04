@@ -36,18 +36,18 @@
                             <Select id="statusFilter" selectedKey="" change="onSearch" width="100%">
                                 <items>
                                     <core:Item key="" text="{i18n>allStatuses}"/>
-                                    <core:Item key="BORRADOR" text="BORRADOR"/>
-                                    <core:Item key="EMITIDA" text="EMITIDA"/>
-                                    <core:Item key="ENVIADA" text="ENVIADA"/>
-                                    <core:Item key="PAGADA" text="PAGADA"/>
-                                    <core:Item key="PENDIENTE" text="PENDIENTE"/>
-                                    <core:Item key="RECTIFICATIVA" text="RECTIFICATIVA"/>
+                                    <core:Item key="BORRADOR" text="{i18n>statusDraft}"/>
+                                    <core:Item key="EMITIDA" text="{i18n>statusIssued}"/>
+                                    <core:Item key="ENVIADA" text="{i18n>statusSent}"/>
+                                    <core:Item key="PAGADA" text="{i18n>statusPaid}"/>
+                                    <core:Item key="PENDIENTE" text="{i18n>statusPending}"/>
+                                    <core:Item key="RECTIFICATIVA" text="{i18n>statusRectification}"/>
                                 </items>
                             </Select>
                         </VBox>
                         <VBox justifyContent="End">
                             <Label text=""/>
-                            <Button text="Go" type="Emphasized" press="onSearch" width="100%"/>
+                            <Button text="{i18n>go}" type="Emphasized" press="onSearch" width="100%"/>
                         </VBox>
                     </layout:Grid>
                 </content>

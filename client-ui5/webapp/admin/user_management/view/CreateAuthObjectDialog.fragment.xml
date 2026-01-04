@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog title="{newAuthObject>/dialogTitle}">
+        <content>
+            <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                <f:content>
+                    <Label text="{i18n>authObjectCode}" required="true"/>
+                    <Input value="{newAuthObject>/code}" editable="{= !${newAuthObject>/isEditMode}}"/>
+                    
+                    <Label text="{i18n>authObjectType}" required="true"/>
+                    <Input value="{newAuthObject>/object_type}"/>
+                    
+                    <Label text="{i18n>description}"/>
+                    <TextArea value="{newAuthObject>/description}" rows="3"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <beginButton>
+            <Button text="{i18n>save}" type="Emphasized" press="onSaveAuthObject"/>
+        </beginButton>
+        <endButton>
+            <Button text="{i18n>cancel}" press="onCancelDialog"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

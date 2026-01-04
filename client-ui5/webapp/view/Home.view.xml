@@ -36,11 +36,19 @@
                             </customData>
                         </Link>
                         <Link 
-                            text="Gestión de Usuarios" 
+                            text="{i18n>globalConfiguration}" 
                             press="onSectionNavigate" 
                             class="homeNavButton">
                             <customData>
                                 <core:CustomData key="section" value="userManagement"/>
+                            </customData>
+                        </Link>
+                        <Link 
+                            text="{i18n>processDesigner}" 
+                            press="onSectionNavigate" 
+                            class="homeNavButton">
+                            <customData>
+                                <core:CustomData key="section" value="processDesigner"/>
                             </customData>
                         </Link>
                     </layout:HorizontalLayout>
@@ -105,12 +113,28 @@
                         </layout:HorizontalLayout>
                     </VBox>
 
-                    <!-- User Management Section -->
+                    <!-- Global Configuration Section -->
                     <VBox id="userManagementSection">
-                        <Title text="Gestión de Usuarios" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+                        <Title text="{i18n>globalConfiguration}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
                         <layout:HorizontalLayout allowWrapping="true">
-                            <GenericTile header="Gestión de Usuarios" press="onNavigateToUserManagement" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>userManagement}" press="onNavigateToUserManagement" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://user-settings"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>invoiceCountriesTitle}" press="onNavigateToCountries" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://world"/></TileContent>
+                            </GenericTile>
+                        </layout:HorizontalLayout>
+                    </VBox>
+
+                    <!-- Process Designer Section -->
+                    <VBox id="processDesignerSection">
+                        <Title text="{i18n>processDesigner}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+                        <layout:HorizontalLayout allowWrapping="true">
+                            <GenericTile header="{i18n>approvalProcesses}" press="onNavigateToWorkflow" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://process"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>xmlDesign}" press="onNavigateToXmlDesign" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://opportunity"/></TileContent>
                             </GenericTile>
                         </layout:HorizontalLayout>
                     </VBox>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Unit Tests - Invoice App</title>
+
+    <script id="sap-ui-bootstrap" src="../../resources/sap-ui-core.js" data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m" data-sap-ui-resourceroots='{
+			"invoice.app": "../../"
+		}' data-sap-ui-async="true">
+        </script>
+
+    <script src="../../resources/sap/ui/thirdparty/qunit-2.js"></script>
+    <script src="../../resources/sap/ui/qunit/qunit-junit.js"></script>
+    <script src="../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../resources/sap/ui/thirdparty/qunit-2.css">
+
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            sap.ui.require([
+                "invoice/app/test/unit/allTests"
+            ], function () {
+                QUnit.start();
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+</body>
+
+</html>

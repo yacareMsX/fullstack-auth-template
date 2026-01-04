@@ -97,20 +97,64 @@ sap.ui.define([
         },
 
         onSelectionChange: function (oEvent) {
-            var bSelected = oEvent.getParameter("listItem").getSelected();
+            var oItem = oEvent.getParameter("listItem");
+            var bSelected = oItem.getSelected();
             this.byId("btnView").setEnabled(bSelected);
-            this.byId("btnModify").setEnabled(bSelected);
             this.byId("btnBlock").setEnabled(bSelected);
             this.byId("btnUnblock").setEnabled(bSelected);
             this.byId("btnDelete").setEnabled(bSelected);
 
             // Context sensitive enabling (e.g. block only if active)
             if (bSelected) {
-                var oContext = oEvent.getParameter("listItem").getBindingContext();
+                var oContext = oItem.getBindingContext();
                 var bActive = oContext.getProperty("is_active");
                 this.byId("btnBlock").setEnabled(bActive);
                 this.byId("btnUnblock").setEnabled(!bActive);
+
+                // Navigate to detail on selection
+                this._showDetail(oItem);
             }
+        },
+
+        onItemPress: function (oEvent) {
+            var oItem = oEvent.getParameter("listItem");
+            this._showDetail(oItem);
+        },
+
+        _showDetail: function (oItem) {
+            var oContext = oItem.getBindingContext();
+            var oUserData = oContext.getObject();
+
+            var oSplitApp = this._getSplitApp();
+            if (oSplitApp) {
+                // Try to find the detail view by its ID suffix
+                var oDetailView = oSplitApp.getDetailPages().find(function (p) {
+                    return p.getId().indexOf("userDetailInfo") > -1;
+                });
+
+                if (oDetailView) {
+                    oSplitApp.toDetail(oDetailView);
+                    // Call the method on the detail controller to populate data
+                    oDetailView.getController().displayUser(oUserData);
+                }
+            }
+        },
+
+        _getSplitApp: function () {
+            var oView = this.getView();
+            var oParent = oView.getParent();
+            while (oParent && !oParent.isA("sap.m.SplitApp")) {
+                oParent = oParent.getParent();
+            }
+            return oParent;
+        },
+
+        formatDate: function (sDate) {
+            if (!sDate) return "";
+            var oDate = new Date(sDate);
+            if (isNaN(oDate.getTime())) return sDate; // Return string if parse fails
+            // Simple format
+            return oDate.toLocaleDateString() + " " + oDate.toLocaleTimeString();
         },
 
         onCreate: function () {
@@ -227,64 +271,7 @@ sap.ui.define([
                 });
         },
 
-        onModify: function () {
-            console.log("onModify called");
-            this._openUserDialog(true, false);
-        },
 
-        onViewUser: function () {
-            console.log("onViewUser called");
-            this._openUserDialog(false, true);
-        },
-
-        _openUserDialog: function (bEditMode, bViewMode) {
-            console.log("_openUserDialog called", bEditMode, bViewMode);
-            var oTable = this.byId("usersTable");
-            var oSelectedItem = oTable.getSelectedItem();
-            if (!oSelectedItem) {
-                console.error("No item selected");
-                return;
-            }
-
-            var oContext = oSelectedItem.getBindingContext();
-            var oUserData = oContext.getObject();
-            console.log("User data:", oUserData);
-
-            var oView = this.getView();
-            var oResourceBundle = oView.getModel("i18n").getResourceBundle();
-
-            var sTitle = bViewMode ? oResourceBundle.getText("viewUserTitle") : oResourceBundle.getText("modifyUserTitle");
-
-            // Populate modified model
-            var oNewUserModel = new JSONModel({
-                isEditMode: bEditMode,
-                isViewMode: bViewMode,
-                dialogTitle: sTitle,
-                id: oUserData.id,
-                email: oUserData.email,
-                firstName: oUserData.first_name,
-                lastName: oUserData.last_name,
-                nif: oUserData.nif,
-                role_id: oUserData.role, // Backend returns role name in 'role' field
-                phone: oUserData.phone,
-                addressLine1: oUserData.address_line1,
-                addressLine2: oUserData.address_line2,
-                city: oUserData.city,
-                stateProvince: oUserData.state_province,
-                postalCode: oUserData.postal_code,
-                country: oUserData.country,
-                dateOfBirth: (function (d) {
-                    if (!d) return "";
-                    if (d instanceof Date) return d.toISOString().substring(0, 10);
-                    if (typeof d === 'string') return d.substring(0, 10);
-                    return "";
-                })(oUserData.date_of_birth),
-                bio: oUserData.bio
-            });
-            oView.setModel(oNewUserModel, "newUser");
-
-            this._openDialog();
-        },
 
         onBlock: function () {
             this._updateStatus(false);

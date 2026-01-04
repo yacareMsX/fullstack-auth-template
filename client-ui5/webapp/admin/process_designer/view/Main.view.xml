@@ -1,0 +1,51 @@
+<mvc:View
+    controllerName="process.designer.controller.Main"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:tnt="sap.tnt"
+    displayBlock="true">
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader class="bannerHeader">
+                <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" tooltip="{i18n>menu}" class="sapUiSmallMarginEnd"/>
+                <Button icon="sap-icon://nav-back" type="Transparent" press="onNavHome" tooltip="{i18n>backToHome}" class="sapUiSmallMarginEnd"/>
+                <Title text="{i18n>headerTitle}" level="H2" class="sapUiSmallMarginBegin"/>
+                <ToolbarSpacer/>
+                <Button icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="{i18n>toggleTheme}" class="sapUiSmallMarginEnd"/>
+                <Button icon="sap-icon://search" type="Transparent" tooltip="{i18n>search}"/>
+                <Button icon="sap-icon://sys-help-2" type="Transparent" tooltip="{i18n>help}"/>
+                <Button icon="sap-icon://bell" type="Transparent" tooltip="{i18n>notifications}"/>
+                <Avatar src="../../../img/profile_pic.png" displaySize="XS" class="sapUiSmallMarginBegin" tooltip="{i18n>profile}"/>
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:sideContent>
+            <tnt:SideNavigation itemSelect="onItemSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem text="{i18n>workflowDesigner}" icon="sap-icon://process" expanded="true">
+                        <tnt:NavigationListItem text="{i18n>createWorkflow}" key="workflowNew"/>
+                        <tnt:NavigationListItem text="{i18n>workflowList}" key="workflowList"/>
+                    </tnt:NavigationListItem>
+                    <tnt:NavigationListItem text="{i18n>mappingTool}" icon="sap-icon://opportunity" expanded="true">
+                        <tnt:NavigationListItem text="{i18n>xmlMapping}" key="xmlMapping"/>
+                    </tnt:NavigationListItem>
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+            <NavContainer id="processNavContainer" initialPage="detailUnderConstruction">
+                <Page id="detailUnderConstruction" title="Detalle">
+                    <content>
+                        <MessagePage
+                            text="{i18n>underConstruction}"
+                            description="{i18n>underConstructionDesc}"
+                            icon="sap-icon://construction"
+                            showHeader="false"/>
+                    </content>
+                </Page>
+                <mvc:XMLView id="workflowDesigner" viewName="invoice.app.view.WorkflowDesigner"/>
+                <mvc:XMLView id="workflowList" viewName="invoice.app.view.WorkflowList"/>
+                <mvc:XMLView id="xmlMapping" viewName="invoice.app.view.XmlMapping"/>
+            </NavContainer>
+        </tnt:mainContents>
+    </tnt:ToolPage>
+</mvc:View>

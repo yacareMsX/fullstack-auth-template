@@ -1,0 +1,56 @@
+<mvc:View
+    controllerName="invoice.app.controller.InvoiceCountriesList"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core">
+    <Page title="{i18n>invoiceCountriesTitle}" showNavButton="false">
+        <content>
+            <Table
+                id="countriesTable"
+                items="{invoiceCountries>/}"
+                mode="SingleSelectMaster"
+                itemPress=".onItemPress"
+                width="auto">
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="{i18n>allCountries}" level="H2"/>
+                        <ToolbarSpacer/>
+                        <Button
+                            icon="sap-icon://sort"
+                            press=".onSort"
+                            tooltip="{i18n>sort}"/>
+                        <SearchField
+                            placeholder="{i18n>search}"
+                            search=".onSearch"
+                            width="250px"/>
+                        <Button
+                            text="{i18n>createCountry}"
+                            icon="sap-icon://add"
+                            press=".onCreate"
+                            type="Emphasized"/>
+                    </Toolbar>
+                </headerToolbar>
+                <columns>
+                    <Column width="50px">
+                        <Text text="ID"/>
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>country}"/>
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>region}"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem type="Navigation">
+                        <cells>
+                            <Text text="{invoiceCountries>id}"/>
+                            <Text text="{invoiceCountries>pais}"/>
+                            <Text text="{invoiceCountries>region}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

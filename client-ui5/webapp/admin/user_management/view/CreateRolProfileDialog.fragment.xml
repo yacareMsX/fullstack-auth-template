@@ -1,0 +1,37 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog title="{newProfile>/dialogTitle}" contentWidth="400px">
+        <content>
+            <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                <f:content>
+                    <Label text="{i18n>profileName}" required="true"/>
+                    <Input value="{newProfile>/name}" editable="{= !${newProfile>/isEditMode}}"/>
+                    
+                    <Label text="{i18n>description}"/>
+                    <TextArea value="{newProfile>/description}" rows="2"/>
+                    
+                    <Label text="{i18n>assignedAuthObjects}"/>
+                    <MultiComboBox
+                        selectionFinish="onSelectionFinish"
+                        width="100%"
+                        items="{
+                            path: '/allAuthObjects',
+                            sorter: { path: 'code' },
+                            templateShareable: false
+                        }"
+                        selectedKeys="{newProfile>/selectedAuthObjects}">
+                        <core:Item key="{id}" text="{code} - {description}"/>
+                    </MultiComboBox>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <beginButton>
+            <Button text="{i18n>save}" type="Emphasized" press="onSaveProfile"/>
+        </beginButton>
+        <endButton>
+            <Button text="{i18n>cancel}" press="onCancelDialog"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

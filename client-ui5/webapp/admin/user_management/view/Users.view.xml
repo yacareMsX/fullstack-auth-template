@@ -44,6 +44,7 @@
                 inset="false"
                 items="{/users}"
                 mode="SingleSelectLeft"
+                itemPress="onItemPress"
                 selectionChange="onSelectionChange"
                 class="sapUiResponsiveMargin"
                 width="auto">
@@ -52,8 +53,6 @@
                         <Title text="{i18n>userListTitle} ({= ${/users}.length || 0})"/>
                         <ToolbarSpacer/>
                         <Button text="{i18n>create}" icon="sap-icon://add" press="onCreate" type="Transparent"/>
-                        <Button id="btnView" text="{i18n>view}" icon="sap-icon://show" press="onViewUser" enabled="false" type="Transparent"/>
-                        <Button id="btnModify" text="{i18n>modify}" icon="sap-icon://edit" press="onModify" enabled="false" type="Transparent"/>
                         <Button id="btnBlock" text="{i18n>block}" icon="sap-icon://locked" press="onBlock" enabled="false" type="Transparent"/>
                         <Button id="btnUnblock" text="{i18n>unblock}" icon="sap-icon://unlocked" press="onUnblock" enabled="false" type="Transparent"/>
                         <Button id="btnDelete" text="{i18n>delete}" icon="sap-icon://delete" press="onDelete" enabled="false" type="Transparent"/>
@@ -83,13 +82,13 @@
                     </Column>
                 </columns>
                 <items>
-                    <ColumnListItem>
+                    <ColumnListItem type="Navigation">
                         <cells>
                             <Text text="{id}" />
                             <ObjectIdentifier title="{first_name} {last_name}" />
                             <Text text="{email}" />
                             <Text text="{role}" />
-                            <Text text="{path: 'last_connection', type: 'sap.ui.model.type.DateTime', formatOptions: { style: 'medium' }}" />
+                            <Text text="{path: 'last_connection', formatter: '.formatDate'}" />
                             <ObjectStatus
                                 icon="{= ${is_online} ? 'sap-icon://connected' : 'sap-icon://disconnected'}"
                                 state="{= ${is_online} ? 'Success' : 'Indication05'}"
