@@ -42,6 +42,7 @@ app.use('/api/admin/users', require('./routes/admin/users'));
 app.use('/api/admin/roles', require('./routes/admin/roles'));
 app.use('/api/admin/auth-objects', require('./routes/admin/auth_objects'));
 app.use('/api/admin/rol-profiles', require('./routes/admin/rol_profiles'));
+app.use('/api/statutory/models', require('./routes/statutory/models'));
 app.use('/api/audit', require('./routes/audit'));
 
 app.get('/api/health', async (req, res) => {

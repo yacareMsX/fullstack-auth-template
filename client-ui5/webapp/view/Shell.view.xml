@@ -77,6 +77,14 @@
                             key="catalogList"/>
                     </tnt:NavigationListItem>
 
+                    <tnt:NavigationListItem
+                        text="{i18n>config}"
+                        icon="sap-icon://action-settings"
+                        expanded="false">
+                        <tnt:NavigationListItem text="{i18n>issuers}" key="issuerManager"/>
+                        <tnt:NavigationListItem text="{i18n>receivers}" key="receiverManager"/>
+                    </tnt:NavigationListItem>
+
 
 
                     <tnt:NavigationListItem
@@ -88,16 +96,6 @@
                             key="originList"/>
                     </tnt:NavigationListItem>
 
-                    <tnt:NavigationListItem text="{i18n>audit}" icon="sap-icon://shield" expanded="false">
-                        <tnt:NavigationListItem text="{i18n>auditLog}" key="auditLog"/>
-                    </tnt:NavigationListItem>
-
-                    <tnt:NavigationListItem
-                        text="APIs"
-                        icon="sap-icon://api"
-                        expanded="false">
-                        <tnt:NavigationListItem text="{i18n>apiDocs}" icon="sap-icon://learning-assistant" key="apiDocs"/>
-                    </tnt:NavigationListItem>
                 </tnt:NavigationList>
             </tnt:SideNavigation>
         </tnt:sideContent>

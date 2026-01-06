@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría</title>
+    <script id="sap-ui-bootstrap" src="https://sdk.openui5.org/resources/sap-ui-core.js" data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.tnt,sap.ui.layout" data-sap-ui-resourceroots='{
+            "audit.app": "./",
+            "invoice.app": "../../"
+        }' data-sap-ui-compatVersion="edge" data-sap-ui-async="true" data-sap-ui-xx-componentPreload="off">
+        </script>
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            sap.ui.require([
+                "sap/ui/core/ComponentContainer"
+            ], function (ComponentContainer) {
+                new ComponentContainer({
+                    name: "audit.app",
+                    settings: {
+                        id: "audit.app"
+                    },
+                    async: true
+                }).placeAt("content");
+            });
+        });
+    </script>
+</head>
+
+<body class="sapUiBody" id="content"></body>
+
+</html>

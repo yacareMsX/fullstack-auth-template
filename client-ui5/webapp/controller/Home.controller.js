@@ -13,6 +13,10 @@ sap.ui.define([
                 this.getOwnerComponent().getRouter().navTo("login");
                 return;
             }
+
+            // Log Security Model Data
+            var oSecurityModel = this.getOwnerComponent().getModel("security");
+            console.log("[Home] Security Model Data onInit:", oSecurityModel ? oSecurityModel.getData() : "Model not found");
         },
 
         onAfterRendering: function () {
@@ -57,6 +61,18 @@ sap.ui.define([
             window.location.href = "admin/process_designer/index.html?section=mapping";
         },
 
+        onNavigateToAudit: function () {
+            window.location.href = "admin/audit/index.html";
+        },
+
+        onNavigateToApiDocs: function () {
+            window.location.href = "admin/api_docs/index.html";
+        },
+
+        onNavigateToModelo303: function () {
+            this.getOwnerComponent().getRouter().navTo("modelo303");
+        },
+
         onGenericTilePress: function (oEvent) {
             var sTileHeader = oEvent.getSource().getHeader();
             sap.m.MessageToast.show("Funcionalidad '" + sTileHeader + "' próximamente disponible");
@@ -88,6 +104,12 @@ sap.ui.define([
                     break;
                 case "processDesigner":
                     oSection = this.byId("processDesignerSection");
+                    break;
+                case "audit":
+                    oSection = this.byId("auditSection");
+                    break;
+                case "api":
+                    oSection = this.byId("apiSection");
                     break;
             }
 

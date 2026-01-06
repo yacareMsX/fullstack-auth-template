@@ -1,0 +1,30 @@
+<mvc:View
+    controllerName="invoice.app.controller.StatutoryLayout"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt"
+    displayBlock="true"
+    height="100%">
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader>
+                <Button icon="sap-icon://menu2" type="Transparent" press="onSideNavButtonPress"/>
+                <Title text="{i18n>appTitle}" class="sapUiTinyMarginBegin"/>
+                <ToolbarSpacer/>
+                <Button icon="sap-icon://home" type="Transparent" press="onHomePress" tooltip="{i18n>home}"/>
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:sideContent>
+            <tnt:SideNavigation expanded="true" itemSelect="onItemSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem text="{i18n>tile301}" icon="sap-icon://form" key="modelo303"/>
+                    <tnt:NavigationListItem text="{i18n>tile349}" icon="sap-icon://form" key="modelo349" enabled="false"/>
+                    <tnt:NavigationListItem text="{i18n>tile322}" icon="sap-icon://form" key="modelo202" enabled="false"/>
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+            <NavContainer id="statutoryMainContent" width="100%" height="100%"/>
+        </tnt:mainContents>
+    </tnt:ToolPage>
+</mvc:View>

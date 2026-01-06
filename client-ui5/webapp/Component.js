@@ -1,7 +1,8 @@
 sap.ui.define([
     "sap/ui/core/UIComponent",
-    "sap/ui/model/json/JSONModel"
-], function (UIComponent, JSONModel) {
+    "sap/ui/model/json/JSONModel",
+    "invoice/app/model/SecurityModel"
+], function (UIComponent, JSONModel, SecurityModel) {
     "use strict";
 
     return UIComponent.extend("invoice.app.Component", {
@@ -37,6 +38,10 @@ sap.ui.define([
 
             // Initialize global model for scanned data
             this.setModel(new JSONModel({}), "scannedData");
+
+            // Initialize Security Model
+            var oSecurityModel = new SecurityModel();
+            this.setModel(oSecurityModel, "security");
         }
     });
 });

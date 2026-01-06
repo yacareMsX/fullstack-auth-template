@@ -33,7 +33,7 @@
                         <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>description}"/></Column>
                     </columns>
                     <items>
-                        <ColumnListItem>
+                        <ColumnListItem type="Navigation" press="onItemPress">
                             <cells>
                                 <Text text="{id}"/>
                                 <ObjectIdentifier title="{name}"/>

@@ -17,14 +17,13 @@
                     <Button text="{i18n>clearFilters}" icon="sap-icon://clear-filter" press="onClearFilters"/>
                     <ToolbarSeparator/>
                     <Button id="btnCreate" text="{i18n>create}" icon="sap-icon://add" type="Emphasized" press="onCreate"/>
-                    <Button id="btnModify" text="{i18n>modify}" icon="sap-icon://edit" press="onModify" enabled="false"/>
                     <Button id="btnDelete" text="{i18n>delete}" icon="sap-icon://delete" type="Reject" press="onDelete" enabled="false"/>
                 </OverflowToolbar>
 
                 <!-- Roles Table -->
                 <Table id="rolesTable"
                     items="{/roles}"
-                    mode="SingleSelectMaster"
+                    mode="SingleSelectLeft"
                     selectionChange="onSelectionChange"
                     itemPress="onItemPress"
                     growing="true"

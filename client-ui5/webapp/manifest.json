@@ -181,6 +181,16 @@
                     "name": "invoiceCountryDetail",
                     "pattern": "config/countries/{countryId}",
                     "target": "invoiceCountryDetail"
+                },
+                {
+                    "name": "statutory",
+                    "pattern": "statutory",
+                    "target": "statutoryLayout"
+                },
+                {
+                    "name": "modelo303",
+                    "pattern": "statutory/303",
+                    "target": "modelo303"
                 }
             ],
             "targets": {
@@ -307,6 +317,19 @@
                     "viewName": "InvoiceCountryDetail",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
+                },
+                "statutoryLayout": {
+                    "viewId": "statutoryLayout",
+                    "viewName": "StatutoryLayout",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "modelo303": {
+                    "viewId": "modelo303",
+                    "viewName": "statutory.Modelo303",
+                    "controlId": "statutoryMainContent",
+                    "controlAggregation": "pages",
+                    "parent": "statutoryLayout"
                 }
             }
         }

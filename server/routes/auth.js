@@ -146,6 +146,7 @@ router.post('/register', async (req, res) => {
  */
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log(`[AUTH] Login attempt for email: ${email}`);
 
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required' });
@@ -154,7 +155,7 @@ router.post('/login', async (req, res) => {
     try {
         // Get user with role
         const userRes = await db.query(
-            `SELECT u.id, u.email, u.password_hash, r.name as role, 
+            `SELECT u.id, u.email, u.password_hash, u.role_id, r.name as role, 
                     p.first_name, p.last_name
              FROM users u
              JOIN roles r ON u.role_id = r.id
@@ -162,6 +163,7 @@ router.post('/login', async (req, res) => {
              WHERE u.email = $1 AND u.is_active = true`,
             [email]
         );
+        console.log(`[AUTH] User lookup result count: ${userRes.rows.length}`);
 
         if (userRes.rows.length === 0) {
             return res.status(401).json({ error: 'Invalid credentials' });
@@ -172,8 +174,10 @@ router.post('/login', async (req, res) => {
         // Verify password
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
         if (!passwordMatch) {
+            console.log('[AUTH] Validate password failed');
             return res.status(401).json({ error: 'Invalid credentials' });
         }
+        console.log('[AUTH] Password validated');
 
         // Generate JWT token
         const token = generateToken(user.id, user.email, user.role);
@@ -192,6 +196,21 @@ router.post('/login', async (req, res) => {
             console.error('Failed to log login action:', logErr);
         }
 
+        // Get Permissions (Auth Object Codes)
+        console.log(`[AUTH] Fetching permissions for role_id: ${user.role_id}`);
+        const permissionsRes = await db.query(
+            `SELECT DISTINCT ao.code
+             FROM roles r
+             JOIN role_rol_profiles rrp ON r.id = rrp.role_id
+             JOIN rol_profiles rp ON rrp.profile_id = rp.id
+             JOIN rol_profile_auth_objects rpao ON rp.id = rpao.profile_id
+             JOIN authorization_objects ao ON rpao.auth_object_id = ao.id
+             WHERE r.id = $1`,
+            [user.role_id]
+        );
+        const permissions = permissionsRes.rows.map(row => row.code);
+        console.log(`[AUTH] Permissions found: ${permissions.length}`);
+
         res.json({
             message: 'Login successful',
             token,
@@ -201,9 +220,11 @@ router.post('/login', async (req, res) => {
                 email: user.email,
                 firstName: user.first_name,
                 lastName: user.last_name,
-                role: user.role
+                role: user.role, // role name from the join
+                permissions: permissions
             }
         });
+
     } catch (err) {
         console.error('Login error:', err);
         res.status(500).json({ error: 'Internal server error' });

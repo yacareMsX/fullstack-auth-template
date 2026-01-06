@@ -1,0 +1,74 @@
+{
+    "_version": "1.59.0",
+    "sap.app": {
+        "id": "audit.app",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "title": "Auditoría",
+        "description": "Audit Log",
+        "applicationVersion": {
+            "version": "1.0.0"
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "rootView": {
+            "viewName": "audit.app.view.Main",
+            "type": "XML",
+            "id": "app"
+        },
+        "dependencies": {
+            "minUI5Version": "1.120.0",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.tnt": {}
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "audit.app.i18n.i18n"
+                }
+            }
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "invoice.app.view",
+                "controlId": "auditNavContainer",
+                "controlAggregation": "pages",
+                "transition": "slide",
+                "bypassed": {
+                    "target": "notFound"
+                }
+            },
+            "routes": [
+                {
+                    "name": "auditLog",
+                    "pattern": "",
+                    "target": "auditLog"
+                }
+            ],
+            "targets": {
+                "auditLog": {
+                    "viewId": "auditLog",
+                    "viewName": "AuditLog"
+                },
+                "notFound": {
+                    "viewId": "notFound",
+                    "viewName": "NotFound"
+                }
+            }
+        }
+    }
+}

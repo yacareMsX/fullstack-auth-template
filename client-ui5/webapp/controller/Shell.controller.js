@@ -123,6 +123,31 @@ sap.ui.define([
                 oUIModel.setProperty("/backButtonVisible", false);
                 oUIModel.setProperty("/headerTitle", sAppTitle);
                 oToolPage.setSideExpanded(false);
+            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0)) {
+                // Statutory App Mode: Hide Main Shell Sidebar/Header to allow Sub-App to take over
+                oUIModel.setProperty("/sidebarVisible", false);
+                oUIModel.setProperty("/menuVisible", false);
+                // We might want to keep back button or let the sub-app handle "Home"
+                oUIModel.setProperty("/backButtonVisible", false);
+                // We hide the entire shell header elements? No, Shell.view uses tnt:ToolPage structure.
+                // If we hide sidebarVisible, tnt:ToolPage just hides layout[1].
+                // But header remains. StatutoryLayout ALSO has a header. 
+                // So we should probably hide the Shell Header content or make it minimal.
+                // However, Shell view has <tnt:header><tnt:ToolHeader>...
+
+                // Let's assume hiding the sidebar is enough to fix the Visual "Double Sidebar".
+                // If the user wants a full sub-app experience, we might need to do more, but let's start with sidebar.
+
+                // Actually, if StatutoryLayout has its OWN header, we will have double headers too.
+                // Let's check StatutoryLayout. It DOES have a header.
+                // So we should try to look like "Fullscreen" or similar.
+                // Since we can't easily remove the Shell Header without a boolean, let's look at Shell.view again.
+                // It doesn't seem to have a visible property on tnt:ToolHeader.
+
+                // For now, let's just hide the sidebar to fix the immediate "Sidebar inside Sidebar" issue.
+                // And maybe Update the Title.
+                oUIModel.setProperty("/headerTitle", "Compliance Hub - Statutory Reporting");
+                oToolPage.setSideExpanded(false);
             } else {
                 oUIModel.setProperty("/sidebarVisible", true);
                 oUIModel.setProperty("/menuVisible", true);
@@ -173,10 +198,10 @@ sap.ui.define([
                 case "catalogList":
                     oRouter.navTo("catalogList");
                     break;
-                case "issuers":
+                case "issuerManager":
                     oRouter.navTo("issuerManager");
                     break;
-                case "receivers":
+                case "receiverManager":
                     oRouter.navTo("receiverManager");
                     break;
                 case "taxes":
@@ -254,23 +279,22 @@ sap.ui.define([
 
         onProfilePress: function (oEvent) {
             var oButton = oEvent.getSource();
+            var oView = this.getView();
 
-            if (!this._oProfileActionSheet) {
-                this._oProfileActionSheet = new ActionSheet({
-                    showCancelButton: true,
-                    buttons: [
-                        new Button({
-                            text: "Logout",
-                            icon: "sap-icon://log",
-                            type: "Reject",
-                            press: this.onLogout.bind(this)
-                        })
-                    ]
+            if (!this._pProfilePopover) {
+                this._pProfilePopover = sap.ui.core.Fragment.load({
+                    id: oView.getId(),
+                    name: "invoice.app.view.UserProfilePopover",
+                    controller: this
+                }).then(function (oPopover) {
+                    oView.addDependent(oPopover);
+                    return oPopover;
                 });
-                this.getView().addDependent(this._oProfileActionSheet);
             }
 
-            this._oProfileActionSheet.openBy(oButton);
+            this._pProfilePopover.then(function (oPopover) {
+                oPopover.openBy(oButton);
+            });
         },
 
         onLogout: function () {

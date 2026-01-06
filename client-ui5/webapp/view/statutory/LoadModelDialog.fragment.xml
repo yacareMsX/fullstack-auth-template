@@ -1,0 +1,42 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        title="{i18n>loadModelTitle}"
+        contentWidth="500px">
+        <Table
+            id="savedModelsTable"
+            items="{loadModel>/models}"
+            mode="SingleSelectMaster"
+            selectionChange="onLoadModelSelectionChange">
+            <columns>
+                <Column><Text text="{i18n>m303_year}"/></Column>
+                <Column><Text text="{i18n>m303_period}"/></Column>
+                <Column><Text text="{i18n>status}"/></Column>
+                <Column><Text text="{i18n>lastUpdated}"/></Column>
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{loadModel>year}"/>
+                        <Text text="{loadModel>period}"/>
+                        <ObjectStatus text="{loadModel>status}" state="{= ${loadModel>status} === 'SUBMITTED' ? 'Success' : 'Warning'}"/>
+                        <Text text="{
+                            path: 'loadModel>updated_at',
+                            type: 'sap.ui.model.type.DateTime',
+                            formatOptions: {
+                                style: 'medium'
+                            }
+                        }"/>
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+        <beginButton>
+            <Button text="{i18n>load}" press="onLoadModelConfirm" type="Emphasized" enabled="{loadModel>/loadEnabled}"/>
+        </beginButton>
+        <endButton>
+            <Button text="{i18n>cancel}" press="onLoadModelCancel"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

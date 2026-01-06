@@ -15,6 +15,8 @@ sap.ui.define([
 
             this._initTheme();
             this._handleDeepLink();
+
+            this.getOwnerComponent().getRouter().attachRouteMatched(this._onRouteMatched, this);
         },
 
         _handleDeepLink: function () {
@@ -72,6 +74,40 @@ sap.ui.define([
             // Optional: Toggle sidebar if we wanted to support collapsing the SplitApp master
         },
 
+        _onRouteMatched: function (oEvent) {
+            var sRouteName = oEvent.getParameter("name");
+            var oUIModel = this.getView().getModel("ui");
+            var oNavContainer = this.byId("userMgmtNavContainer");
+
+            // Log for debugging
+            console.log("Main Controller _onRouteMatched:", sRouteName);
+
+            // Ensure sidebar is visible for all these routes
+            oUIModel.setProperty("/sidebarVisible", true);
+            oUIModel.setProperty("/menuVisible", true);
+            oUIModel.setProperty("/backButtonVisible", true);
+
+            if (sRouteName === "invoiceCountryList") {
+                oNavContainer.to(this.createId("countriesDetail"));
+            } else if (sRouteName === "invoiceCountryDetail") {
+                oNavContainer.to(this.createId("countryDetail"));
+            } else if (sRouteName === "users") {
+                oNavContainer.to(this.createId("usersDetail"));
+            } else if (sRouteName === "userDetail") {
+                oNavContainer.to(this.createId("userDetailInfo"));
+            } else if (sRouteName === "roles") {
+                oNavContainer.to(this.createId("rolesDetail"));
+            } else if (sRouteName === "roleDetail") {
+                oNavContainer.to(this.createId("roleDetailInfo"));
+            } else if (sRouteName === "auth") {
+                oNavContainer.to(this.createId("authDetail"));
+            } else if (sRouteName === "profiles") {
+                oNavContainer.to(this.createId("profilesDetail"));
+            } else if (sRouteName === "rolProfileDetail") {
+                oNavContainer.to(this.createId("rolProfileDetailInfo"));
+            }
+        },
+
         onItemSelect: function (oEvent) {
             var oItem = oEvent.getParameter("item");
             var sKey = oItem.getKey();
@@ -79,23 +115,24 @@ sap.ui.define([
         },
 
         _navToSection: function (sKey) {
-            var oNavContainer = this.byId("userMgmtNavContainer");
+            var oRouter = this.getOwnerComponent().getRouter();
 
             if (sKey === "users") {
-                oNavContainer.to(this.createId("usersDetail"));
+                oRouter.navTo("users");
             } else if (sKey === "roles") {
-                oNavContainer.to(this.createId("rolesDetail"));
+                oRouter.navTo("roles");
             } else if (sKey === "auth") {
-                oNavContainer.to(this.createId("authDetail"));
+                oRouter.navTo("auth");
             } else if (sKey === "profiles") {
-                oNavContainer.to(this.createId("profilesDetail"));
+                oRouter.navTo("profiles");
             } else if (sKey === "countries") {
-                oNavContainer.to(this.createId("countriesDetail"));
+                oRouter.navTo("invoiceCountryList");
             } else {
                 // If it's a group header or other item without specific handler
                 if (sKey) {
+                    var oNavContainer = this.byId("userMgmtNavContainer");
                     oNavContainer.to(this.createId("detailUnderConstruction"));
-                    MessageToast.show("Opción seleccionada: " + sKey + ". Funcionalidad en construcción.");
+                    sap.m.MessageToast.show("Opción seleccionada: " + sKey + ". Funcionalidad en construcción.");
                 }
             }
         }

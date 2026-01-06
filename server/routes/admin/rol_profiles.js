@@ -64,12 +64,16 @@ router.get('/:id', authenticateToken, async (req, res) => {
         }
         const profile = profileResult.rows[0];
 
-        // Fetch assigned auth objects
+        // Fetch assigned auth objects with details
         const authObjectsResult = await db.query(
-            `SELECT auth_object_id FROM rol_profile_auth_objects WHERE profile_id = $1`,
+            `SELECT ao.id, ao.object_type, ao.code, ao.description 
+             FROM rol_profile_auth_objects rpo
+             JOIN authorization_objects ao ON rpo.auth_object_id = ao.id
+             WHERE rpo.profile_id = $1`,
             [id]
         );
-        profile.auth_object_ids = authObjectsResult.rows.map(row => row.auth_object_id);
+        profile.auth_objects = authObjectsResult.rows;
+        profile.auth_object_ids = authObjectsResult.rows.map(row => row.id);
 
         res.json(profile);
     } catch (err) {

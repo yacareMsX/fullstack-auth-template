@@ -19,7 +19,7 @@
                 
                 <Label text="{i18n>role}" required="true"/>
                 <Select selectedKey="{newUser>/role_id}" forceSelection="false" width="100%" items="{/roles}" enabled="{= !${newUser>/isViewMode}}">
-                    <core:Item key="{key}" text="{text}"/>
+                    <core:Item key="{id}" text="{name}"/>
                 </Select>
             </f:content>
         </f:SimpleForm>

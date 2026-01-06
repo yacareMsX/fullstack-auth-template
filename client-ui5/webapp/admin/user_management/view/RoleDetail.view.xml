@@ -1,38 +1,121 @@
 <mvc:View
     controllerName="user.management.controller.RoleDetail"
     xmlns="sap.m"
-    xmlns:mvc="sap.ui.core.mvc">
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:layout="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form">
 
-    <Page id="roleDetailPage" title="{i18n>usersInRole}" showNavButton="true" navButtonPress="onNavBack">
+    <Page id="roleDetailPage" title="{i18n>roleDetailTitle}" showNavButton="true" navButtonPress="onNavBack">
+        <headerContent>
+            <Button text="{i18n>modify}" icon="sap-icon://edit" press="onModifyRole" visible="{= !${/isEditMode}}"/>
+            <Button text="{i18n>save}" icon="sap-icon://save" type="Emphasized" press="onSaveRole" visible="{/isEditMode}"/>
+            <Button text="{i18n>cancel}" icon="sap-icon://sys-cancel" press="onCancelRole" visible="{/isEditMode}"/>
+        </headerContent>
         <content>
-            <Table id="usersInRoleTable"
-                items="{/users}"
-                growing="true"
-                growingThreshold="20">
-                <headerToolbar>
-                    <OverflowToolbar>
-                        <Title text="{i18n>userListTitle} ({/roleName})" level="H3"/>
-                    </OverflowToolbar>
-                </headerToolbar>
-                <columns>
-                    <Column width="3rem"><Text text="ID"/></Column>
-                    <Column><Text text="{i18n>email}"/></Column>
-                    <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>name}"/></Column>
-                    <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>status}"/></Column>
-                </columns>
-                <items>
-                    <ColumnListItem>
-                        <cells>
-                            <Text text="{id}"/>
-                            <Text text="{email}"/>
-                            <Text text="{first_name} {last_name}"/>
-                            <ObjectStatus 
-                                text="{= ${is_active} ? ${i18n>active} : ${i18n>inactive}}"
-                                state="{= ${is_active} ? 'Success' : 'Error'}"/>
-                        </cells>
-                    </ColumnListItem>
-                </items>
-            </Table>
+            <VBox class="sapUiSmallMargin">
+                <!-- View Mode Header -->
+                <ObjectHeader
+                    visible="{= !${/isEditMode}}"
+                    title="{/roleName}"
+                    intro="ID: {/roleId}"
+                    class="sapUiResponsivePadding--header">
+                    <attributes>
+                        <ObjectAttribute title="{i18n>description}" text="{/roleDescription}"/>
+                    </attributes>
+                </ObjectHeader>
+
+                <!-- Edit Mode Form -->
+                <form:SimpleForm visible="{/isEditMode}" editable="true" layout="ResponsiveGridLayout">
+                    <form:content>
+                        <Label text="{i18n>name}" required="true"/>
+                        <Input value="{/roleName}"/>
+                        <Label text="{i18n>description}"/>
+                        <Input value="{/roleDescription}"/>
+                    </form:content>
+                </form:SimpleForm>
+
+                <!-- Users Table -->
+                <Table id="usersInRoleTable"
+                    items="{/users}"
+                    mode="{= ${/isEditMode} ? 'MultiSelect' : 'None'}"
+                    selectionChange="onUserSelectionChange"
+                    growing="true"
+                    growingThreshold="20"
+                    class="sapUiMediumMarginTop">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <Title text="{i18n>userListTitle} ({/roleName})" level="H3"/>
+                            <ToolbarSpacer/>
+                            <Button text="{i18n>add}" icon="sap-icon://add" press="onAddUser" visible="{/isEditMode}"/>
+                            <Button text="{i18n>block}" icon="sap-icon://locked" 
+                                press="onBlockUsers" 
+                                enabled="{= ${/selectedUsersCount} > 0}" 
+                                visible="{/isEditMode}"/>
+                            <Button text="{i18n>unblock}" icon="sap-icon://unlocked" 
+                                press="onUnblockUsers" 
+                                enabled="{= ${/selectedUsersCount} > 0}" 
+                                visible="{/isEditMode}"/>
+                            <Button text="{i18n>delete}" icon="sap-icon://delete" type="Reject" 
+                                press="onDeleteUsers" 
+                                enabled="{= ${/selectedUsersCount} > 0}" 
+                                visible="{/isEditMode}"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column width="3rem"><Text text="ID"/></Column>
+                        <Column><Text text="{i18n>email}"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>name}"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>status}"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Text text="{id}"/>
+                                <Text text="{email}"/>
+                                <Text text="{first_name} {last_name}"/>
+                                <ObjectStatus 
+                                    text="{= ${is_active} ? ${i18n>active} : ${i18n>inactive}}"
+                                    state="{= ${is_active} ? 'Success' : 'Error'}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+
+                <!-- Profiles Table -->
+                <Table id="profilesInRoleTable"
+                    items="{/profiles}"
+                    mode="{= ${/isEditMode} ? 'MultiSelect' : 'None'}"
+                    selectionChange="onProfileSelectionChange"
+                    growing="true"
+                    growingThreshold="20"
+                    class="sapUiMediumMarginTop">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <Title text="{i18n>profileListTitle}" level="H3"/>
+                            <ToolbarSpacer/>
+                            <Button text="{i18n>add}" icon="sap-icon://add" press="onAddProfile" visible="{/isEditMode}"/>
+                            <Button text="{i18n>delete}" icon="sap-icon://delete" type="Reject" 
+                                press="onRemoveProfiles" 
+                                enabled="{= ${/selectedProfilesCount} > 0}" 
+                                visible="{/isEditMode}"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column width="3rem"><Text text="ID"/></Column>
+                        <Column><Text text="{i18n>roleProfileName}"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>roleProfileDescription}"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem type="Navigation" press="onProfilePress">
+                            <cells>
+                                <Text text="{id}"/>
+                                <Text text="{name}"/>
+                                <Text text="{description}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
         </content>
     </Page>
 </mvc:View>

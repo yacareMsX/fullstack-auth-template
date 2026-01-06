@@ -81,6 +81,13 @@ sap.ui.define([
             this.byId("btnDelete").setEnabled(bSelected);
         },
 
+        onItemPress: function (oEvent) {
+            var oItem = oEvent.getSource();
+            var oContext = oItem.getBindingContext();
+            var sProfileId = oContext.getProperty("id");
+            this.getOwnerComponent().getRouter().navTo("rolProfileDetail", { profileId: sProfileId });
+        },
+
         onCreate: function () {
             this._openDialog(false);
         },

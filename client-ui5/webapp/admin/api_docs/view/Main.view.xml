@@ -1,0 +1,35 @@
+<mvc:View
+    controllerName="api.docs.controller.Main"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:tnt="sap.tnt"
+    displayBlock="true">
+    
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader class="bannerHeader">
+                <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress"/>
+                <Title text="API Documentation" level="H2"/>
+                <ToolbarSpacer/>
+                <Button icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle"/>
+                <Button icon="sap-icon://home" type="Transparent" press="onNavHome" tooltip="Inicio"/>
+            </tnt:ToolHeader>
+        </tnt:header>
+
+        <tnt:sideContent>
+            <tnt:SideNavigation selectedKey="apiDocs" itemSelect="onItemSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem text="API Docs" icon="sap-icon://learning-assistant" key="apiDocs"/>
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        
+        <tnt:mainContents>
+            <NavContainer id="apiNavContainer">
+                <pages>
+                    <!-- Filled by Router -->
+                </pages>
+            </NavContainer>
+        </tnt:mainContents>
+    </tnt:ToolPage>
+</mvc:View>

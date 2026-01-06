@@ -1,0 +1,44 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<TableSelectDialog
+		id="addUserDialog"
+		noDataText="{i18n>noUsersFound}"
+		title="{i18n>selectUsersToAdd}"
+		search="onUserSearch"
+		confirm="onAddUserConfirm"
+		cancel="onAddUserCancel"
+		multiSelect="true"
+		items="{
+			path: '/allUsers',
+			sorter: {
+				path: 'email',
+				descending: false
+			}
+		}">
+		<columns>
+			<Column>
+				<header>
+					<Text text="{i18n>email}" />
+				</header>
+			</Column>
+			<Column minScreenWidth="Tablet" demandPopin="true">
+				<header>
+					<Text text="{i18n>name}" />
+				</header>
+			</Column>
+            <Column hAlign="End">
+				<header>
+					<Text text="{i18n>currentRole}" />
+				</header>
+			</Column>
+		</columns>
+		<ColumnListItem>
+			<cells>
+				<Text text="{email}" />
+				<Text text="{first_name} {last_name}" />
+                <Text text="{role}" />
+			</cells>
+		</ColumnListItem>
+	</TableSelectDialog>
+</core:FragmentDefinition>

@@ -44,7 +44,6 @@
             "config": {
                 "routerClass": "sap.m.routing.Router",
                 "viewType": "XML",
-                "viewPath": "user.management.view",
                 "controlId": "app",
                 "controlAggregation": "pages",
                 "transition": "slide",
@@ -57,16 +56,69 @@
                     "name": "home",
                     "pattern": "",
                     "target": "home"
+                },
+                {
+                    "name": "users",
+                    "pattern": "users",
+                    "target": "home"
+                },
+                {
+                    "name": "userDetail",
+                    "pattern": "users/{userId}",
+                    "target": "home"
+                },
+                {
+                    "name": "roles",
+                    "pattern": "roles",
+                    "target": "home"
+                },
+                {
+                    "name": "roleDetail",
+                    "pattern": "roles/{roleId}",
+                    "target": "home"
+                },
+                {
+                    "name": "auth",
+                    "pattern": "auth",
+                    "target": "home"
+                },
+                {
+                    "name": "profiles",
+                    "pattern": "profiles",
+                    "target": "home"
+                },
+                {
+                    "name": "rolProfileDetail",
+                    "pattern": "profiles/{profileId}",
+                    "target": "home"
+                },
+                {
+                    "name": "invoiceCountryList",
+                    "pattern": "countries",
+                    "target": "home"
+                },
+                {
+                    "name": "invoiceCountryDetail",
+                    "pattern": "countries/{countryId}",
+                    "target": "home"
                 }
             ],
             "targets": {
                 "home": {
                     "viewId": "home",
-                    "viewName": "Main"
+                    "viewName": "user.management.view.Main"
+                },
+                "invoiceCountryList": {
+                    "viewId": "invoiceCountryList",
+                    "viewName": "invoice.app.view.InvoiceCountriesList"
+                },
+                "invoiceCountryDetail": {
+                    "viewId": "invoiceCountryDetail",
+                    "viewName": "invoice.app.view.InvoiceCountryDetail"
                 },
                 "notFound": {
                     "viewId": "notFound",
-                    "viewName": "NotFound"
+                    "viewName": "user.management.view.NotFound"
                 }
             }
         }

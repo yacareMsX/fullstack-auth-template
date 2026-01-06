@@ -9,8 +9,17 @@ sap.ui.define([
     return Controller.extend("invoice.app.controller.InvoiceCountryDetail", {
 
         onInit: function () {
-            this._oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-            this._oRouter.getRoute("invoiceCountryDetail").attachPatternMatched(this._onRouteMatched, this);
+            this._oRouter = this.getOwnerComponent().getRouter();
+            var oRoute;
+            try {
+                oRoute = this._oRouter.getRoute("invoiceCountryDetail");
+            } catch (e) { console.error(e); }
+
+            if (oRoute) {
+                oRoute.attachPatternMatched(this._onRouteMatched, this);
+            } else {
+                console.warn("Route 'invoiceCountryDetail' not found. This view might be running standalone or route is missing.");
+            }
 
             var oViewModel = new JSONModel({
                 isNew: true,

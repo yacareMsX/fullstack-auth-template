@@ -20,15 +20,63 @@ sap.ui.define([
             });
             this.getView().setModel(oModel, "newUser");
 
-            // Define roles for the Select control (same as in Users controller)
+            // Define roles model
             var oDefaultModel = new JSONModel({
-                roles: [
-                    { key: "admin", text: "Admin" },
-                    { key: "user", text: "Usuario" },
-                    { key: "dev", text: "Desarrollador" }
-                ]
+                roles: []
             });
             this.getView().setModel(oDefaultModel);
+            this._loadRoles();
+
+            this.getOwnerComponent().getRouter().getRoute("userDetail").attachPatternMatched(this._onRouteMatched, this);
+        },
+
+        _loadRoles: function () {
+            var sUrl = "/api/admin/roles";
+            var sToken = localStorage.getItem("auth_token");
+            var oHeaders = { "Content-Type": "application/json" };
+            if (sToken) oHeaders["Authorization"] = "Bearer " + sToken;
+
+            var that = this;
+            fetch(sUrl, { headers: oHeaders })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (Array.isArray(data)) {
+                        that.getView().getModel().setProperty("/roles", data);
+                    }
+                })
+                .catch(function (err) {
+                    console.error("Error loading roles:", err);
+                });
+        },
+
+        _onRouteMatched: function (oEvent) {
+            var sUserId = oEvent.getParameter("arguments").userId;
+            this._loadUser(sUserId);
+        },
+
+        _loadUser: function (sUserId) {
+            var sUrl = "/api/admin/users/" + sUserId;
+            var sToken = localStorage.getItem("auth_token");
+            var oHeaders = { "Content-Type": "application/json" };
+            if (sToken) oHeaders["Authorization"] = "Bearer " + sToken;
+
+            var that = this;
+            this.getView().setBusy(true);
+
+            fetch(sUrl, { headers: oHeaders })
+                .then(function (res) {
+                    if (!res.ok) throw new Error("Failed to load user");
+                    return res.json();
+                })
+                .then(function (oUserData) {
+                    that.displayUser(oUserData);
+                })
+                .catch(function (err) {
+                    MessageToast.show("Error loading user: " + err.message);
+                })
+                .finally(function () {
+                    that.getView().setBusy(false);
+                });
         },
 
         displayUser: function (oUserData) {
@@ -154,23 +202,25 @@ sap.ui.define([
         },
 
         _refreshMasterList: function () {
+            // Since we are using router now, we might not have easy access to the master controller instance via SplitApp logic
+            // But if we want to refresh the list, we can just assume the list will be refreshed when the user navigates back 
+            // OR we can trigger a refresh if we have a global model. 
+            // For now, let's keep it simple. If we really need to refresh the list in the previous view, we can use EventBus.
+
+            // Re-implementing basic SplitApp check just in case, but likely not needed with Router nav
+            /*
             var oSplitApp = this._getSplitApp();
             if (oSplitApp) {
-                // Try to find master 
                 var oMaster = oSplitApp.getMasterPages()[0];
                 if (oMaster && oMaster.getController()._loadUsers) {
                     oMaster.getController()._loadUsers();
                 }
             }
+            */
         },
 
         onNavBack: function () {
-            var oSplitApp = this._getSplitApp();
-            if (oSplitApp) {
-                if (sap.ui.Device.system.phone) {
-                    oSplitApp.toMaster("usersDetail");
-                }
-            }
+            this.getOwnerComponent().getRouter().navTo("users");
         },
 
         _getSplitApp: function () {

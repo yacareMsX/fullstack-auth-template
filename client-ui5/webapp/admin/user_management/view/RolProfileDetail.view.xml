@@ -1,0 +1,38 @@
+<mvc:View
+    controllerName="user.management.controller.RolProfileDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core">
+    <Page title="Detalle de Perfil" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <ObjectHeader
+                title="{profile>/name}"
+                intro="ID: {profile>/id}">
+                <attributes>
+                    <ObjectAttribute title="Descripción" text="{profile>/description}"/>
+                </attributes>
+            </ObjectHeader>
+
+            <VBox class="sapUiSmallMargin">
+                <Title text="Objetos de Autorización" level="H4"/>
+                <Table
+                    items="{profile>/auth_objects}">
+                    <columns>
+                        <Column><Text text="Código"/></Column>
+                        <Column><Text text="Tipo"/></Column>
+                        <Column><Text text="Descripción"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Text text="{profile>code}"/>
+                                <Text text="{profile>object_type}"/>
+                                <Text text="{profile>description}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

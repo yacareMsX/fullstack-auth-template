@@ -56,6 +56,7 @@
                         <Button id="btnBlock" text="{i18n>block}" icon="sap-icon://locked" press="onBlock" enabled="false" type="Transparent"/>
                         <Button id="btnUnblock" text="{i18n>unblock}" icon="sap-icon://unlocked" press="onUnblock" enabled="false" type="Transparent"/>
                         <Button id="btnDelete" text="{i18n>delete}" icon="sap-icon://delete" press="onDelete" enabled="false" type="Transparent"/>
+                        <Button id="btnChangePassword" text="{i18n>changePassword}" icon="sap-icon://key" press="onChangePassword" enabled="false" type="Transparent"/>
                     </OverflowToolbar>
                 </headerToolbar>
                 <columns>

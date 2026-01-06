@@ -34,7 +34,7 @@ sap.ui.define([
             oModel.setProperty("/error", false);
             oModel.setProperty("/loading", true);
 
-            var that = this;
+            console.log("[Login] Attempting login for:", sEmail);
 
             fetch("/api/login", {
                 method: "POST",
@@ -47,26 +47,32 @@ sap.ui.define([
                 })
             })
                 .then(function (response) {
+                    console.log("[Login] Response status:", response.status);
                     if (!response.ok) {
-                        throw new Error("Invalid credentials");
+                        return response.json().then(function (errData) {
+                            throw new Error(errData.error || "Invalid credentials");
+                        });
                     }
                     return response.json();
                 })
                 .then(function (data) {
+                    console.log("[Login] Success data received:", data);
                     // Save token and user info
                     localStorage.setItem("auth_token", data.token);
                     localStorage.setItem("auth_user", JSON.stringify(data.user));
+                    localStorage.setItem("permissions", JSON.stringify(data.user.permissions || []));
 
                     oModel.setProperty("/loading", false);
 
                     // Redirect to main application
+                    console.log("[Login] Redirecting to index.html#/");
                     window.location.href = "index.html#/";
                 })
                 .catch(function (error) {
-                    console.error("Login error:", error);
+                    console.error("[Login] Login error:", error);
                     oModel.setProperty("/loading", false);
                     oModel.setProperty("/error", true);
-                    oModel.setProperty("/errorMessage", "Invalid email or password");
+                    oModel.setProperty("/errorMessage", error.message || "Invalid email or password");
                 });
         }
     });

@@ -54,9 +54,8 @@ sap.ui.define([
         },
 
         onSelectionChange: function (oEvent) {
-            var bSelected = oEvent.getParameter("listItem").getSelected();
-            this.byId("btnModify").setEnabled(bSelected);
-            this.byId("btnDelete").setEnabled(bSelected);
+            var oSelectedItem = this.byId("rolesTable").getSelectedItem();
+            this.byId("btnDelete").setEnabled(!!oSelectedItem);
         },
 
         onItemPress: function (oEvent) {
@@ -64,25 +63,9 @@ sap.ui.define([
             var oContext = oItem.getBindingContext();
             var oRole = oContext.getObject();
 
-            var oSplitApp = this._getSplitApp();
-            if (!oSplitApp) {
-                MessageToast.show("Error: Navigation container not found.");
-                return;
-            }
-
-            // Find RoleDetail view by ID suffix
-            var aDetails = oSplitApp.getDetailPages();
-            var oDetailView = aDetails.find(function (v) {
-                return v.getId().indexOf("roleDetailInfo") > -1;
+            this.getOwnerComponent().getRouter().navTo("roleDetail", {
+                roleId: oRole.id
             });
-
-            if (oDetailView) {
-                oSplitApp.toDetail(oDetailView);
-                // Load data in detail view
-                if (oDetailView.getController() && oDetailView.getController().loadUsers) {
-                    oDetailView.getController().loadUsers(oRole.id, oRole.name);
-                }
-            }
         },
 
         _getSplitApp: function () {

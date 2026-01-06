@@ -69,8 +69,16 @@ sap.ui.define([
         },
 
         onNavBack: function () {
-            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-            oRouter.navTo("dashboard");
+            var sAppId = this.getOwnerComponent().getManifestEntry("sap.app").id;
+
+            // If running in standalone Audit app
+            if (sAppId === "audit.app") {
+                window.location.href = "../../index.html";
+            } else {
+                // If running in Main app
+                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                oRouter.navTo("dashboard");
+            }
         },
 
         _formatDate: function (oDate) {

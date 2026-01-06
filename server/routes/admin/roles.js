@@ -188,4 +188,97 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/admin/roles/{id}/profiles:
+ *   get:
+ *     summary: Get profiles for a role
+ *     tags: [Admin, Roles]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of profiles
+ */
+router.get('/:id/profiles', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const query = `
+            SELECT rp.* 
+            FROM rol_profiles rp 
+            JOIN role_rol_profiles rrp ON rp.id = rrp.profile_id 
+            WHERE rrp.role_id = $1
+            ORDER BY rp.name ASC
+        `;
+        const result = await db.query(query, [id]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching role profiles:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * @swagger
+ * /api/admin/roles/{id}/profiles:
+ *   post:
+ *     summary: Add profiles to a role
+ *     tags: [Admin, Roles]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profile_ids:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       200:
+ *         description: Profiles added
+ */
+router.post('/:id/profiles', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { profile_ids } = req.body;
+
+    if (!Array.isArray(profile_ids) || profile_ids.length === 0) {
+        return res.status(400).json({ error: 'No profile IDs provided' });
+    }
+
+    try {
+        await db.query('BEGIN');
+
+        // Insert associations
+        const values = profile_ids.map(pid => `(${id}, ${pid})`).join(',');
+        await db.query(`
+            INSERT INTO role_rol_profiles (role_id, profile_id) 
+            VALUES ${values} 
+            ON CONFLICT (role_id, profile_id) DO NOTHING
+        `);
+
+        await db.query('COMMIT');
+        res.json({ message: 'Profiles added to role' });
+    } catch (err) {
+        await db.query('ROLLBACK');
+        console.error('Error adding profiles to role:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;

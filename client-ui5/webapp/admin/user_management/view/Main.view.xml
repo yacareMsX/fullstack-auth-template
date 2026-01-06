@@ -29,7 +29,7 @@
                         <tnt:NavigationListItem text="{i18n>authObjects}" key="auth"/>
                     </tnt:NavigationListItem>
                     <tnt:NavigationListItem text="{i18n>countryManagement}" icon="sap-icon://world" expanded="true">
-                        <tnt:NavigationListItem text="{i18n>countriesConfig}" key="countries"/>
+                    <tnt:NavigationListItem text="{i18n>countriesConfig}" key="countries"/>
                     </tnt:NavigationListItem>
                 </tnt:NavigationList>
             </tnt:SideNavigation>
@@ -51,7 +51,9 @@
                 <mvc:XMLView id="roleDetailInfo" viewName="user.management.view.RoleDetail"/>
                 <mvc:XMLView id="authDetail" viewName="user.management.view.AuthObjects"/>
                 <mvc:XMLView id="profilesDetail" viewName="user.management.view.RolProfiles"/>
+                <mvc:XMLView id="rolProfileDetailInfo" viewName="user.management.view.RolProfileDetail"/>
                 <mvc:XMLView id="countriesDetail" viewName="invoice.app.view.InvoiceCountriesList"/>
+                <mvc:XMLView id="countryDetail" viewName="invoice.app.view.InvoiceCountryDetail"/>
             </NavContainer>
         </tnt:mainContents>
     </tnt:ToolPage>

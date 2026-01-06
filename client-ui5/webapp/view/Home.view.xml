@@ -14,6 +14,7 @@
                         <Link 
                             text="{i18n>sectionInvoices}" 
                             press="onSectionNavigate" 
+                            visible="{= !!${security>/APP_TILE_FACE} || !!${security>/APP_TILE_TBAI} || !!${security>/APP_TILE_LEY_CC} || !!${security>/APP_TILE_POLONIA} || !!${security>/APP_TILE_FRANCIA} || !!${security>/APP_TILE_BELGICA} }"
                             class="homeNavButton">
                             <customData>
                                 <core:CustomData key="section" value="invoices"/>
@@ -22,6 +23,7 @@
                         <Link 
                             text="{i18n>sectionReporting}" 
                             press="onSectionNavigate" 
+                            visible="{= !!${security>/APP_TILE_SII} || !!${security>/APP_TILE_VERIFACTU} || !!${security>/APP_TILE_FRANCE_REPORTING} }"
                             class="homeNavButton">
                             <customData>
                                 <core:CustomData key="section" value="reporting"/>
@@ -30,6 +32,7 @@
                         <Link 
                             text="{i18n>sectionStatutory}" 
                             press="onSectionNavigate" 
+                            visible="{= !!${security>/APP_TILE_301} || !!${security>/APP_TILE_322} }"
                             class="homeNavButton">
                             <customData>
                                 <core:CustomData key="section" value="statutory"/>
@@ -38,6 +41,7 @@
                         <Link 
                             text="{i18n>globalConfiguration}" 
                             press="onSectionNavigate" 
+                            visible="{= !!${security>/APP_USER_MANAGEMENT} || !!${security>/APP_TILE_COUNTRIES} }"
                             class="homeNavButton">
                             <customData>
                                 <core:CustomData key="section" value="userManagement"/>
@@ -46,9 +50,28 @@
                         <Link 
                             text="{i18n>processDesigner}" 
                             press="onSectionNavigate" 
+                            visible="{= !!${security>/APP_TILE_WORKFLOW} || !!${security>/APP_TILE_XML_DESIGN} }"
                             class="homeNavButton">
                             <customData>
                                 <core:CustomData key="section" value="processDesigner"/>
+                            </customData>
+                        </Link>
+                        <Link 
+                            text="{i18n>audit}" 
+                            press="onSectionNavigate" 
+                            visible="{= !!${security>/APP_MENU_AUDIT} }"
+                            class="homeNavButton">
+                            <customData>
+                                <core:CustomData key="section" value="audit"/>
+                            </customData>
+                        </Link>
+                        <Link 
+                            text="APIs" 
+                            press="onSectionNavigate" 
+                            visible="{= !!${security>/APP_MENU_API_DOCS} }"
+                            class="homeNavButton">
+                            <customData>
+                                <core:CustomData key="section" value="api"/>
                             </customData>
                         </Link>
                     </layout:HorizontalLayout>
@@ -60,81 +83,114 @@
                 <layout:VerticalLayout width="100%" class="sapUiContentPadding">
                     
                     <!-- Invoices Section -->
-                    <VBox id="invoicesSection">
+                    <!-- Invoices Section -->
+                    <VBox id="invoicesSection" visible="{= !!${security>/APP_TILE_FACE} || !!${security>/APP_TILE_TBAI} || !!${security>/APP_TILE_LEY_CC} || !!${security>/APP_TILE_POLONIA} || !!${security>/APP_TILE_FRANCIA} || !!${security>/APP_TILE_BELGICA} }">
                         <Title text="{i18n>sectionInvoices}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
                         <layout:HorizontalLayout allowWrapping="true">
-                            <GenericTile header="{i18n>tileEinvoiceFace}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileEinvoiceFace}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FACE} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://document-text"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tileTbai}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileTbai}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_TBAI} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://official-service"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tileLeyCC}" press="onNavigateToDashboard" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileLeyCC}" press="onNavigateToDashboard" visible="{= !!${security>/APP_TILE_LEY_CC} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://bbyd-dashboard"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tileEinvoicePolonia}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileEinvoicePolonia}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_POLONIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://world"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tileEinvoiceFrancia}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileEinvoiceFrancia}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FRANCIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://world"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tileEinvoiceBelgica}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileEinvoiceBelgica}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_BELGICA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://world"/></TileContent>
                             </GenericTile>
                         </layout:HorizontalLayout>
                     </VBox>
 
                     <!-- Reporting Section -->
-                    <VBox id="reportingSection">
+                    <!-- Reporting Section -->
+                    <VBox id="reportingSection" visible="{= !!${security>/APP_TILE_SII} || !!${security>/APP_TILE_VERIFACTU} || !!${security>/APP_TILE_FRANCE_REPORTING} }">
                         <Title text="{i18n>sectionReporting}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
                         <layout:HorizontalLayout allowWrapping="true">
-                            <GenericTile header="{i18n>tileSii}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileSii}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_SII} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://bar-chart"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tileVerifactu}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileVerifactu}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_VERIFACTU} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://receipt"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tileFranceReporting}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileFranceReporting}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FRANCE_REPORTING} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://line-chart"/></TileContent>
                             </GenericTile>
                         </layout:HorizontalLayout>
                     </VBox>
 
                     <!-- Statutory Reporting Section -->
-                    <VBox id="statutorySection">
+                    <!-- Statutory Reporting Section -->
+                    <VBox id="statutorySection" visible="{= !!${security>/APP_TILE_301} || !!${security>/APP_TILE_349} || !!${security>/APP_TILE_322} }">
                         <Title text="{i18n>sectionStatutory}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
                         <layout:HorizontalLayout allowWrapping="true">
-                            <GenericTile header="{i18n>tile301}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tile301}" press="onNavigateToModelo303" visible="{= !!${security>/APP_TILE_301} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://form"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tile322}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tile349}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_349} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://form"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>tile322}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_322} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://form"/></TileContent>
                             </GenericTile>
                         </layout:HorizontalLayout>
                     </VBox>
 
                     <!-- Global Configuration Section -->
-                    <VBox id="userManagementSection">
+                    <!-- Global Configuration Section -->
+                    <VBox id="userManagementSection" visible="{= !!${security>/APP_USER_MANAGEMENT} || !!${security>/APP_TILE_COUNTRIES} }">
                         <Title text="{i18n>globalConfiguration}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
                         <layout:HorizontalLayout allowWrapping="true">
-                            <GenericTile header="{i18n>userManagement}" press="onNavigateToUserManagement" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>userManagement}" press="onNavigateToUserManagement" visible="{= !!${security>/APP_USER_MANAGEMENT} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://user-settings"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>invoiceCountriesTitle}" press="onNavigateToCountries" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>invoiceCountriesTitle}" press="onNavigateToCountries" visible="{= !!${security>/APP_TILE_COUNTRIES} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://world"/></TileContent>
+                            </GenericTile>
+                            <GenericTile header="{i18n>certificatesManagement}" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://badge"/></TileContent>
                             </GenericTile>
                         </layout:HorizontalLayout>
                     </VBox>
 
                     <!-- Process Designer Section -->
-                    <VBox id="processDesignerSection">
+                    <!-- Process Designer Section -->
+                    <VBox id="processDesignerSection" visible="{= !!${security>/APP_TILE_WORKFLOW} || !!${security>/APP_TILE_XML_DESIGN} }">
                         <Title text="{i18n>processDesigner}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
                         <layout:HorizontalLayout allowWrapping="true">
-                            <GenericTile header="{i18n>approvalProcesses}" press="onNavigateToWorkflow" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>approvalProcesses}" press="onNavigateToWorkflow" visible="{= !!${security>/APP_TILE_WORKFLOW} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://process"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>xmlDesign}" press="onNavigateToXmlDesign" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>xmlDesign}" press="onNavigateToXmlDesign" visible="{= !!${security>/APP_TILE_XML_DESIGN} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://opportunity"/></TileContent>
+                            </GenericTile>
+                        </layout:HorizontalLayout>
+                    </VBox>
+                    
+                    <!-- Audit Section -->
+                    <!-- Audit Section -->
+                    <VBox id="auditSection" visible="{= !!${security>/APP_MENU_AUDIT} }">
+                        <Title text="{i18n>audit}" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+                        <layout:HorizontalLayout allowWrapping="true">
+                            <GenericTile header="{i18n>auditLog}" press="onNavigateToAudit" visible="{= !!${security>/APP_MENU_AUDIT} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://shield"/></TileContent>
+                            </GenericTile>
+                        </layout:HorizontalLayout>
+                    </VBox>
+                    
+                    <!-- API Section -->
+                    <!-- API Section -->
+                    <VBox id="apiSection" visible="{= !!${security>/APP_MENU_API_DOCS} }">
+                        <Title text="APIs" level="H2" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+                        <layout:HorizontalLayout allowWrapping="true">
+                            <GenericTile header="{i18n>apiDocs}" press="onNavigateToApiDocs" visible="{= !!${security>/APP_MENU_API_DOCS} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                <TileContent><ImageContent src="sap-icon://api"/></TileContent>
                             </GenericTile>
                         </layout:HorizontalLayout>
                     </VBox>

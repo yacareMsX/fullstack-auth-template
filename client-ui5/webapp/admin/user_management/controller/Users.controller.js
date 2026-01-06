@@ -13,14 +13,30 @@ sap.ui.define([
         onInit: function () {
             var oModel = new JSONModel({
                 users: [],
-                roles: [
-                    { key: "admin", text: "Admin" },
-                    { key: "user", text: "User" },
-                    { key: "dev", text: "Developer" }
-                ] // Should ideally be fetched from backend
+                roles: []
             });
             this.getView().setModel(oModel);
+            this._loadRoles();
             this._loadUsers();
+        },
+
+        _loadRoles: function () {
+            var sUrl = "/api/admin/roles";
+            var sToken = localStorage.getItem("auth_token");
+            var oHeaders = { "Content-Type": "application/json" };
+            if (sToken) oHeaders["Authorization"] = "Bearer " + sToken;
+
+            var that = this;
+            fetch(sUrl, { headers: oHeaders })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (Array.isArray(data)) {
+                        that.getView().getModel().setProperty("/roles", data);
+                    }
+                })
+                .catch(function (err) {
+                    console.error("Error loading roles:", err);
+                });
         },
 
         _loadUsers: function (sSearchQuery) {
@@ -28,10 +44,6 @@ sap.ui.define([
             if (sSearchQuery) {
                 sUrl += "?search=" + encodeURIComponent(sSearchQuery);
             }
-
-            // Using fetch with auth token logic (assumed global or handled via cookie/header in main app logic)
-            // For now, assuming token is handled by browser cookies or interceptors if implemented. 
-            // If explicit token needed: localStorage.getItem('token')
 
             var sToken = localStorage.getItem("auth_token");
             var oHeaders = {
@@ -97,22 +109,20 @@ sap.ui.define([
         },
 
         onSelectionChange: function (oEvent) {
-            var oItem = oEvent.getParameter("listItem");
-            var bSelected = oItem.getSelected();
-            this.byId("btnView").setEnabled(bSelected);
+            var oTable = this.byId("usersTable");
+            var oItem = oTable.getSelectedItem();
+            var bSelected = !!oItem;
+
             this.byId("btnBlock").setEnabled(bSelected);
             this.byId("btnUnblock").setEnabled(bSelected);
             this.byId("btnDelete").setEnabled(bSelected);
+            this.byId("btnChangePassword").setEnabled(bSelected);
 
-            // Context sensitive enabling (e.g. block only if active)
             if (bSelected) {
                 var oContext = oItem.getBindingContext();
                 var bActive = oContext.getProperty("is_active");
                 this.byId("btnBlock").setEnabled(bActive);
                 this.byId("btnUnblock").setEnabled(!bActive);
-
-                // Navigate to detail on selection
-                this._showDetail(oItem);
             }
         },
 
@@ -125,36 +135,9 @@ sap.ui.define([
             var oContext = oItem.getBindingContext();
             var oUserData = oContext.getObject();
 
-            var oSplitApp = this._getSplitApp();
-            if (oSplitApp) {
-                // Try to find the detail view by its ID suffix
-                var oDetailView = oSplitApp.getDetailPages().find(function (p) {
-                    return p.getId().indexOf("userDetailInfo") > -1;
-                });
-
-                if (oDetailView) {
-                    oSplitApp.toDetail(oDetailView);
-                    // Call the method on the detail controller to populate data
-                    oDetailView.getController().displayUser(oUserData);
-                }
-            }
-        },
-
-        _getSplitApp: function () {
-            var oView = this.getView();
-            var oParent = oView.getParent();
-            while (oParent && !oParent.isA("sap.m.SplitApp")) {
-                oParent = oParent.getParent();
-            }
-            return oParent;
-        },
-
-        formatDate: function (sDate) {
-            if (!sDate) return "";
-            var oDate = new Date(sDate);
-            if (isNaN(oDate.getTime())) return sDate; // Return string if parse fails
-            // Simple format
-            return oDate.toLocaleDateString() + " " + oDate.toLocaleTimeString();
+            this.getOwnerComponent().getRouter().navTo("userDetail", {
+                userId: oUserData.id
+            });
         },
 
         onCreate: function () {
@@ -271,8 +254,6 @@ sap.ui.define([
                 });
         },
 
-
-
         onBlock: function () {
             this._updateStatus(false);
         },
@@ -283,44 +264,49 @@ sap.ui.define([
 
         _updateStatus: function (bActive) {
             var oTable = this.byId("usersTable");
-            var oContext = oTable.getSelectedItem().getBindingContext();
-            var sId = oContext.getProperty("id");
+            var oItem = oTable.getSelectedItem();
+            if (!oItem) return;
+
+            var sId = oItem.getBindingContext().getProperty("id");
+            var that = this;
 
             var sToken = localStorage.getItem("auth_token");
-            var oHeaders = {
-                "Content-Type": "application/json"
-            };
-            if (sToken) {
-                oHeaders["Authorization"] = "Bearer " + sToken;
-            }
+            var oHeaders = { "Content-Type": "application/json" };
+            if (sToken) oHeaders["Authorization"] = "Bearer " + sToken;
 
-            var that = this;
+            this.getView().setBusy(true);
             fetch("/api/admin/users/" + sId + "/status", {
                 method: "PUT",
                 headers: oHeaders,
                 body: JSON.stringify({ is_active: bActive })
             })
                 .then(function (res) { return res.json(); })
-                .then(function (data) {
-                    MessageToast.show(data.message || "Status updated");
-                    that._loadUsers(); // Refresh list
-                    // Reset buttons
-                    that.byId("btnBlock").setEnabled(bActive);
-                    that.byId("btnUnblock").setEnabled(!bActive);
+                .then(function () {
+                    MessageToast.show(bActive ? "User unblocked" : "User blocked");
+                    that._loadUsers();
+                    that.byId("usersTable").removeSelections();
+                    that.byId("btnBlock").setEnabled(false);
+                    that.byId("btnUnblock").setEnabled(false);
+                    that.byId("btnDelete").setEnabled(false);
+                    that.byId("btnChangePassword").setEnabled(false);
                 })
                 .catch(function (err) {
                     MessageBox.error("Error updating status: " + err.message);
-                });
+                })
+                .finally(function () { that.getView().setBusy(false); });
         },
 
         onDelete: function () {
             var oTable = this.byId("usersTable");
-            var oContext = oTable.getSelectedItem().getBindingContext();
+            var oItem = oTable.getSelectedItem();
+            if (!oItem) return;
+
+            var oContext = oItem.getBindingContext();
             var sId = oContext.getProperty("id");
             var sEmail = oContext.getProperty("email");
 
             var that = this;
-            MessageBox.confirm("Are you sure you want to delete user " + sEmail + "?", {
+            MessageBox.confirm("Permanently delete user " + sEmail + "?", {
                 onClose: function (oAction) {
                     if (oAction === MessageBox.Action.OK) {
                         that._performDelete(sId);
@@ -330,15 +316,13 @@ sap.ui.define([
         },
 
         _performDelete: function (sId) {
-            var sToken = localStorage.getItem("token");
-            var oHeaders = {
-                "Content-Type": "application/json"
-            };
-            if (sToken) {
-                oHeaders["Authorization"] = "Bearer " + sToken;
-            }
+            var sToken = localStorage.getItem("auth_token");
+            var oHeaders = { "Content-Type": "application/json" };
+            if (sToken) oHeaders["Authorization"] = "Bearer " + sToken;
 
             var that = this;
+            this.getView().setBusy(true);
+
             fetch("/api/admin/users/" + sId, {
                 method: "DELETE",
                 headers: oHeaders
@@ -347,13 +331,97 @@ sap.ui.define([
                     if (!res.ok) throw new Error("Delete failed");
                     return res.json();
                 })
-                .then(function (data) {
+                .then(function () {
                     MessageToast.show("User deleted");
                     that._loadUsers();
+                    that.byId("usersTable").removeSelections();
+                    that.byId("btnBlock").setEnabled(false);
+                    that.byId("btnUnblock").setEnabled(false);
+                    that.byId("btnDelete").setEnabled(false);
+                    that.byId("btnChangePassword").setEnabled(false);
                 })
                 .catch(function (err) {
                     MessageBox.error("Error deleting user: " + err.message);
+                })
+                .finally(function () { that.getView().setBusy(false); });
+        },
+
+        // --- Change Password Logic ---
+
+        onChangePassword: function () {
+            var oView = this.getView();
+            var oNewPasswordModel = new JSONModel({
+                newPassword: "",
+                confirmPassword: ""
+            });
+            oView.setModel(oNewPasswordModel, "changePassword");
+            this._openChangePasswordDialog();
+        },
+
+        _openChangePasswordDialog: function () {
+            var oView = this.getView();
+            if (!this._pChangePasswordDialog) {
+                this._pChangePasswordDialog = sap.ui.core.Fragment.load({
+                    id: oView.getId(),
+                    name: "user.management.view.ChangePasswordDialog",
+                    controller: this
+                }).then(function (oDialog) {
+                    oView.addDependent(oDialog);
+                    return oDialog;
                 });
+            }
+            this._pChangePasswordDialog.then(function (oDialog) {
+                oDialog.open();
+            });
+        },
+
+        onCancelPassword: function () {
+            if (this._pChangePasswordDialog) {
+                this._pChangePasswordDialog.then(function (oDialog) {
+                    oDialog.close();
+                });
+            }
+        },
+
+        onSavePassword: function () {
+            var oModel = this.getView().getModel("changePassword");
+            var sNew = oModel.getProperty("/newPassword");
+            var sConfirm = oModel.getProperty("/confirmPassword");
+
+            if (!sNew || sNew !== sConfirm) {
+                MessageBox.error("Passwords do not match or are empty");
+                return;
+            }
+            if (sNew.length < 6) {
+                MessageBox.error("Password must be at least 6 characters");
+                return;
+            }
+
+            var sId = this.byId("usersTable").getSelectedItem().getBindingContext().getProperty("id");
+            var sToken = localStorage.getItem("auth_token");
+            var oHeaders = { "Content-Type": "application/json" };
+            if (sToken) oHeaders["Authorization"] = "Bearer " + sToken;
+
+            var that = this;
+            this.getView().setBusy(true);
+
+            fetch("/api/admin/users/" + sId + "/password", {
+                method: "PUT",
+                headers: oHeaders,
+                body: JSON.stringify({ password: sNew })
+            })
+                .then(function (res) {
+                    if (!res.ok) return res.json().then(function (e) { throw new Error(e.error) });
+                    return res.json();
+                })
+                .then(function () {
+                    MessageToast.show("Password changed successfully");
+                    that.onCancelPassword();
+                })
+                .catch(function (e) {
+                    MessageBox.error("Error changing password: " + e.message);
+                })
+                .finally(function () { that.getView().setBusy(false); });
         }
 
     });

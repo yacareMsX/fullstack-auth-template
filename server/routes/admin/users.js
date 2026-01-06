@@ -58,17 +58,61 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/admin/users/{id}:
+ *   get:
+ *     summary: Get user by ID
+ *     tags: [Admin, User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User details
+ */
+router.get('/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const query = `
+            SELECT u.id, u.email, u.is_active, r.name as role, u.role_id,
+                   p.first_name, p.last_name, p.nif, p.avatar_url,
+                   p.phone, p.address_line1, p.address_line2, p.city, p.state_province, p.postal_code, p.country, p.date_of_birth, p.bio,
+                   u.created_at, u.last_connection, u.is_online
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            LEFT JOIN profiles p ON u.id = p.user_id
+            WHERE u.id = $1
+        `;
+        const result = await db.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error getting user:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Create User
 router.post('/', authenticateToken, async (req, res) => {
     // Password is optional now, generated if missing
-    // role_id received from frontend is actually the role NAME (string) e.g. "user", "admin"
+    // role_id is the database ID
     const {
-        email, firstName, lastName, nif, role_id: roleName,
+        email, firstName, lastName, nif, role_id,
         phone, addressLine1, addressLine2, city, stateProvince, postalCode, country, dateOfBirth, bio
     } = req.body;
     let { password } = req.body;
 
-    if (!email || !firstName || !lastName || !nif || !roleName) {
+    if (!email || !firstName || !lastName || !nif || !role_id) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -84,11 +128,11 @@ router.post('/', authenticateToken, async (req, res) => {
             return res.status(409).json({ error: 'Email already exists' });
         }
 
-        // Resolve Role ID from Name
-        const roleRes = await client.query('SELECT id FROM roles WHERE name = $1', [roleName]);
+        // Validate Role ID
+        const roleRes = await client.query('SELECT id FROM roles WHERE id = $1', [role_id]);
         if (roleRes.rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(400).json({ error: 'Invalid role' });
+            return res.status(400).json({ error: 'Invalid role ID' });
         }
         const dbRoleId = roleRes.rows[0].id;
 
@@ -136,11 +180,11 @@ router.post('/', authenticateToken, async (req, res) => {
 router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const {
-        email, firstName, lastName, nif, role_id: roleName,
+        email, firstName, lastName, nif, role_id,
         phone, addressLine1, addressLine2, city, stateProvince, postalCode, country, dateOfBirth, bio
     } = req.body;
 
-    if (!email || !firstName || !lastName || !nif || !roleName) {
+    if (!email || !firstName || !lastName || !nif || !role_id) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -156,11 +200,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
             return res.status(409).json({ error: 'Email already exists' });
         }
 
-        // Resolve Role ID from Name
-        const roleRes = await client.query('SELECT id FROM roles WHERE name = $1', [roleName]);
+        // Validate Role ID
+        const roleRes = await client.query('SELECT id FROM roles WHERE id = $1', [role_id]);
         if (roleRes.rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(400).json({ error: 'Invalid role' });
+            return res.status(400).json({ error: 'Invalid role ID' });
         }
         const dbRoleId = roleRes.rows[0].id;
 
@@ -205,6 +249,27 @@ router.put('/:id/status', authenticateToken, async (req, res) => {
         res.json({ message: `User ${id} status updated to ${is_active}` });
     } catch (err) {
         console.error('Error updating user status:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update Password
+router.put('/:id/password', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    try {
+        const saltRounds = 10;
+        const passwordHash = await bcrypt.hash(password, saltRounds);
+
+        await db.query('UPDATE users SET password_hash = $1 WHERE id = $2', [passwordHash, id]);
+        res.json({ message: `Password updated for user ${id}` });
+    } catch (err) {
+        console.error('Error updating password:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
