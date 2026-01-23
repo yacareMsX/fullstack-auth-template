@@ -444,6 +444,16 @@ body,
     box-sizing: border-box;
 }
 
+/* Custom UI5 Classes to replace 'style' attribute */
+.helpText {
+    color: #666 !important;
+    font-size: 0.875rem !important;
+}
+
+.negativeValue {
+    color: #bb0000 !important;
+}
+
 .cardLikeSection .sectionHeader {
     border-bottom: 1px solid var(--sapGroup_TitleBorderColor, #eee);
     padding-bottom: 0.5rem;

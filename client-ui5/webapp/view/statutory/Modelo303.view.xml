@@ -43,135 +43,149 @@
                     <!-- Tab 2: IVA Devengado -->
                     <IconTabFilter icon="sap-icon://money-bills" text="{i18n>m303_devengado}">
                         <VBox class="sapUiSmallMargin">
-                            <Title text="{i18n>m303_generalRegime}" level="H3"/>
                             
-                            <!-- Static Grid for Precise Box Numbers -->
-                            <l:Grid defaultSpan="L4 M4 S12" class="sapUiSmallMarginTop">
-                                <!-- Row 1: 4% -->
-                                <VBox>
-                                    <Label text="{i18n>m303_taxBase} [01]"/>
-                                    <Input value="{modelo303>/devengado_general/0/base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_rate} %"/>
-                                    <Input value="{modelo303>/devengado_general/0/rate}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [03]"/>
-                                    <Input value="{modelo303>/devengado_general/0/quota}" type="Number" editable="false"/>
-                                </VBox>
+                            <!-- Régimen General -->
+                            <Panel headerText="{i18n>m303_generalRegime}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L4 M4 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_taxBase} [01]"/>
+                                        <Input value="{modelo303>/devengado_general/0/base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_rate} %"/>
+                                        <Input value="{modelo303>/devengado_general/0/rate}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [03]"/>
+                                        <Input value="{modelo303>/devengado_general/0/quota}" type="Number" editable="false"/>
+                                    </VBox>
 
-                                <!-- Row 2: 10% -->
-                                <VBox>
-                                    <Label text="{i18n>m303_taxBase} [04]"/>
-                                    <Input value="{modelo303>/devengado_general/1/base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_rate} %"/>
-                                    <Input value="{modelo303>/devengado_general/1/rate}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [06]"/>
-                                    <Input value="{modelo303>/devengado_general/1/quota}" type="Number" editable="false"/>
-                                </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_taxBase} [04]"/>
+                                        <Input value="{modelo303>/devengado_general/1/base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_rate} %"/>
+                                        <Input value="{modelo303>/devengado_general/1/rate}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [06]"/>
+                                        <Input value="{modelo303>/devengado_general/1/quota}" type="Number" editable="false"/>
+                                    </VBox>
 
-                                <!-- Row 3: 21% -->
-                                <VBox>
-                                    <Label text="{i18n>m303_taxBase} [07]"/>
-                                    <Input value="{modelo303>/devengado_general/2/base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_rate} %"/>
-                                    <Input value="{modelo303>/devengado_general/2/rate}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [09]"/>
-                                    <Input value="{modelo303>/devengado_general/2/quota}" type="Number" editable="false"/>
-                                </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_taxBase} [07]"/>
+                                        <Input value="{modelo303>/devengado_general/2/base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_rate} %"/>
+                                        <Input value="{modelo303>/devengado_general/2/rate}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [09]"/>
+                                        <Input value="{modelo303>/devengado_general/2/quota}" type="Number" editable="false"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
-                                <!-- Adquisiciones intracomunitarias de bienes y servicios -->
-                                <VBox>
-                                    <Label text="{i18n>m303_intraCommunityAcq} [10]" design="Bold"/>
-                                    <Input value="{modelo303>/devengado_intra_base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <!-- Empty column for Rate -->
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [11]"/>
-                                    <Input value="{modelo303>/devengado_intra_quota}" type="Number"/>
-                                </VBox>
+                            <!-- Adquisiciones Intracomunitarias -->
+                            <Panel headerText="{i18n>m303_intraCommunityAcq}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L4 M4 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_intraCommunityAcq} [10]" design="Bold"/>
+                                        <Input value="{modelo303>/devengado_intra_base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <!-- Empty column -->
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [11]"/>
+                                        <Input value="{modelo303>/devengado_intra_quota}" type="Number"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
-                                <!-- Otras operaciones con inversión del sujeto pasivo -->
-                                <VBox>
-                                    <Label text="{i18n>m303_reverseCharge} [12]" design="Bold"/>
-                                    <Input value="{modelo303>/devengado_isp_base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <!-- Empty column for Rate -->
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [13]"/>
-                                    <Input value="{modelo303>/devengado_isp_quota}" type="Number"/>
-                                </VBox>
+                            <!-- Otras Operaciones (Inversión Sujeto Pasivo) -->
+                            <Panel headerText="{i18n>m303_reverseCharge}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L4 M4 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_reverseCharge} [12]" design="Bold"/>
+                                        <Input value="{modelo303>/devengado_isp_base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <!-- Empty column -->
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [13]"/>
+                                        <Input value="{modelo303>/devengado_isp_quota}" type="Number"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
-                                <!-- Modificación bases y cuotas -->
-                                <VBox>
-                                    <Label text="{i18n>m303_modifications} [14]" design="Bold"/>
-                                    <Input value="{modelo303>/devengado_mod_base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <!-- Empty column for Rate -->
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [15]"/>
-                                    <Input value="{modelo303>/devengado_mod_quota}" type="Number"/>
-                                </VBox>
-                            </l:Grid>
+                            <!-- Modificación Bases y Cuotas -->
+                            <Panel headerText="{i18n>m303_modifications}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L4 M4 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_modifications} [14]" design="Bold"/>
+                                        <Input value="{modelo303>/devengado_mod_base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <!-- Empty column -->
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [15]"/>
+                                        <Input value="{modelo303>/devengado_mod_quota}" type="Number"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
-                            <Title text="{i18n>m303_equivalenceSurcharge}" level="H3" class="sapUiMediumMarginTop"/>
-                            <l:Grid defaultSpan="L4 M4 S12" class="sapUiSmallMarginTop">
-                                <!-- Row 1: 0.5% -->
-                                <VBox>
-                                    <Label text="{i18n>m303_taxBase} [16]"/>
-                                    <Input value="{modelo303>/recargo_equivalencia/0/base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_rate} %"/>
-                                    <Input value="{modelo303>/recargo_equivalencia/0/rate}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [18]"/>
-                                    <Input value="{modelo303>/recargo_equivalencia/0/quota}" type="Number" editable="false"/>
-                                </VBox>
+                            <!-- Recargo Equivalencia -->
+                            <Panel headerText="{i18n>m303_equivalenceSurcharge}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L4 M4 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_taxBase} [16]"/>
+                                        <Input value="{modelo303>/recargo_equivalencia/0/base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_rate} %"/>
+                                        <Input value="{modelo303>/recargo_equivalencia/0/rate}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [18]"/>
+                                        <Input value="{modelo303>/recargo_equivalencia/0/quota}" type="Number" editable="false"/>
+                                    </VBox>
 
-                                <!-- Row 2: 1.4% -->
-                                <VBox>
-                                    <Label text="{i18n>m303_taxBase} [19]"/>
-                                    <Input value="{modelo303>/recargo_equivalencia/1/base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_rate} %"/>
-                                    <Input value="{modelo303>/recargo_equivalencia/1/rate}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [21]"/>
-                                    <Input value="{modelo303>/recargo_equivalencia/1/quota}" type="Number" editable="false"/>
-                                </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_taxBase} [19]"/>
+                                        <Input value="{modelo303>/recargo_equivalencia/1/base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_rate} %"/>
+                                        <Input value="{modelo303>/recargo_equivalencia/1/rate}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [21]"/>
+                                        <Input value="{modelo303>/recargo_equivalencia/1/quota}" type="Number" editable="false"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
-                                <!-- Modificación bases y cuotas del recargo de equivalencia -->
-                                <VBox>
-                                    <Label text="{i18n>m303_re_modifications} [25]" design="Bold"/>
-                                    <Input value="{modelo303>/recargo_mod_base}" type="Number"/>
-                                </VBox>
-                                <VBox>
-                                    <!-- Empty column for Rate -->
-                                </VBox>
-                                <VBox>
-                                    <Label text="{i18n>m303_quota} [26]"/>
-                                    <Input value="{modelo303>/recargo_mod_quota}" type="Number"/>
-                                </VBox>
-                            </l:Grid>
+                            <!-- Modificación Recargo Equivalencia -->
+                            <Panel headerText="{i18n>m303_re_modifications}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L4 M4 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_re_modifications} [25]" design="Bold"/>
+                                        <Input value="{modelo303>/recargo_mod_base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <!-- Empty column -->
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [26]"/>
+                                        <Input value="{modelo303>/recargo_mod_quota}" type="Number"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
                              <Title text="{i18n>m303_totals}" level="H3" class="sapUiMediumMarginTop"/>
                              <form:SimpleForm editable="false" layout="ResponsiveGridLayout">
@@ -183,36 +197,71 @@
 
                     <!-- Tab 3: IVA Deducible -->
                     <IconTabFilter icon="sap-icon://sales-quote" text="{i18n>m303_deducible}">
-                         <form:SimpleForm editable="true" layout="ResponsiveGridLayout" title="{i18n>m303_deducible}">
-                            <form:content>
-                                <Title text="{i18n>m303_internalOps}"/>
-                                <Label text="{i18n>m303_base} [28]"/>
-                                <Input value="{modelo303>/deducible_interior_base}" type="Number"/>
-                                <Label text="{i18n>m303_quota} [29]"/>
-                                <Input value="{modelo303>/deducible_interior_quota}" type="Number"/>
+                         <VBox class="sapUiSmallMargin">
+                            
+                            <!-- Operaciones Interiores Corrientes -->
+                            <Panel headerText="{i18n>m303_internalOps}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L6 M6 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_base} [28]"/>
+                                        <Input value="{modelo303>/deducible_interior_base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [29]"/>
+                                        <Input value="{modelo303>/deducible_interior_quota}" type="Number"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
-                                <Title text="{i18n>m303_intraOps}"/>
-                                <Label text="{i18n>m303_base} [32]"/>
-                                <Input value="{modelo303>/deducible_intra_base}" type="Number"/>
-                                <Label text="{i18n>m303_quota} [33]"/>
-                                <Input value="{modelo303>/deducible_intra_quota}" type="Number"/>
-                                
-                                <Title text="{i18n>m303_imports}"/>
-                                <Label text="{i18n>m303_base} [30]"/>
-                                <Input value="{modelo303>/deducible_import_base}" type="Number"/>
-                                <Label text="{i18n>m303_quota} [31]"/>
-                                <Input value="{modelo303>/deducible_import_quota}" type="Number"/>
+                            <!-- Adquisiciones Intracomunitarias -->
+                            <Panel headerText="{i18n>m303_intraOps}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L6 M6 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_base} [32]"/>
+                                        <Input value="{modelo303>/deducible_intra_base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [33]"/>
+                                        <Input value="{modelo303>/deducible_intra_quota}" type="Number"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
-                                <Title text="{i18n>m303_investmentAssets}"/>
-                                <Label text="{i18n>m303_base} [34]"/>
-                                <Input value="{modelo303>/deducible_assets_base}" type="Number"/>
-                                <Label text="{i18n>m303_quota} [35]"/>
-                                <Input value="{modelo303>/deducible_assets_quota}" type="Number"/>
+                            <!-- Importaciones -->
+                            <Panel headerText="{i18n>m303_imports}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L6 M6 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_base} [30]"/>
+                                        <Input value="{modelo303>/deducible_import_base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [31]"/>
+                                        <Input value="{modelo303>/deducible_import_quota}" type="Number"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
 
+                            <!-- Bienes de Inversión -->
+                            <Panel headerText="{i18n>m303_investmentAssets}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
+                                <l:Grid defaultSpan="L6 M6 S12">
+                                    <VBox>
+                                        <Label text="{i18n>m303_base} [34]"/>
+                                        <Input value="{modelo303>/deducible_assets_base}" type="Number"/>
+                                    </VBox>
+                                    <VBox>
+                                        <Label text="{i18n>m303_quota} [35]"/>
+                                        <Input value="{modelo303>/deducible_assets_quota}" type="Number"/>
+                                    </VBox>
+                                </l:Grid>
+                            </Panel>
+
+                            <Title text="{i18n>m303_totals}" level="H3" class="sapUiMediumMarginTop"/>
+                            <form:SimpleForm editable="false" layout="ResponsiveGridLayout">
                                 <Label text="{i18n>m303_totalDeducible} [45] (Sum [29]+[33]+[31]+[35])" design="Bold"/>
                                 <Input value="{modelo303>/total_deducible}" editable="false"/>
-                            </form:content>
-                         </form:SimpleForm>
+                            </form:SimpleForm>
+
+                         </VBox>
                     </IconTabFilter>
 
                     <!-- Tab 4: Resultado -->

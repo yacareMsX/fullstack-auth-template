@@ -1,5 +1,5 @@
 <mvc:View
-    controllerName="invoice.app.controller.InvoiceDetail"
+    controllerName="invoice.app.controller.france.FranceInvoiceDetail"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
@@ -269,10 +269,6 @@
                     text="View PDF" 
                     icon="sap-icon://pdf-attachment" 
                     press="onViewPDF"/>
-                <Button 
-                    text="Generate XML FacturaE" 
-                    icon="sap-icon://attachment-e-pub" 
-                    press="onGenerateFacturaE"/>
                 <Button 
                     text="Generate XML UBL 2.1" 
                     icon="sap-icon://attachment-text-file" 

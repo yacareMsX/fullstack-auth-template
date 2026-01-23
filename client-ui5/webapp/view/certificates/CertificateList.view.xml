@@ -1,0 +1,48 @@
+<mvc:View
+    controllerName="invoice.app.controller.certificates.CertificateList"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core">
+    
+    <Page title="Listado de Certificados" showNavButton="false">
+        <content>
+            <Table
+                id="certificatesTable"
+                items="{certificates>/}"
+                mode="SingleSelectLeft"
+                itemPress="onItemPress"
+                selectionChange="onSelectionChange">
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="Certificados ({= ${certificates>/}.length })" level="H2"/>
+                        <ToolbarSpacer/>
+                        <Button text="Crear" icon="sap-icon://add" press="onCreate" type="Emphasized"/>
+                        <Button id="btnUpdate" text="Actualizar" icon="sap-icon://edit" press="onUpdate" enabled="false"/>
+                        <Button id="btnDelete" text="Borrar" icon="sap-icon://delete" press="onDelete" type="Reject" enabled="false"/>
+                        <Button id="btnActivate" text="Activar" icon="sap-icon://accept" press="onActivate" enabled="false"/>
+                        <Button id="btnDeactivate" text="Desactivar" icon="sap-icon://decline" press="onDeactivate" enabled="false"/>
+                    </Toolbar>
+                </headerToolbar>
+                <columns>
+                    <Column><Text text="Filename"/></Column>
+                    <Column><Text text="CN"/></Column>
+                    <Column><Text text="Caducidad"/></Column>
+                    <Column><Text text="Activo"/></Column>
+                </columns>
+                <items>
+                    <ColumnListItem type="Navigation" press="onItemPress">
+                        <cells>
+                            <Text text="{certificates>filename}"/>
+                            <Text text="{certificates>cn}"/>
+                            <Text text="{certificates>expiry_date}"/>
+                            <ObjectStatus
+                                text="{= ${certificates>active} ? 'Activo' : 'Inactivo' }"
+                                state="{= ${certificates>active} ? 'Success' : 'Error' }"
+                                icon="{= ${certificates>active} ? 'sap-icon://accept' : 'sap-icon://decline' }"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

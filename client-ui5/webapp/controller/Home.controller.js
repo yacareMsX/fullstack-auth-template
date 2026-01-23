@@ -73,6 +73,10 @@ sap.ui.define([
             this.getOwnerComponent().getRouter().navTo("modelo303");
         },
 
+        onNavigateToFrance: function () {
+            this.getOwnerComponent().getRouter().navTo("franceDashboard");
+        },
+
         onGenericTilePress: function (oEvent) {
             var sTileHeader = oEvent.getSource().getHeader();
             sap.m.MessageToast.show("Funcionalidad '" + sTileHeader + "' próximamente disponible");

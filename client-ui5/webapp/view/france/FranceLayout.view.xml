@@ -1,5 +1,5 @@
 <mvc:View
-    controllerName="invoice.app.controller.Shell"
+    controllerName="invoice.app.controller.france.FranceLayout"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:tnt="sap.tnt"
@@ -9,7 +9,7 @@
     
     <tnt:ToolPage id="toolPage">
         <tnt:header>
-            <tnt:ToolHeader class="bannerHeader" visible="{ui>/headerVisible}">
+            <tnt:ToolHeader class="bannerHeader">
                 <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" tooltip="Menu" class="sapUiSmallMarginEnd" visible="{ui>/menuVisible}"/>
                 <Button icon="sap-icon://nav-back" type="Transparent" press="onNavBack" tooltip="Back" class="sapUiSmallMarginEnd" visible="{ui>/backButtonVisible}"/>
                 <Title text="{ui>/headerTitle}" level="H2" class="sapUiSmallMarginBegin"/>
@@ -33,7 +33,7 @@
                     <tnt:NavigationListItem
                         text="Dashboard"
                         icon="sap-icon://bbyd-dashboard"
-                        key="dashboard"/>
+                        key="franceDashboard"/>
 
                     <tnt:NavigationListItem
                         text="{i18n>issueInvoices}"
@@ -41,10 +41,10 @@
                         expanded="false">
                         <tnt:NavigationListItem
                             text="{i18n>invoiceList}"
-                            key="issueList"/>
+                            key="franceIssueList"/>
                         <tnt:NavigationListItem
                             text="{i18n>createNew}"
-                            key="issueNew"/>
+                            key="franceIssueNew"/>
                     </tnt:NavigationListItem>
                     
                     <tnt:NavigationListItem
@@ -53,13 +53,13 @@
                         expanded="false">
                         <tnt:NavigationListItem
                             text="{i18n>invoiceList}"
-                            key="receiptList"/>
+                            key="franceReceiptList"/>
                         <tnt:NavigationListItem
                             text="{i18n>createNew}"
-                            key="receiptNew"/>
+                            key="franceReceiptNew"/>
                         <tnt:NavigationListItem
                             text="{i18n>newScanningInvoice}"
-                            key="scanInvoice"/>
+                            key="franceScanInvoice"/>
                         <tnt:NavigationListItem
                             text="{i18n>uploadExcel}"
                             key="uploadExcel"/>
@@ -71,18 +71,18 @@
                         expanded="false">
                         <tnt:NavigationListItem
                             text="{i18n>createItem}"
-                            key="catalogNew"/>
+                            key="franceCatalogNew"/>
                         <tnt:NavigationListItem
                             text="{i18n>itemList}"
-                            key="catalogList"/>
+                            key="franceCatalogList"/>
                     </tnt:NavigationListItem>
 
                     <tnt:NavigationListItem
                         text="{i18n>config}"
                         icon="sap-icon://action-settings"
                         expanded="false">
-                        <tnt:NavigationListItem text="{i18n>issuers}" key="issuerManager"/>
-                        <tnt:NavigationListItem text="{i18n>receivers}" key="receiverManager"/>
+                        <tnt:NavigationListItem text="{i18n>issuers}" key="franceIssuerManager"/>
+                        <tnt:NavigationListItem text="{i18n>receivers}" key="franceReceiverManager"/>
                     </tnt:NavigationListItem>
 
 
@@ -93,7 +93,7 @@
                         expanded="false">
                         <tnt:NavigationListItem
                             text="{i18n>origins}"
-                            key="originList"/>
+                            key="franceOriginList"/>
                     </tnt:NavigationListItem>
 
                 </tnt:NavigationList>
@@ -102,9 +102,9 @@
         
         <!-- Main Content -->
         <tnt:mainContents>
-            <NavContainer id="shellNavContainer" height="100%">
+            <NavContainer id="franceNavContainer" height="100%">
                 <pages>
-                    <mvc:XMLView viewName="invoice.app.view.Home"/>
+                    <!-- Default page will be loaded via manifest -->
                 </pages>
             </NavContainer>
         </tnt:mainContents>

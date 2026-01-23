@@ -99,7 +99,7 @@
                             <GenericTile header="{i18n>tileEinvoicePolonia}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_POLONIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://world"/></TileContent>
                             </GenericTile>
-                            <GenericTile header="{i18n>tileEinvoiceFrancia}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FRANCIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                            <GenericTile header="{i18n>tileEinvoiceFrancia}" press="onNavigateToFrance" visible="{= !!${security>/APP_TILE_FRANCIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                 <TileContent><ImageContent src="sap-icon://world"/></TileContent>
                             </GenericTile>
                             <GenericTile header="{i18n>tileEinvoiceBelgica}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_BELGICA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">

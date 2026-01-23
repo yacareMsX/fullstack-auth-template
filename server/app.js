@@ -13,6 +13,7 @@ const workflowRoutes = require('./routes/workflows');
 const scanRoutes = require('./routes/scan');
 const invoiceCountriesRoutes = require('./routes/invoice_countries');
 const origenesRoutes = require('./routes/admin/origenes');
+const certificatesRoutes = require('./routes/certificates');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
@@ -43,6 +44,7 @@ app.use('/api/admin/roles', require('./routes/admin/roles'));
 app.use('/api/admin/auth-objects', require('./routes/admin/auth_objects'));
 app.use('/api/admin/rol-profiles', require('./routes/admin/rol_profiles'));
 app.use('/api/statutory/models', require('./routes/statutory/models'));
+app.use('/api/certificates', certificatesRoutes);
 app.use('/api/audit', require('./routes/audit'));
 
 app.get('/api/health', async (req, res) => {

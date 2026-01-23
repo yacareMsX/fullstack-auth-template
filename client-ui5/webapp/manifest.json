@@ -191,6 +191,131 @@
                     "name": "modelo303",
                     "pattern": "statutory/303",
                     "target": "modelo303"
+                },
+                {
+                    "name": "franceLayout",
+                    "pattern": "france",
+                    "target": "franceLayout"
+                },
+                {
+                    "name": "franceDashboard",
+                    "pattern": "france/dashboard",
+                    "target": [
+                        "franceLayout",
+                        "franceDashboard"
+                    ]
+                },
+                {
+                    "name": "franceIssueList",
+                    "pattern": "france/issued",
+                    "target": [
+                        "franceLayout",
+                        "franceIssueList"
+                    ]
+                },
+                {
+                    "name": "franceReceiptList",
+                    "pattern": "france/received",
+                    "target": [
+                        "franceLayout",
+                        "franceReceiptList"
+                    ]
+                },
+                {
+                    "name": "franceIssueNew",
+                    "pattern": "france/invoice/new/ISSUE",
+                    "target": [
+                        "franceLayout",
+                        "franceInvoiceForm"
+                    ]
+                },
+                {
+                    "name": "franceReceiptNew",
+                    "pattern": "france/invoice/new/RECEIPT",
+                    "target": [
+                        "franceLayout",
+                        "franceInvoiceForm"
+                    ]
+                },
+                {
+                    "name": "franceInvoiceDetail",
+                    "pattern": "france/invoice/detail/{invoiceId}",
+                    "target": [
+                        "franceLayout",
+                        "franceInvoiceDetail"
+                    ]
+                },
+                {
+                    "name": "franceInvoiceEdit",
+                    "pattern": "france/invoice/edit/{invoiceId}",
+                    "target": [
+                        "franceLayout",
+                        "franceInvoiceForm"
+                    ]
+                },
+                {
+                    "name": "franceScanInvoice",
+                    "pattern": "france/scan",
+                    "target": [
+                        "franceLayout",
+                        "franceScanInvoice"
+                    ]
+                },
+                {
+                    "name": "franceIssuerManager",
+                    "pattern": "france/issuers",
+                    "target": [
+                        "franceLayout",
+                        "franceIssuerManager"
+                    ]
+                },
+                {
+                    "name": "franceReceiverManager",
+                    "pattern": "france/receivers",
+                    "target": [
+                        "franceLayout",
+                        "franceReceiverManager"
+                    ]
+                },
+                {
+                    "name": "franceCatalogList",
+                    "pattern": "france/catalog",
+                    "target": [
+                        "franceLayout",
+                        "franceCatalogList"
+                    ]
+                },
+                {
+                    "name": "franceCatalogNew",
+                    "pattern": "france/catalog/new",
+                    "target": [
+                        "franceLayout",
+                        "franceCatalogDetail"
+                    ]
+                },
+                {
+                    "name": "franceCatalogEdit",
+                    "pattern": "france/catalog/edit/{productId}",
+                    "target": [
+                        "franceLayout",
+                        "franceCatalogDetail"
+                    ]
+                },
+                {
+                    "name": "franceUbl21",
+                    "pattern": "france/generate/ubl21/{invoiceId}",
+                    "target": [
+                        "franceLayout",
+                        "franceUbl21"
+                    ]
+                },
+                {
+                    "name": "franceOriginList",
+                    "pattern": "france/origins",
+                    "target": [
+                        "franceLayout",
+                        "franceOriginList"
+                    ]
                 }
             ],
             "targets": {
@@ -330,6 +455,96 @@
                     "controlId": "statutoryMainContent",
                     "controlAggregation": "pages",
                     "parent": "statutoryLayout"
+                },
+                "franceLayout": {
+                    "viewId": "franceLayout",
+                    "viewName": "france.FranceLayout",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "franceDashboard": {
+                    "viewId": "franceDashboard",
+                    "viewName": "france.FranceDashboard",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceIssueList": {
+                    "viewId": "franceIssueList",
+                    "viewName": "france.FranceInvoiceList",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceReceiptList": {
+                    "viewId": "franceReceiptList",
+                    "viewName": "france.FranceInvoiceList",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceInvoiceForm": {
+                    "viewId": "franceInvoiceForm",
+                    "viewName": "france.FranceInvoiceForm",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceInvoiceDetail": {
+                    "viewId": "franceInvoiceDetail",
+                    "viewName": "france.FranceInvoiceDetail",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceScanInvoice": {
+                    "viewId": "franceScanInvoice",
+                    "viewName": "france.FranceScanInvoice",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceIssuerManager": {
+                    "viewId": "franceIssuerManager",
+                    "viewName": "france.FranceIssuerManager",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceReceiverManager": {
+                    "viewId": "franceReceiverManager",
+                    "viewName": "france.FranceReceiverManager",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceCatalogList": {
+                    "viewId": "franceCatalogList",
+                    "viewName": "france.FranceCatalogList",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceCatalogDetail": {
+                    "viewId": "franceCatalogDetail",
+                    "viewName": "france.FranceCatalogDetail",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceUbl21": {
+                    "viewId": "franceUbl21",
+                    "viewName": "france.FranceFacturaUBL",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceOriginList": {
+                    "viewId": "franceOriginList",
+                    "viewName": "france.FranceOriginList",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
                 }
             }
         }

@@ -1,0 +1,116 @@
+<mvc:View
+    controllerName="invoice.app.controller.france.FranceInvoiceList"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout">
+    
+    <Page title="{invoiceList>/pageTitle}" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <!-- Custom Filter Bar -->
+            <Panel expandable="true" expanded="true" headerText="{i18n>filters}" width="auto" class="sapUiSmallMargin">
+                <content>
+                    <layout:Grid defaultSpan="L3 M6 S12" vSpacing="1">
+                        <VBox>
+                            <Label text="{i18n>search}"/>
+                            <SearchField id="searchFilter" placeholder="{i18n>searchPlaceholder}" search="onSearch"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="{i18n>invoiceNumber}"/>
+                            <Input id="numberFilter" submit="onSearch"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="{i18n>issuer}"/>
+                            <Input id="issuerFilter" placeholder="{i18n>issuerPlaceholder}" submit="onSearch"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="{i18n>receiver}"/>
+                            <Input id="receiverFilter" placeholder="{i18n>receiverPlaceholder}" submit="onSearch"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="{i18n>date}"/>
+                            <DateRangeSelection id="dateFilter" displayFormat="medium" change="onSearch"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="{i18n>status}"/>
+                            <Select id="statusFilter" selectedKey="" change="onSearch" width="100%">
+                                <items>
+                                    <core:Item key="" text="{i18n>allStatuses}"/>
+                                    <core:Item key="BORRADOR" text="{i18n>statusDraft}"/>
+                                    <core:Item key="EMITIDA" text="{i18n>statusIssued}"/>
+                                    <core:Item key="ENVIADA" text="{i18n>statusSent}"/>
+                                    <core:Item key="PAGADA" text="{i18n>statusPaid}"/>
+                                    <core:Item key="PENDIENTE" text="{i18n>statusPending}"/>
+                                    <core:Item key="RECTIFICATIVA" text="{i18n>statusRectification}"/>
+                                </items>
+                            </Select>
+                        </VBox>
+                        <VBox justifyContent="End">
+                            <Label text=""/>
+                            <Button text="{i18n>go}" type="Emphasized" press="onSearch" width="100%"/>
+                        </VBox>
+                    </layout:Grid>
+                </content>
+            </Panel>
+
+            <!-- Invoices Table -->
+            <Table
+                id="invoicesTable"
+                items="{invoiceList>/invoices}"
+                mode="SingleSelectMaster"
+                growing="true"
+                growingThreshold="20"
+                selectionChange="onInvoiceSelect">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="{i18n>invoices}" level="H2"/>
+                        <ToolbarSpacer/>
+                        <Button text="{i18n>newInvoice}" type="Emphasized" icon="sap-icon://add" press="onCreateInvoice"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column width="12em">
+                        <Text text="{i18n>invoiceNumber}"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="{i18n>issuer}"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="{i18n>receiver}"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="{i18n>date}"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="{i18n>source}"/>
+                    </Column>
+                    <Column minScreenWidth="Desktop" demandPopin="true" hAlign="End">
+                        <Text text="{i18n>amount}"/>
+                    </Column>
+                    <Column hAlign="End">
+                        <Text text="{i18n>status}"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem type="Navigation" press="onInvoicePress">
+                        <cells>
+                            <ObjectIdentifier title="{invoiceList>numero}" text="{= ${invoiceList>serie} ? ${invoiceList>serie} : '' }"/>
+                            <Text text="{invoiceList>emisor_nombre}"/>
+                            <Text text="{invoiceList>receptor_nombre}"/>
+                            <Text text="{path: 'invoiceList>fecha_emision', type: 'sap.ui.model.type.Date', formatOptions: {style: 'medium'}}"/>
+                            <core:Icon src="{path: 'invoiceList>origen_descripcion', formatter: '.formatter.originIcon'}" tooltip="{invoiceList>origen_descripcion}" color="#0854a0"/>
+                            <ObjectNumber
+                                number="{parts:[{path:'invoiceList>total'},{path:'invoiceList>moneda'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false}}"
+                                unit="{invoiceList>moneda}"
+                                state="{= ${invoiceList>total} > 1000 ? 'Error' : 'Success' }"/>
+                            <ObjectStatus
+                                text="{invoiceList>estado}"
+                                state="{= ${invoiceList>estado} === 'PAGADA' ? 'Success' : ${invoiceList>estado} === 'PENDIENTE' ? 'Warning' : 'None'}"/>
+                            <Button icon="sap-icon://action" type="Transparent" press="onInvoiceAction"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

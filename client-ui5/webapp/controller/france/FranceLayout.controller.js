@@ -5,7 +5,7 @@ sap.ui.define([
 ], function (Controller, ActionSheet, Button) {
     "use strict";
 
-    return Controller.extend("invoice.app.controller.Shell", {
+    return Controller.extend("invoice.app.controller.france.FranceLayout", {
 
         onInit: function () {
             // Initialize UI model for shell state
@@ -14,7 +14,6 @@ sap.ui.define([
                 sidebarVisible: true,
                 menuVisible: true,
                 headerTitle: "Compliance Hub",
-                headerVisible: true,
                 backButtonVisible: false,
                 themeIcon: "sap-icon://show" // Default icon
             });
@@ -117,56 +116,14 @@ sap.ui.define([
             var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
             var sAppTitle = oResourceBundle.getText("appTitle");
 
-            // Hide sidebar and menu button on Home screen
-            if (sRouteName === "home") {
-                oUIModel.setProperty("/sidebarVisible", false);
-                oUIModel.setProperty("/menuVisible", false);
-                oUIModel.setProperty("/headerVisible", true);
-                oUIModel.setProperty("/backButtonVisible", false);
-                oUIModel.setProperty("/headerTitle", sAppTitle);
-                oToolPage.setSideExpanded(false);
-            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0 || sRouteName.indexOf("france") === 0)) {
-                // Statutory App Mode: Hide Main Shell Sidebar/Header to allow Sub-App to take over
-                oUIModel.setProperty("/sidebarVisible", false);
-                oUIModel.setProperty("/menuVisible", false);
-                oUIModel.setProperty("/headerVisible", false);
-                // We might want to keep back button or let the sub-app handle "Home"
-                oUIModel.setProperty("/backButtonVisible", false);
-                // We hide the entire shell header elements? No, Shell.view uses tnt:ToolPage structure.
-                // If we hide sidebarVisible, tnt:ToolPage just hides layout[1].
-                // But header remains. StatutoryLayout ALSO has a header. 
-                // So we should probably hide the Shell Header content or make it minimal.
-                // However, Shell view has <tnt:header><tnt:ToolHeader>...
+            oUIModel.setProperty("/sidebarVisible", true);
+            oUIModel.setProperty("/menuVisible", true);
+            oUIModel.setProperty("/backButtonVisible", true);
+            oToolPage.setSideExpanded(true);
 
-                // Let's assume hiding the sidebar is enough to fix the Visual "Double Sidebar".
-                // If the user wants a full sub-app experience, we might need to do more, but let's start with sidebar.
-
-                // Actually, if StatutoryLayout has its OWN header, we will have double headers too.
-                // Let's check StatutoryLayout. It DOES have a header.
-                // So we should try to look like "Fullscreen" or similar.
-                // Since we can't easily remove the Shell Header without a boolean, let's look at Shell.view again.
-                // It doesn't seem to have a visible property on tnt:ToolHeader.
-
-                // For now, let's just hide the sidebar to fix the immediate "Sidebar inside Sidebar" issue.
-                // And maybe Update the Title.
-                oUIModel.setProperty("/headerTitle", "Compliance Hub - Statutory Reporting");
-                oToolPage.setSideExpanded(false);
-            } else {
-                oUIModel.setProperty("/sidebarVisible", true);
-                oUIModel.setProperty("/menuVisible", true);
-                oUIModel.setProperty("/headerVisible", true);
-                oUIModel.setProperty("/backButtonVisible", true);
-                oToolPage.setSideExpanded(true);
-
-                // Dynamic Title Logic
-                var sPageTitle = "eInvoice Ley C&C";
-
-                if (sPageTitle) {
-                    oUIModel.setProperty("/headerTitle", sAppTitle + " / " + sPageTitle);
-                } else {
-                    oUIModel.setProperty("/headerTitle", sAppTitle);
-                }
-            }
+            // Dynamic Title Logic
+            var sPageTitle = "eInvoice France";
+            oUIModel.setProperty("/headerTitle", sAppTitle + " / " + sPageTitle);
         },
 
         onItemSelect: function (oEvent) {
@@ -175,63 +132,38 @@ sap.ui.define([
             var oRouter = this.getOwnerComponent().getRouter();
 
             switch (sKey) {
-                case "dashboard":
-                    oRouter.navTo("dashboard");
+                case "franceDashboard":
+                    oRouter.navTo("franceDashboard");
                     break;
-                case "issueList":
-                    oRouter.navTo("invoiceList", { tipo: "ISSUE" });
+                case "franceIssueList":
+                    oRouter.navTo("franceIssueList", { tipo: "ISSUE" });
                     break;
-                case "receiptList":
-                    oRouter.navTo("invoiceList", { tipo: "RECEIPT" });
+                case "franceReceiptList":
+                    oRouter.navTo("franceReceiptList", { tipo: "RECEIPT" });
                     break;
-                case "issueNew":
-                    oRouter.navTo("invoiceNew", { tipo: "ISSUE" });
+                case "franceIssueNew":
+                    oRouter.navTo("franceIssueNew", { tipo: "ISSUE" });
                     break;
-                case "receiptNew":
-                    oRouter.navTo("invoiceNew", { tipo: "RECEIPT" });
+                case "franceReceiptNew":
+                    oRouter.navTo("franceReceiptNew", { tipo: "RECEIPT" });
                     break;
-                case "scanInvoice":
-                    oRouter.navTo("scanInvoice");
+                case "franceScanInvoice":
+                    oRouter.navTo("franceScanInvoice");
                     break;
-                case "uploadExcel":
-                    sap.m.MessageToast.show("Coming soon");
+                case "franceCatalogNew":
+                    oRouter.navTo("franceCatalogNew");
                     break;
-                case "catalogNew":
-                    oRouter.navTo("catalogNew");
+                case "franceCatalogList":
+                    oRouter.navTo("franceCatalogList");
                     break;
-                case "catalogList":
-                    oRouter.navTo("catalogList");
+                case "franceIssuerManager":
+                    oRouter.navTo("franceIssuerManager");
                     break;
-                case "issuerManager":
-                    oRouter.navTo("issuerManager");
+                case "franceReceiverManager":
+                    oRouter.navTo("franceReceiverManager");
                     break;
-                case "receiverManager":
-                    oRouter.navTo("receiverManager");
-                    break;
-                case "taxes":
-                    // TODO: Navigate to taxes manager
-                    sap.m.MessageToast.show("Tax management - Coming soon");
-                    break;
-                case "workflowList":
-                    oRouter.navTo("workflowList");
-                    break;
-                case "workflowNew":
-                    oRouter.navTo("workflowNew");
-                    break;
-                case "originList":
-                    oRouter.navTo("originList");
-                    break;
-                case "apiDocs":
-                    oRouter.navTo("apiDocs");
-                    break;
-                case "auditLog":
-                    oRouter.navTo("auditLog");
-                    break;
-                case "xmlMapping":
-                    oRouter.navTo("xmlMapping");
-                    break;
-                case "invoiceCountryList":
-                    oRouter.navTo("invoiceCountryList");
+                case "franceOriginList":
+                    oRouter.navTo("franceOriginList");
                     break;
             }
 
@@ -242,7 +174,7 @@ sap.ui.define([
         },
 
         onNavHome: function () {
-            this.getOwnerComponent().getRouter().navTo("dashboard");
+            this.getOwnerComponent().getRouter().navTo("franceDashboard");
         },
 
         onLanguagePress: function (oEvent) {

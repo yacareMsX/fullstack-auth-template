@@ -13,13 +13,14 @@ sap.ui.define([
 ], function (Controller, JSONModel, MessageToast, MessageBox, Fragment, Filter, FilterOperator, Dialog, TextArea, Button, formatter) {
     "use strict";
 
-    return Controller.extend("invoice.app.controller.InvoiceForm", {
+    return Controller.extend("invoice.app.controller.france.FranceInvoiceForm", {
         formatter: formatter,
 
         onInit: function () {
             var oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("invoiceNew").attachPatternMatched(this._onRouteMatched, this);
-            oRouter.getRoute("invoiceEdit").attachPatternMatched(this._onEditInvoice, this);
+            oRouter.getRoute("franceIssueNew").attachPatternMatched(this._onRouteMatched, this);
+            oRouter.getRoute("franceReceiptNew").attachPatternMatched(this._onRouteMatched, this);
+            oRouter.getRoute("franceInvoiceEdit").attachPatternMatched(this._onEditInvoice, this);
 
             this._initializeModel();
         },
@@ -29,19 +30,17 @@ sap.ui.define([
             var oArgs = oEvent.getParameter("arguments");
 
             // If it's the new invoice route
-            if (sRouteName === "invoiceNew") {
-                console.log("DEBUG: InvoiceForm - Route invoiceNew matched");
+            if (sRouteName === "franceIssueNew" || sRouteName === "franceReceiptNew") {
+                console.log("DEBUG: FranceInvoiceForm - Route matched:", sRouteName);
 
                 this._onNewInvoice(oEvent).then(function () {
-                    console.log("DEBUG: Data loaded, checking for pending scan...");
-
                     // Determine type based on route argument 'tipo'
-                    // If tipo is RECEIPT, set codigo_tipo to '02'
-                    if (oArgs.tipo === "RECEIPT") {
+                    if (oArgs.tipo === "RECEIPT" || sRouteName === "franceReceiptNew") {
                         this.getView().getModel("form").setProperty("/codigo_tipo", "02");
                     } else {
                         this.getView().getModel("form").setProperty("/codigo_tipo", "01");
                     }
+                    this.getView().getModel("form").setProperty("/invoice_country_id", 3);
 
                     // Check for pending scan data in global model
                     var oScannedModel = this.getOwnerComponent().getModel("scannedData");
@@ -262,7 +261,7 @@ sap.ui.define([
                     total: 0
                 },
                 pdfPanelSize: "0%",
-                invoice_country_id: 1
+                invoice_country_id: 3
             });
             this.getView().setModel(oViewModel, "form");
 
@@ -300,7 +299,7 @@ sap.ui.define([
             var that = this;
             var sToken = localStorage.getItem("auth_token");
 
-            fetch("/api/invoices/facturas/next-number", {
+            fetch("/api/invoices/facturas/next-number?invoice_country_id=3", {
                 headers: { "Authorization": "Bearer " + sToken }
             })
                 .then(res => res.json())
@@ -418,8 +417,8 @@ sap.ui.define([
                     oModel.setProperty("/id_receptor", data.id_receptor);
                     oModel.setProperty("/metodo_pago", data.metodo_pago || "TRANSFERENCIA");
                     oModel.setProperty("/codigo_tipo", data.codigo_tipo || "01");
-                    oModel.setProperty("/id_origen", data.id_origen);
-                    oModel.setProperty("/invoice_country_id", data.invoice_country_id || 1);
+                    oModel.setProperty("/id_origen", data.id_origen || 3);
+                    oModel.setProperty("/invoice_country_id", data.invoice_country_id || 3);
                     oModel.setProperty("/lineas", data.lineas || []);
                     that._calculateTotals();
                 })
@@ -775,7 +774,7 @@ sap.ui.define([
                 codigo_tipo: oData.codigo_tipo || "01",
                 id_origen: oData.id_origen,
                 lineas: oData.lineas,
-                invoice_country_id: oData.invoice_country_id || 1
+                invoice_country_id: 3
             };
 
             console.log("DEBUG: Saving invoice payload:", oPayload);
@@ -797,7 +796,7 @@ sap.ui.define([
                 })
                 .then(function (data) {
                     MessageToast.show(oData.isEdit ? "Invoice updated successfully" : "Invoice created successfully");
-                    that.getOwnerComponent().getRouter().navTo("invoiceDetail", {
+                    that.getOwnerComponent().getRouter().navTo("franceInvoiceDetail", {
                         invoiceId: data.id_factura
                     });
                 })
@@ -809,9 +808,14 @@ sap.ui.define([
 
         onCancel: function () {
             if (this._bFromScan) {
-                this.getOwnerComponent().getRouter().navTo("scanInvoice");
+                this.getOwnerComponent().getRouter().navTo("franceScanInvoice");
             } else {
-                this.getOwnerComponent().getRouter().navTo("invoiceList");
+                var sTipo = this.getView().getModel("form").getProperty("/codigo_tipo");
+                if (sTipo === "02") {
+                    this.getOwnerComponent().getRouter().navTo("franceReceiptList", { tipo: "RECEIPT" });
+                } else {
+                    this.getOwnerComponent().getRouter().navTo("franceIssueList", { tipo: "ISSUE" });
+                }
             }
         },
 

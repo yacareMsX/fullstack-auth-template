@@ -46,9 +46,14 @@ const router = express.Router();
 // Get next invoice number
 router.get('/next-number', authenticateToken, async (req, res) => {
     try {
-        // Find the latest invoice number with the specific prefix
+        const countryId = req.query.invoice_country_id || 1;
+        const prefix = countryId == 3 ? 'INV-FR-%' : 'INV-ISUE-%';
+        const displayPrefix = countryId == 3 ? 'INV-FR-' : 'INV-ISUE-';
+
+        // Find the latest invoice number for the specific country and prefix
         const result = await db.query(
-            "SELECT numero FROM factura WHERE numero LIKE 'INV-ISUE-%' ORDER BY numero DESC LIMIT 1"
+            "SELECT numero FROM factura WHERE numero LIKE $1 AND invoice_country_id = $2 ORDER BY numero DESC LIMIT 1",
+            [prefix, countryId]
         );
 
         let nextSequence = 1;
@@ -65,7 +70,7 @@ router.get('/next-number', authenticateToken, async (req, res) => {
         }
 
         const paddedSeq = nextSequence.toString().padStart(12, '0');
-        const nextNumber = `INV-ISUE-${paddedSeq}`;
+        const nextNumber = `${displayPrefix}${paddedSeq}`;
 
         res.json({ nextNumber });
     } catch (error) {
@@ -76,7 +81,8 @@ router.get('/next-number', authenticateToken, async (req, res) => {
 
 router.get('/', authenticateToken, async (req, res) => {
     try {
-        const { estado, tipo, id_emisor, id_receptor, fecha_desde, fecha_hasta, limit = 50, offset = 0 } = req.query;
+        const { estado, tipo, id_emisor, id_receptor, fecha_desde, fecha_hasta, invoice_country_id, limit = 50, offset = 0 } = req.query;
+        const countryId = invoice_country_id || 1;
 
         let query = `
       SELECT f.*,
@@ -87,10 +93,10 @@ router.get('/', authenticateToken, async (req, res) => {
       JOIN emisor e ON f.id_emisor = e.id_emisor
       JOIN receptor r ON f.id_receptor = r.id_receptor
       LEFT JOIN origenes o ON f.id_origen = o.id_origen
-      WHERE 1 = 1
+      WHERE f.invoice_country_id = $1
     `;
-        const params = [];
-        let paramCount = 1;
+        const params = [countryId];
+        let paramCount = 2;
 
         if (tipo) {
             // Map legacy tipo to codigo_tipo
@@ -233,7 +239,7 @@ router.get('/:id/pdf', authenticateToken, async (req, res) => {
         // Set response headers
         const filename = `invoice_${invoice.serie || ''}${invoice.numero}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename = "${filename}"`);
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
         // Pipe PDF to response
         doc.pipe(res);
@@ -241,6 +247,68 @@ router.get('/:id/pdf', authenticateToken, async (req, res) => {
 
     } catch (error) {
         console.error('Error generating PDF:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Generate Factur-X for invoice
+router.get('/:id/factur-x', authenticateToken, async (req, res) => {
+    console.log(`[Factur-X] Request received for invoice ID: ${req.params.id}`);
+    console.log(`[Factur-X] User: ${req.user ? req.user.email : 'Unauthenticated'}`);
+    try {
+        const { id } = req.params;
+        const { generateFacturX } = require('../../utils/pdfGenerator');
+        const { generateUBLXML } = require('../../utils/ublGenerator');
+
+        // Get invoice with all details
+        const invoiceResult = await db.query(
+            `SELECT f.*,
+    e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
+    r.email as receptor_email, r.telefono as receptor_telefono
+       FROM factura f
+       JOIN emisor e ON f.id_emisor = e.id_emisor
+       JOIN receptor r ON f.id_receptor = r.id_receptor
+       WHERE f.id_factura = $1`,
+            [id]
+        );
+
+        if (invoiceResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const invoice = invoiceResult.rows[0];
+
+        // Get invoice lines
+        const linesResult = await db.query(
+            `SELECT lf.*, i.codigo as impuesto_codigo, i.descripcion as impuesto_descripcion
+       FROM linea_factura lf
+       LEFT JOIN impuesto i ON lf.id_impuesto = i.id_impuesto
+       WHERE lf.id_factura = $1
+       ORDER BY lf.created_at ASC`,
+            [id]
+        );
+
+        invoice.lineas = linesResult.rows;
+
+        // Generate XML
+        const xmlContent = generateUBLXML(invoice);
+
+        // Generate Factur-X PDF
+        const doc = generateFacturX(invoice, xmlContent);
+
+        // Set response headers
+        const filename = `factur-x_${invoice.serie || ''}${invoice.numero}.pdf`;
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        // Pipe PDF to response
+        doc.pipe(res);
+        doc.end();
+
+    } catch (error) {
+        console.error('Error generating Factur-X:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -254,8 +322,10 @@ router.post('/', authenticateToken, async (req, res) => {
         const {
             numero, serie, fecha_emision, fecha_vencimiento,
             id_emisor, id_receptor, metodo_pago, codigo_tipo, id_origen,
-            lineas = []
+            invoice_country_id, lineas = []
         } = req.body;
+
+        const countryId = invoice_country_id || 1;
 
         const missingFields = [];
         if (!numero) missingFields.push('numero');
@@ -290,11 +360,11 @@ router.post('/', authenticateToken, async (req, res) => {
             `INSERT INTO factura(
         numero, serie, fecha_emision, fecha_vencimiento,
         id_emisor, id_receptor, metodo_pago, codigo_tipo, id_origen,
-        subtotal, impuestos_totales, total, estado
-    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'BORRADOR')
+        subtotal, impuestos_totales, total, estado, invoice_country_id
+    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'BORRADOR', $13)
 RETURNING * `,
             [numero, serie, fecha_emision, fecha_vencimiento, id_emisor, id_receptor,
-                metodo_pago, codigo_tipo, id_origen || 1, subtotal, impuestos_totales, total]
+                metodo_pago, codigo_tipo, id_origen || 1, subtotal, impuestos_totales, total, countryId]
         );
 
         const invoice = invoiceResult.rows[0];
@@ -356,9 +426,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
         const {
             numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion,
             id_emisor, id_receptor, estado, metodo_pago,
-            subtotal, impuestos_totales, total, tipo,
+            subtotal, impuestos_totales, total, tipo, invoice_country_id,
             lineas = []
         } = req.body;
+
+        const countryId = invoice_country_id || 1;
 
         // Update Invoice
         const updateResult = await client.query(
@@ -375,14 +447,15 @@ router.put('/:id', authenticateToken, async (req, res) => {
                 subtotal = $10,
                 impuestos_totales = $11,
                 total = $12,
-                tipo = $13
-            WHERE id_factura = $14
+                tipo = $13,
+                invoice_country_id = $14
+            WHERE id_factura = $15
             RETURNING *`,
             [
                 numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion || null,
                 id_emisor, id_receptor, estado, metodo_pago,
                 subtotal, impuestos_totales, total, tipo,
-                id
+                countryId, id
             ]
         );
 

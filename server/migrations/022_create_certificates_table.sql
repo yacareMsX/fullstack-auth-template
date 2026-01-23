@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS certificates (
+    id SERIAL PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    cn VARCHAR(255),
+    created_date TIMESTAMP,
+    expiry_date TIMESTAMP,
+    chain TEXT,
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

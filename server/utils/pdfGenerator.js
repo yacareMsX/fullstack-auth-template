@@ -1,12 +1,101 @@
 const PDFDocument = require('pdfkit');
 
 /**
+ * Adds strict XMP metadata for Factur-X/ZUGFeRD compliance
+ * @param {PDFDocument} doc 
+ */
+function addFacturXMetadata(doc) {
+    const metadata = `
+        <?xpacket begin="&#xFEFF;" id="W5M0MpCehiHzreSzNTczkc9d"?>
+        <x:xmpmeta xmlns:x="adobe:ns:meta/">
+            <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                <rdf:Description rdf:about="" xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/" xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#" xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#">
+                    <pdfaExtension:schemas>
+                        <rdf:Bag>
+                            <rdf:li rdf:parseType="Resource">
+                                <pdfaSchema:schema>Factur-X PDFA Extension Schema</pdfaSchema:schema>
+                                <pdfaSchema:namespaceURI>urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#</pdfaSchema:namespaceURI>
+                                <pdfaSchema:prefix>fx</pdfaSchema:prefix>
+                                <pdfaSchema:property>
+                                    <rdf:Seq>
+                                        <rdf:li rdf:parseType="Resource">
+                                            <pdfaProperty:name>DocumentFileName</pdfaProperty:name>
+                                            <pdfaProperty:valueType>Text</pdfaProperty:valueType>
+                                            <pdfaProperty:category>external</pdfaProperty:category>
+                                            <pdfaProperty:description>The name of the embedded XML invoice file</pdfaProperty:description>
+                                        </rdf:li>
+                                        <rdf:li rdf:parseType="Resource">
+                                            <pdfaProperty:name>DocumentType</pdfaProperty:name>
+                                            <pdfaProperty:valueType>Text</pdfaProperty:valueType>
+                                            <pdfaProperty:category>external</pdfaProperty:category>
+                                            <pdfaProperty:description>The document type</pdfaProperty:description>
+                                        </rdf:li>
+                                        <rdf:li rdf:parseType="Resource">
+                                            <pdfaProperty:name>Version</pdfaProperty:name>
+                                            <pdfaProperty:valueType>Text</pdfaProperty:valueType>
+                                            <pdfaProperty:category>external</pdfaProperty:category>
+                                            <pdfaProperty:description>The Factur-X version</pdfaProperty:description>
+                                        </rdf:li>
+                                        <rdf:li rdf:parseType="Resource">
+                                            <pdfaProperty:name>ConformanceLevel</pdfaProperty:name>
+                                            <pdfaProperty:valueType>Text</pdfaProperty:valueType>
+                                            <pdfaProperty:category>external</pdfaProperty:category>
+                                            <pdfaProperty:description>The conformance level</pdfaProperty:description>
+                                        </rdf:li>
+                                    </rdf:Seq>
+                                </pdfaSchema:property>
+                            </rdf:li>
+                        </rdf:Bag>
+                    </pdfaExtension:schemas>
+                </rdf:Description>
+                <rdf:Description rdf:about="" xmlns:fx="urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#">
+                    <fx:DocumentType>INVOICE</fx:DocumentType>
+                    <fx:DocumentFileName>factur-x.xml</fx:DocumentFileName>
+                    <fx:Version>1.0</fx:Version>
+                    <fx:ConformanceLevel>EN 16931</fx:ConformanceLevel>
+                </rdf:Description>
+                <rdf:Description rdf:about="" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
+                    <pdfaid:part>3</pdfaid:part>
+                    <pdfaid:conformance>B</pdfaid:conformance>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:xmpmeta>
+        <?xpacket end="w"?>
+    `.trim();
+
+    // Inject Metadata
+    try {
+        const metadataStream = doc.ref({
+            Type: 'Metadata',
+            Subtype: 'XML'
+        });
+
+        metadataStream.end(Buffer.from(metadata));
+
+        // Link to Catalog
+        doc._root.data.Metadata = metadataStream;
+
+    } catch (e) {
+        console.error("Error injecting metadata:", e);
+    }
+}
+
+/**
  * Generate PDF for an invoice
  * @param {Object} invoice - Invoice data with all details
  * @returns {PDFDocument} - PDF document stream
  */
 function generateInvoicePDF(invoice) {
-    const doc = new PDFDocument({ margin: 50 });
+    if (!invoice) throw new Error("No invoice data provided");
+    const doc = new PDFDocument({
+        margin: 50,
+        pdfVersion: '1.7', // Required for PDF/A-3
+        lang: 'en',
+        tagged: true, // Required for PDF/A
+        displayTitle: true
+    });
+
+    console.log(`Generating PDF for invoice: ${invoice.numero}`);
 
     // Header
     doc.fontSize(20).text('INVOICE', { align: 'center' });
@@ -111,4 +200,35 @@ function generateInvoicePDF(invoice) {
     return doc;
 }
 
-module.exports = { generateInvoicePDF };
+/**
+ * Generate Factur-X PDF (PDF with embedded XML)
+ * @param {Object} invoice - Invoice data
+ * @param {string} xmlContent - UBL 2.1 XML content
+ * @returns {PDFDocument} - PDF document stream
+ */
+function generateFacturX(invoice, xmlContent) {
+    if (!xmlContent) {
+        console.warn("Factur-X generation without XML content");
+        return generateInvoicePDF(invoice);
+    }
+
+    // Use generateInvoicePDF which now returns a PDF 1.7 doc
+    const doc = generateInvoicePDF(invoice);
+
+    // Embed the XML file
+    doc.file(Buffer.from(xmlContent), {
+        name: 'factur-x.xml',
+        type: 'application/xml',
+        description: 'Factur-X/ZUGFeRD e-invoice data',
+        relationship: 'Alternative', // PDF/A-3 Requirement
+        creationDate: new Date(),
+        modifiedDate: new Date()
+    });
+
+    // Add XMP Metadata
+    addFacturXMetadata(doc);
+
+    return doc;
+}
+
+module.exports = { generateInvoicePDF, generateFacturX };

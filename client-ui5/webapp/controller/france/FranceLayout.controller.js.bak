@@ -5,7 +5,7 @@ sap.ui.define([
 ], function (Controller, ActionSheet, Button) {
     "use strict";
 
-    return Controller.extend("invoice.app.controller.Shell", {
+    return Controller.extend("invoice.app.controller.france.FranceLayout", {
 
         onInit: function () {
             // Initialize UI model for shell state
@@ -14,7 +14,6 @@ sap.ui.define([
                 sidebarVisible: true,
                 menuVisible: true,
                 headerTitle: "Compliance Hub",
-                headerVisible: true,
                 backButtonVisible: false,
                 themeIcon: "sap-icon://show" // Default icon
             });
@@ -121,15 +120,13 @@ sap.ui.define([
             if (sRouteName === "home") {
                 oUIModel.setProperty("/sidebarVisible", false);
                 oUIModel.setProperty("/menuVisible", false);
-                oUIModel.setProperty("/headerVisible", true);
                 oUIModel.setProperty("/backButtonVisible", false);
                 oUIModel.setProperty("/headerTitle", sAppTitle);
                 oToolPage.setSideExpanded(false);
-            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0 || sRouteName.indexOf("france") === 0)) {
+            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0)) {
                 // Statutory App Mode: Hide Main Shell Sidebar/Header to allow Sub-App to take over
                 oUIModel.setProperty("/sidebarVisible", false);
                 oUIModel.setProperty("/menuVisible", false);
-                oUIModel.setProperty("/headerVisible", false);
                 // We might want to keep back button or let the sub-app handle "Home"
                 oUIModel.setProperty("/backButtonVisible", false);
                 // We hide the entire shell header elements? No, Shell.view uses tnt:ToolPage structure.
@@ -154,7 +151,6 @@ sap.ui.define([
             } else {
                 oUIModel.setProperty("/sidebarVisible", true);
                 oUIModel.setProperty("/menuVisible", true);
-                oUIModel.setProperty("/headerVisible", true);
                 oUIModel.setProperty("/backButtonVisible", true);
                 oToolPage.setSideExpanded(true);
 
