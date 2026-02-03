@@ -256,6 +256,23 @@ sap.ui.define([
                 });
         },
 
+        onDownloadXML: function () {
+            var oModel = this.getView().getModel("detail");
+            var sPath = oModel.getProperty("/xml_path");
+            if (sPath) {
+                // Assuming sPath is relative (e.g. uploads/file.xml) and server serves /uploads
+                window.open("/" + sPath, "_blank");
+            }
+        },
+
+        onViewXML: function () {
+            var oModel = this.getView().getModel("detail");
+            var sInvoiceId = oModel.getProperty("/id_factura");
+            this.getOwnerComponent().getRouter().navTo("facturaE", {
+                invoiceId: sInvoiceId
+            });
+        },
+
         onViewPDF: function () {
             var oModel = this.getView().getModel("detail");
             var sCurrentSize = oModel.getProperty("/pdfPanelSize");

@@ -8,21 +8,12 @@
     height="100%">
     
     <tnt:ToolPage id="certificateToolPage">
-        <tnt:header>
-            <tnt:ToolHeader class="bannerHeader">
-                <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" tooltip="Menu" class="sapUiSmallMarginEnd" visible="{ui>/certificateMenuVisible}"/>
-                <Title text="Gestor de Certificados" level="H2" class="sapUiSmallMarginBegin"/>
-                <ToolbarSpacer/>
-                <Button icon="sap-icon://search" type="Transparent" tooltip="{i18n>search}"/>
-                <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications"/>
-                <Avatar src="img/profile_pic.png" displaySize="XS" press="onProfilePress" class="sapUiSmallMarginBegin" tooltip="Profile"/>
-            </tnt:ToolHeader>
-        </tnt:header>
+
 
         <!-- Side Navigation -->
         <tnt:sideContent>
             <tnt:SideNavigation
-                expanded="true"
+                expanded="{ui>/certificateSidebarExpanded}"
                 itemSelect="onItemSelect"
                 visible="{ui>/certificateSidebarVisible}">
                 <tnt:NavigationList>

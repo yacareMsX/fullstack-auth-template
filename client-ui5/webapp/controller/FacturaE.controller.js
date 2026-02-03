@@ -3,8 +3,14 @@ sap.ui.define([
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageToast",
     "sap/m/MessageBox",
-    "invoice/app/service/AutoFirmaService" // Assuming this path for AutoFirmaService
-], function (Controller, JSONModel, MessageToast, MessageBox, AutoFirmaService) {
+    "sap/m/SelectDialog",
+    "sap/m/StandardListItem",
+    "sap/m/Dialog",
+    "sap/m/Button",
+    "sap/m/Label",
+    "sap/m/Input",
+    "sap/m/VBox"
+], function (Controller, JSONModel, MessageToast, MessageBox, SelectDialog, StandardListItem, Dialog, Button, Label, Input, VBox) {
     "use strict";
 
     return Controller.extend("invoice.app.controller.FacturaE", {
@@ -22,6 +28,7 @@ sap.ui.define([
 
         _onObjectMatched: function (oEvent) {
             var sInvoiceId = oEvent.getParameter("arguments").invoiceId;
+            this._invoiceId = sInvoiceId; // Store ID
             this._loadInvoiceAndGenerateXML(sInvoiceId);
         },
 
@@ -38,9 +45,25 @@ sap.ui.define([
                     return response.json();
                 })
                 .then(function (data) {
-                    var sXML = that._generateFacturaEXML(data);
-                    that.getView().getModel("facturae").setProperty("/xml", sXML);
-                    that.getView().getModel("facturae").setProperty("/invoice", data);
+                    if (data.xml_path) {
+                        fetch("/" + data.xml_path)
+                            .then(function (res) { return res.text(); })
+                            .then(function (xml) {
+                                that.getView().getModel("facturae").setProperty("/xml", xml);
+                                that.getView().getModel("facturae").setProperty("/invoice", data);
+                                var bSigned = (data.estado === 'FIRMADA') || (xml.indexOf("ds:Signature") !== -1);
+                                that.getView().getModel("facturae").setProperty("/isSigned", bSigned);
+                            })
+                            .catch(function (err) {
+                                console.error("Error loading XML file:", err);
+                                MessageToast.show("Error loading XML file");
+                            });
+                    } else {
+                        var sXML = that._generateFacturaEXML(data);
+                        that.getView().getModel("facturae").setProperty("/xml", sXML);
+                        that.getView().getModel("facturae").setProperty("/invoice", data);
+                        that.getView().getModel("facturae").setProperty("/isSigned", false);
+                    }
                 })
                 .catch(function (error) {
                     console.error("Error loading invoice:", error);
@@ -204,27 +227,130 @@ sap.ui.define([
         },
 
         onSignXML: function () {
-            var sXML = this.getView().getModel("facturae").getProperty("/xml");
+            // 1. Fetch available certificates
+            var that = this;
+            var sToken = localStorage.getItem("auth_token");
 
-            try {
-                var sUrl = AutoFirmaService.getSignUrl(sXML);
-
-                // Inform user
-                MessageBox.information(
-                    this.getResourceBundle().getText("autoFirmaInstructions"),
-                    {
-                        title: this.getResourceBundle().getText("launchingAutoFirma"),
-                        actions: [MessageBox.Action.OK],
-                        onClose: function () {
-                            // Launch AutoFirma
-                            window.location.href = sUrl;
-                        }
+            fetch("/api/certificates?limit=100&active=true", {
+                headers: {
+                    "Authorization": "Bearer " + sToken
+                }
+            })
+                .then(function (response) {
+                    if (!response.ok) throw new Error("Could not load certificates");
+                    return response.json();
+                })
+                .then(function (aCerts) {
+                    if (!aCerts || aCerts.length === 0) {
+                        MessageBox.warning(that.getResourceBundle().getText("noCertificatesFound"));
+                        return;
                     }
-                );
-            } catch (e) {
-                console.error("Error launching AutoFirma", e);
-                MessageBox.error(this.getResourceBundle().getText("autoFirmaError") + " " + e.message);
-            }
+                    that._openCertificateDialog(aCerts);
+                })
+                .catch(function (err) {
+                    MessageBox.error(err.message);
+                });
+        },
+
+        _openCertificateDialog: function (aCerts) {
+            var that = this;
+            var oDialog = new SelectDialog({
+                title: "Seleccionar Certificado",
+                items: {
+                    path: "/certificates",
+                    template: new StandardListItem({
+                        title: "{acronimo}",
+                        description: "{filename}",
+                        type: "Active"
+                    })
+                },
+                confirm: function (oEvent) {
+                    var oSelectedItem = oEvent.getParameter("selectedItem");
+                    if (oSelectedItem) {
+                        var oCert = oSelectedItem.getBindingContext().getObject();
+                        that._openPasswordDialog(oCert);
+                    }
+                },
+                search: function (oEvent) {
+                    // Implement search if needed
+                }
+            });
+
+            var oModel = new JSONModel({ certificates: aCerts });
+            oDialog.setModel(oModel);
+            oDialog.open();
+        },
+
+        _openPasswordDialog: function (oCert) {
+            var that = this;
+            var oInput = new Input({ type: "Password", placeholder: "Contraseña del certificado" });
+
+            var oDialog = new Dialog({
+                title: "Introducir Contraseña",
+                type: "Message",
+                content: [
+                    new Label({ text: "Contraseña para " + oCert.acronimo + ":" }),
+                    oInput
+                ],
+                beginButton: new Button({
+                    text: "Firmar",
+                    type: "Emphasized",
+                    press: function () {
+                        var sPassword = oInput.getValue();
+                        oDialog.close();
+                        that._signXML(oCert.id, sPassword);
+                    }
+                }),
+                endButton: new Button({
+                    text: "Cancelar",
+                    press: function () {
+                        oDialog.close();
+                    }
+                }),
+                afterClose: function () {
+                    oDialog.destroy();
+                }
+            });
+
+            oDialog.open();
+        },
+
+        _signXML: function (sCertId, sPassword) {
+            var that = this;
+            var sXML = this.getView().getModel("facturae").getProperty("/xml");
+            var sToken = localStorage.getItem("auth_token");
+            var sInvoiceId = this._invoiceId; // Assuming stored in _onObjectMatched
+
+            MessageToast.show("Firmando documento...");
+
+            fetch("/api/invoices/facturas/" + sInvoiceId + "/sign", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + sToken
+                },
+                body: JSON.stringify({
+                    xml: sXML,
+                    certificate_id: sCertId,
+                    password: sPassword
+                })
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        return response.json().then(function (err) { throw new Error(err.error || "Signing failed"); });
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (data.signedXml) {
+                        that.getView().getModel("facturae").setProperty("/xml", data.signedXml);
+                        that.getView().getModel("facturae").setProperty("/isSigned", true);
+                        MessageBox.success("Documento firmado correctamente.");
+                    }
+                })
+                .catch(function (err) {
+                    MessageBox.error(err.message);
+                });
         },
 
         onSendAEAT: function () {
@@ -261,7 +387,6 @@ sap.ui.define([
 
         onValidateXML: function () {
             var sXML = this.getView().getModel("facturae").getProperty("/xml");
-            // Basic validation: check for key tags and non-empty values
             var bValid = true;
             var aErrors = [];
 
@@ -282,13 +407,10 @@ sap.ui.define([
 
         onSendEmail: function () {
             var oInvoice = this.getView().getModel("facturae").getProperty("/invoice");
-            var sSubject = "FacturaE: " + (oInvoice ? oInvoice.numero : this.getResourceBundle().getText("newInvoice"));
+            var sSubject = "FacturaE: " + (oInvoice ? oInvoice.numero : "Nueva Factura");
             var sBody = "Adjunto encontrará el XML de la factura.\n\nSaludos.";
-
-            // Mailto link (cannot attach file directly via mailto, but can open client)
             var sMailto = "mailto:?subject=" + encodeURIComponent(sSubject) + "&body=" + encodeURIComponent(sBody);
             window.location.href = sMailto;
-
             MessageToast.show(this.getResourceBundle().getText("openingMail"));
         },
 

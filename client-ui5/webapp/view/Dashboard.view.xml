@@ -11,7 +11,10 @@
         <f:title>
             <f:DynamicPageTitle>
                 <f:heading>
-                    <Title text="{i18n>dashboardTitle}"/>
+                    <HBox alignItems="Center">
+                        <Button icon="sap-icon://nav-back" press="onNavBack" type="Transparent" class="sapUiTinyMarginEnd" tooltip="{i18n>goBack}"/>
+                        <Title text="{i18n>dashboardTitle}"/>
+                    </HBox>
                 </f:heading>
             </f:DynamicPageTitle>
         </f:title>

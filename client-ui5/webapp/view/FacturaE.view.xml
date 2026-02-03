@@ -49,7 +49,8 @@
                     text="{i18n>signXML}" 
                     type="Emphasized" 
                     press="onSignXML" 
-                    icon="sap-icon://signature"/>
+                    icon="sap-icon://signature"
+                    visible="{= !${facturae>/isSigned}}"/>
                 <Button 
                     text="{i18n>sendAEAT}" 
                     enabled="false" 

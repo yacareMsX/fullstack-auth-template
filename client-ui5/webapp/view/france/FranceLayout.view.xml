@@ -8,27 +8,14 @@
     height="100%">
     
     <tnt:ToolPage id="toolPage">
-        <tnt:header>
-            <tnt:ToolHeader class="bannerHeader">
-                <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" tooltip="Menu" class="sapUiSmallMarginEnd" visible="{ui>/menuVisible}"/>
-                <Button icon="sap-icon://nav-back" type="Transparent" press="onNavBack" tooltip="Back" class="sapUiSmallMarginEnd" visible="{ui>/backButtonVisible}"/>
-                <Title text="{ui>/headerTitle}" level="H2" class="sapUiSmallMarginBegin"/>
-                <ToolbarSpacer/>
-                <Button icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="Toggle Dark Mode" class="sapUiSmallMarginEnd"/>
-                <Button icon="sap-icon://search" type="Transparent" tooltip="{i18n>search}"/>
-                <Button icon="sap-icon://sys-help-2" type="Transparent" tooltip="Help"/>
-                <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications"/>
-                <Avatar id="languageAvatar" src="img/flag_en.png" displaySize="XS" press="onLanguagePress" class="sapUiSmallMarginBeginEnd" tooltip="Language"/>
-                <Avatar src="img/profile_pic.png" displaySize="XS" press="onProfilePress" class="sapUiSmallMarginBegin" tooltip="Profile"/>
-            </tnt:ToolHeader>
-        </tnt:header>
+
 
         <!-- Side Navigation -->
         <tnt:sideContent>
             <tnt:SideNavigation
-                expanded="true"
+                expanded="{ui>/franceSidebarExpanded}"
                 itemSelect="onItemSelect"
-                visible="{ui>/sidebarVisible}">
+                visible="{ui>/franceSidebarVisible}">
                 <tnt:NavigationList>
                     <tnt:NavigationListItem
                         text="Dashboard"

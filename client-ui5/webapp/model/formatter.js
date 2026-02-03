@@ -85,6 +85,8 @@ sap.ui.define([], function () {
                 return "sap-icon://email";
             } else if (sUpperOrigin.includes("API")) {
                 return "sap-icon://api";
+            } else if (sUpperOrigin.includes("SAP")) {
+                return "sap-icon://sap-logo-shape";
             } else if (sUpperOrigin.includes("IMPORT")) {
                 return "sap-icon://upload";
             }

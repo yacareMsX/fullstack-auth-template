@@ -1,112 +1,66 @@
-<mvc:View
-    controllerName="invoice.app.controller.Shell"
+<mvc:View controllerName="invoice.app.controller.Shell"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:tnt="sap.tnt"
-    xmlns:core="sap.ui.core"
-    displayBlock="true"
-    height="100%">
-    
-    <tnt:ToolPage id="toolPage">
-        <tnt:header>
-            <tnt:ToolHeader class="bannerHeader" visible="{ui>/headerVisible}">
-                <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" tooltip="Menu" class="sapUiSmallMarginEnd" visible="{ui>/menuVisible}"/>
-                <Button icon="sap-icon://nav-back" type="Transparent" press="onNavBack" tooltip="Back" class="sapUiSmallMarginEnd" visible="{ui>/backButtonVisible}"/>
-                <Title text="{ui>/headerTitle}" level="H2" class="sapUiSmallMarginBegin"/>
-                <ToolbarSpacer/>
-                <Button icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="Toggle Dark Mode" class="sapUiSmallMarginEnd"/>
-                <Button icon="sap-icon://search" type="Transparent" tooltip="{i18n>search}"/>
-                <Button icon="sap-icon://sys-help-2" type="Transparent" tooltip="Help"/>
-                <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications"/>
-                <Avatar id="languageAvatar" src="img/flag_en.png" displaySize="XS" press="onLanguagePress" class="sapUiSmallMarginBeginEnd" tooltip="Language"/>
-                <Avatar src="img/profile_pic.png" displaySize="XS" press="onProfilePress" class="sapUiSmallMarginBegin" tooltip="Profile"/>
-            </tnt:ToolHeader>
-        </tnt:header>
+    xmlns:f="sap.f"
+    xmlns:core="sap.ui.core" displayBlock="true" height="100%">
 
-        <!-- Side Navigation -->
-        <tnt:sideContent>
-            <tnt:SideNavigation
-                expanded="true"
-                itemSelect="onItemSelect"
-                visible="{ui>/sidebarVisible}">
-                <tnt:NavigationList>
-                    <tnt:NavigationListItem
-                        text="Dashboard"
-                        icon="sap-icon://bbyd-dashboard"
-                        key="dashboard"/>
+    <VBox height="100%">
+        <f:ShellBar title="{ui>/headerTitle}" homeIcon="img/t4s_logo.png" homeIconPressed="onNavHome" showMenuButton="true" menuButtonPressed="onMenuPress" showSearch="true" showNotifications="true" notificationsPressed="onNotificationsPress" showProductSwitcher="true" productSwitcherPressed="onProductSwitcherPress">
+            <f:additionalContent>
+                <Button id="themeButton" icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="Toggle Theme"/>
+                <Avatar id="languageAvatar" displaySize="XS" press="onLanguagePress" tooltip="Select Language" class="sapUiTinyMarginBegin"/>
+            </f:additionalContent>
+            <f:profile>
+                <Avatar press="onProfilePress" src="img/profile_pic.png" displaySize="XS"/>
+            </f:profile>
+        </f:ShellBar>
 
-                    <tnt:NavigationListItem
-                        text="{i18n>issueInvoices}"
-                        icon="sap-icon://create-form"
-                        expanded="false">
-                        <tnt:NavigationListItem
-                            text="{i18n>invoiceList}"
-                            key="issueList"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>createNew}"
-                            key="issueNew"/>
-                    </tnt:NavigationListItem>
-                    
-                    <tnt:NavigationListItem
-                        text="{i18n>receiptInvoices}"
-                        icon="sap-icon://inbox"
-                        expanded="false">
-                        <tnt:NavigationListItem
-                            text="{i18n>invoiceList}"
-                            key="receiptList"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>createNew}"
-                            key="receiptNew"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>newScanningInvoice}"
-                            key="scanInvoice"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>uploadExcel}"
-                            key="uploadExcel"/>
-                    </tnt:NavigationListItem>
-                    
-                    <tnt:NavigationListItem
-                        text="{i18n>catalog}"
-                        icon="sap-icon://product"
-                        expanded="false">
-                        <tnt:NavigationListItem
-                            text="{i18n>createItem}"
-                            key="catalogNew"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>itemList}"
-                            key="catalogList"/>
-                    </tnt:NavigationListItem>
+        <tnt:ToolPage id="toolPage" sideExpanded="{ui>/shellSidebarExpanded}">
+            <tnt:layoutData>
+                <FlexItemData growFactor="1" baseSize="0%"/>
+            </tnt:layoutData>
+            <!-- Side Navigation -->
+            <tnt:sideContent>
+                <tnt:SideNavigation expanded="{ui>/shellSidebarExpanded}" itemSelect="onItemSelect" visible="{ui>/shellSidebarVisible}">
+                    <tnt:NavigationList>
+                        <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bbyd-dashboard" key="dashboard"/>
 
-                    <tnt:NavigationListItem
-                        text="{i18n>config}"
-                        icon="sap-icon://action-settings"
-                        expanded="false">
-                        <tnt:NavigationListItem text="{i18n>issuers}" key="issuerManager"/>
-                        <tnt:NavigationListItem text="{i18n>receivers}" key="receiverManager"/>
-                    </tnt:NavigationListItem>
+                        <tnt:NavigationListItem text="{i18n>issueInvoices}" icon="sap-icon://create-form" expanded="false">
+                            <tnt:NavigationListItem text="{i18n>invoiceList}" key="issueList"/>
+                            <tnt:NavigationListItem text="{i18n>createNew}" key="issueNew"/>
+                        </tnt:NavigationListItem>
 
+                        <tnt:NavigationListItem text="{i18n>receiptInvoices}" icon="sap-icon://inbox" expanded="false">
+                            <tnt:NavigationListItem text="{i18n>invoiceList}" key="receiptList"/>
+                            <tnt:NavigationListItem text="{i18n>createNew}" key="receiptNew"/>
+                            <tnt:NavigationListItem text="{i18n>newScanningInvoice}" key="scanInvoice"/>
+                            <tnt:NavigationListItem text="{i18n>uploadExcel}" key="uploadExcel"/>
+                        </tnt:NavigationListItem>
 
+                        <tnt:NavigationListItem text="{i18n>catalog}" icon="sap-icon://product" expanded="false">
+                            <tnt:NavigationListItem text="{i18n>createItem}" key="catalogNew"/>
+                            <tnt:NavigationListItem text="{i18n>itemList}" key="catalogList"/>
+                        </tnt:NavigationListItem>
 
-                    <tnt:NavigationListItem
-                        text="{i18n>admin}"
-                        icon="sap-icon://action-settings"
-                        expanded="false">
-                        <tnt:NavigationListItem
-                            text="{i18n>origins}"
-                            key="originList"/>
-                    </tnt:NavigationListItem>
+                        <tnt:NavigationListItem text="{i18n>config}" icon="sap-icon://action-settings" expanded="false">
+                            <tnt:NavigationListItem text="{i18n>issuers}" key="issuerManager"/>
+                            <tnt:NavigationListItem text="{i18n>receivers}" key="receiverManager"/>
+                        </tnt:NavigationListItem>
 
-                </tnt:NavigationList>
-            </tnt:SideNavigation>
-        </tnt:sideContent>
-        
-        <!-- Main Content -->
-        <tnt:mainContents>
-            <NavContainer id="shellNavContainer" height="100%">
-                <pages>
-                    <mvc:XMLView viewName="invoice.app.view.Home"/>
-                </pages>
-            </NavContainer>
-        </tnt:mainContents>
-    </tnt:ToolPage>
+                        <tnt:NavigationListItem text="{i18n>admin}" icon="sap-icon://action-settings" expanded="false">
+                            <tnt:NavigationListItem text="{i18n>origins}" key="originList"/>
+                            <tnt:NavigationListItem text="Gestor de Certificados" icon="sap-icon://certificate" key="certificateLayout"/>
+                        </tnt:NavigationListItem>
+
+                    </tnt:NavigationList>
+                </tnt:SideNavigation>
+            </tnt:sideContent>
+
+            <!-- Main Content -->
+            <tnt:mainContents>
+                <App id="shellNavContainer" />
+            </tnt:mainContents>
+        </tnt:ToolPage>
+    </VBox>
 </mvc:View>

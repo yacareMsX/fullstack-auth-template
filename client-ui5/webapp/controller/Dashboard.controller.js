@@ -168,6 +168,11 @@ sap.ui.define([
             return parseFloat(sValue) || 0;
         },
 
+        onNavBack: function () {
+            // Navigate back to Home
+            this.getOwnerComponent().getRouter().navTo("home");
+        },
+
         onNavToInvoiceDetail: function (oEvent) {
             var oItem = oEvent.getSource();
             var oContext = oItem.getBindingContext("dashboard");

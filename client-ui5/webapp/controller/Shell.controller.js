@@ -10,10 +10,22 @@ sap.ui.define([
         onInit: function () {
             // Initialize UI model for shell state
             var oUIModel = new sap.ui.model.json.JSONModel({
-                sidebarVisible: true,
-                sidebarVisible: true,
-                menuVisible: true,
-                headerTitle: "Compliance Hub",
+                // Global Shell Sidebar
+                shellSidebarVisible: false, // Default to false for Home
+                shellSidebarExpanded: true,
+
+                // Sub-App Sidebars
+                statutorySidebarVisible: true,
+                statutorySidebarExpanded: true,
+
+                franceSidebarVisible: true,
+                franceSidebarExpanded: true,
+
+                certificateSidebarVisible: true,
+                certificateSidebarExpanded: true,
+
+                menuVisible: false, // Default to false for Home
+                headerTitle: "Home",
                 headerVisible: true,
                 backButtonVisible: false,
                 themeIcon: "sap-icon://show" // Default icon
@@ -40,7 +52,10 @@ sap.ui.define([
             }
 
             var sFlagImg = sCurrentLanguage === "es" ? "img/flag_es.png" : "img/flag_en.png";
-            this.byId("languageAvatar").setSrc(sFlagImg);
+            var oLangAvatar = this.byId("languageAvatar");
+            if (oLangAvatar) {
+                oLangAvatar.setSrc(sFlagImg);
+            }
 
             // Attach to router for navigation within shell
             var oRouter = this.getOwnerComponent().getRouter();
@@ -48,7 +63,7 @@ sap.ui.define([
 
             // Auto-collapse side navigation on phone
             if (sap.ui.Device.system.phone) {
-                this.byId("toolPage").setSideExpanded(false);
+                oUIModel.setProperty("/shellSidebarExpanded", false);
             }
         },
 
@@ -101,9 +116,22 @@ sap.ui.define([
         },
 
         onMenuPress: function () {
-            var oToolPage = this.byId("toolPage");
-            var bSideExpanded = oToolPage.getSideExpanded();
-            oToolPage.setSideExpanded(!bSideExpanded);
+            var oUIModel = this.getView().getModel("ui");
+            var sContext = this._sCurrentContext || "shell";
+
+            if (sContext === "shell") {
+                var bExpanded = oUIModel.getProperty("/shellSidebarExpanded");
+                oUIModel.setProperty("/shellSidebarExpanded", !bExpanded);
+            } else if (sContext === "france") {
+                var bExpanded = oUIModel.getProperty("/franceSidebarExpanded");
+                oUIModel.setProperty("/franceSidebarExpanded", !bExpanded);
+            } else if (sContext === "statutory") {
+                var bExpanded = oUIModel.getProperty("/statutorySidebarExpanded");
+                oUIModel.setProperty("/statutorySidebarExpanded", !bExpanded);
+            } else if (sContext === "certificate") {
+                var bExpanded = oUIModel.getProperty("/certificateSidebarExpanded");
+                oUIModel.setProperty("/certificateSidebarExpanded", !bExpanded);
+            }
         },
 
         onNavBack: function () {
@@ -112,60 +140,63 @@ sap.ui.define([
 
         _onRouteMatched: function (oEvent) {
             var sRouteName = oEvent.getParameter("name");
+
             var oUIModel = this.getView().getModel("ui");
-            var oToolPage = this.byId("toolPage");
+            var oToolPage = this.byId("toolPage"); // Keep this if needed for other things, but rely on model for visibility
             var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
             var sAppTitle = oResourceBundle.getText("appTitle");
 
             // Hide sidebar and menu button on Home screen
             if (sRouteName === "home") {
-                oUIModel.setProperty("/sidebarVisible", false);
+                oUIModel.setProperty("/shellSidebarVisible", false);
                 oUIModel.setProperty("/menuVisible", false);
                 oUIModel.setProperty("/headerVisible", true);
                 oUIModel.setProperty("/backButtonVisible", false);
                 oUIModel.setProperty("/headerTitle", sAppTitle);
-                oToolPage.setSideExpanded(false);
-            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0 || sRouteName.indexOf("france") === 0)) {
-                // Statutory App Mode: Hide Main Shell Sidebar/Header to allow Sub-App to take over
-                oUIModel.setProperty("/sidebarVisible", false);
+                oUIModel.setProperty("/shellSidebarExpanded", false);
+            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0 || sRouteName.indexOf("france") === 0 || sRouteName.indexOf("certificate") === 0)) {
+                // Statutory/France/Cert App Mode
+                // Show Global Header (Unified)
+                oUIModel.setProperty("/headerVisible", true);
+
+                // Hide Global Sidebar (Sub-App handles its own)
+                oUIModel.setProperty("/shellSidebarVisible", false);
+
+                // Hide Menu Button (Global Sidebar is hidden, so toggling it is useless)
                 oUIModel.setProperty("/menuVisible", false);
-                oUIModel.setProperty("/headerVisible", false);
-                // We might want to keep back button or let the sub-app handle "Home"
-                oUIModel.setProperty("/backButtonVisible", false);
-                // We hide the entire shell header elements? No, Shell.view uses tnt:ToolPage structure.
-                // If we hide sidebarVisible, tnt:ToolPage just hides layout[1].
-                // But header remains. StatutoryLayout ALSO has a header. 
-                // So we should probably hide the Shell Header content or make it minimal.
-                // However, Shell view has <tnt:header><tnt:ToolHeader>...
 
-                // Let's assume hiding the sidebar is enough to fix the Visual "Double Sidebar".
-                // If the user wants a full sub-app experience, we might need to do more, but let's start with sidebar.
+                // Show Back Button (To allow navigation back to Home/Dashboard)
+                oUIModel.setProperty("/backButtonVisible", true);
 
-                // Actually, if StatutoryLayout has its OWN header, we will have double headers too.
-                // Let's check StatutoryLayout. It DOES have a header.
-                // So we should try to look like "Fullscreen" or similar.
-                // Since we can't easily remove the Shell Header without a boolean, let's look at Shell.view again.
-                // It doesn't seem to have a visible property on tnt:ToolHeader.
+                // Update Title? Optional, sub-apps might behave better with a generic title or we let them update it if they have access to the model.
+                // Keeping previous title logic implies we set it here.
+                if (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0) {
+                    this._sCurrentContext = "statutory";
+                    oUIModel.setProperty("/headerTitle", "Compliance Hub - Statutory Report");
+                    oUIModel.setProperty("/statutorySidebarVisible", true);
+                } else if (sRouteName.indexOf("france") === 0) {
+                    this._sCurrentContext = "france";
+                    oUIModel.setProperty("/headerTitle", "Compliance Hub - France");
+                    oUIModel.setProperty("/franceSidebarVisible", true);
+                } else if (sRouteName.indexOf("certificate") === 0) {
+                    this._sCurrentContext = "certificate";
+                    oUIModel.setProperty("/headerTitle", "Gestor de Certificados");
+                    oUIModel.setProperty("/certificateSidebarVisible", true);
+                }
 
-                // For now, let's just hide the sidebar to fix the immediate "Sidebar inside Sidebar" issue.
-                // And maybe Update the Title.
-                oUIModel.setProperty("/headerTitle", "Compliance Hub - Statutory Reporting");
-                oToolPage.setSideExpanded(false);
+                oUIModel.setProperty("/shellSidebarExpanded", false);
             } else {
-                oUIModel.setProperty("/sidebarVisible", true);
+                this._sCurrentContext = "shell";
+                oUIModel.setProperty("/shellSidebarVisible", true);
+                oUIModel.setProperty("/sidebarVisible", true); // Fallback for any missed bindings
                 oUIModel.setProperty("/menuVisible", true);
                 oUIModel.setProperty("/headerVisible", true);
                 oUIModel.setProperty("/backButtonVisible", true);
-                oToolPage.setSideExpanded(true);
+                oUIModel.setProperty("/shellSidebarExpanded", true);
 
                 // Dynamic Title Logic
                 var sPageTitle = "eInvoice Ley C&C";
-
-                if (sPageTitle) {
-                    oUIModel.setProperty("/headerTitle", sAppTitle + " / " + sPageTitle);
-                } else {
-                    oUIModel.setProperty("/headerTitle", sAppTitle);
-                }
+                oUIModel.setProperty("/headerTitle", sAppTitle + " / " + sPageTitle);
             }
         },
 
@@ -176,7 +207,7 @@ sap.ui.define([
 
             switch (sKey) {
                 case "dashboard":
-                    oRouter.navTo("dashboard");
+                    oRouter.navTo("home");
                     break;
                 case "issueList":
                     oRouter.navTo("invoiceList", { tipo: "ISSUE" });
@@ -233,6 +264,9 @@ sap.ui.define([
                 case "invoiceCountryList":
                     oRouter.navTo("invoiceCountryList");
                     break;
+                case "certificateLayout":
+                    oRouter.navTo("certificateLayout");
+                    break;
             }
 
             // Auto-collapse on mobile after selection
@@ -278,7 +312,10 @@ sap.ui.define([
         _setLanguage: function (sLanguage) {
             sap.ui.getCore().getConfiguration().setLanguage(sLanguage);
             var sFlagImg = sLanguage === "es" ? "img/flag_es.png" : "img/flag_en.png";
-            this.byId("languageAvatar").setSrc(sFlagImg);
+            var oLangAvatar = this.byId("languageAvatar");
+            if (oLangAvatar) {
+                oLangAvatar.setSrc(sFlagImg);
+            }
         },
 
         onProfilePress: function (oEvent) {

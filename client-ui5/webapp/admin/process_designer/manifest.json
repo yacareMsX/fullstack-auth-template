@@ -77,6 +77,16 @@
                     "name": "xmlMapping",
                     "pattern": "mapping",
                     "target": "xmlMapping"
+                },
+                {
+                    "name": "documentationXml",
+                    "pattern": "documentation/xml",
+                    "target": "documentationXml"
+                },
+                {
+                    "name": "documentationDetail",
+                    "pattern": "documentation/xml/{id}",
+                    "target": "documentationDetail"
                 }
             ],
             "targets": {
@@ -91,6 +101,14 @@
                 "xmlMapping": {
                     "viewId": "xmlMapping",
                     "viewName": "XmlMapping"
+                },
+                "documentationXml": {
+                    "viewId": "documentationXml",
+                    "viewName": "DocumentationXml"
+                },
+                "documentationDetail": {
+                    "viewId": "documentationDetail",
+                    "viewName": "DocumentationDetail"
                 },
                 "notFound": {
                     "viewId": "notFound",

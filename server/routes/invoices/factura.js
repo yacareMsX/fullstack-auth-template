@@ -4,6 +4,28 @@ const { authenticateToken } = require('../../middleware/auth');
 const db = require('../../db');
 const { logAction } = require('../../utils/audit');
 const router = express.Router();
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+const { signXml } = require('../../utils/xml_signer');
+
+// Encryption Configuration (Must match certificates.js)
+const ALGORITHM = 'aes-256-gcm';
+const ENCRYPTION_KEY = crypto.scryptSync(process.env.JWT_SECRET || 'fallback-secret', 'salt', 32);
+
+function decrypt(encryptedHex, ivHex) {
+    const iv = Buffer.from(ivHex, 'hex');
+    const encryptedBytes = Buffer.from(encryptedHex, 'hex');
+    const authTagLength = 16;
+    const authTag = encryptedBytes.slice(encryptedBytes.length - authTagLength);
+    const encryptedContent = encryptedBytes.slice(0, encryptedBytes.length - authTagLength);
+
+    const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+    decipher.setAuthTag(authTag);
+    const decrypted = Buffer.concat([decipher.update(encryptedContent), decipher.final()]);
+    return decrypted;
+}
+
 
 // Get all invoices with filters
 /**
@@ -69,7 +91,7 @@ router.get('/next-number', authenticateToken, async (req, res) => {
             }
         }
 
-        const paddedSeq = nextSequence.toString().padStart(12, '0');
+        const paddedSeq = nextSequence.toString().padStart(11, '0');
         const nextNumber = `${displayPrefix}${paddedSeq}`;
 
         res.json({ nextNumber });
@@ -158,7 +180,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
         // Get invoice with issuer and receiver details
         const invoiceResult = await db.query(
-            `SELECT f.*,
+            `SELECT f.*, o.descripcion as origen_descripcion,
     e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
     e.email as emisor_email, e.telefono as emisor_telefono,
     r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
@@ -166,6 +188,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
        FROM factura f
        JOIN emisor e ON f.id_emisor = e.id_emisor
        JOIN receptor r ON f.id_receptor = r.id_receptor
+       LEFT JOIN origenes o ON f.id_origen = o.id_origen
        WHERE f.id_factura = $1`,
             [id]
         );
@@ -738,4 +761,67 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         client.release();
     }
 });
+
+
+// Sign Invoice XML (FacturaE)
+router.post('/:id/sign', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { xml, certificate_id, password } = req.body;
+
+        if (!xml || !certificate_id) {
+            return res.status(400).json({ error: 'XML and certificate_id are required' });
+        }
+
+        // 1. Fetch Certificate
+        const certResult = await db.query(
+            'SELECT * FROM certificates WHERE id = $1',
+            [certificate_id]
+        );
+
+        if (certResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Certificate not found' });
+        }
+        const cert = certResult.rows[0];
+
+        // 2. Decrypt P12
+        let p12Buffer;
+        try {
+            p12Buffer = decrypt(cert.encrypted_p12, cert.iv);
+        } catch (e) {
+            console.error("Decryption failed:", e);
+            return res.status(500).json({ error: 'Failed to access certificate secure storage' });
+        }
+
+        // 3. Sign XML
+        const signedXml = signXml(xml, p12Buffer, password);
+
+        // 4. Save Signed XML
+        const filename = `signed_invoice_${id}_${Date.now()}.xml`;
+        const uploadsDir = path.join(__dirname, '../../uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+        const filePath = path.join(uploadsDir, filename);
+        fs.writeFileSync(filePath, signedXml);
+
+        // 5. Update Invoice Status and Path
+        await db.query(
+            "UPDATE factura SET estado = 'FIRMADA', xml_path = $1 WHERE id_factura = $2",
+            [`uploads/${filename}`, id]
+        );
+
+        // 6. Return result
+        res.json({
+            signedXml,
+            message: 'Invoice signed and saved successfully',
+            xml_path: `uploads/${filename}`
+        });
+
+    } catch (error) {
+        console.error('Error signing XML:', error);
+        res.status(500).json({ error: 'Internal server error: ' + error.message });
+    }
+});
+
 module.exports = router;

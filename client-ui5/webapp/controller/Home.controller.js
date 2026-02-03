@@ -37,6 +37,16 @@ sap.ui.define([
             });
         },
 
+        onShowInfo: function () {
+            sap.ui.require(["sap/m/MessageBox"], function (MessageBox) {
+                // Style matches the request: Blue header (Info state), "Information" title, OK button.
+                MessageBox.information("Por rellenar", {
+                    title: "Information",
+                    actions: [MessageBox.Action.OK]
+                });
+            });
+        },
+
         onNavigateToDashboard: function () {
             this.getOwnerComponent().getRouter().navTo("dashboard");
         },
@@ -75,6 +85,10 @@ sap.ui.define([
 
         onNavigateToFrance: function () {
             this.getOwnerComponent().getRouter().navTo("franceDashboard");
+        },
+
+        onNavigateToCertificates: function () {
+            this.getOwnerComponent().getRouter().navTo("certificateLayout");
         },
 
         onGenericTilePress: function (oEvent) {

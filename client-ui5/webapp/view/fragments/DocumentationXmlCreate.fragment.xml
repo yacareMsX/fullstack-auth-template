@@ -1,0 +1,28 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog title="Crear Documentación" contentWidth="400px">
+        <content>
+            <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                <f:content>
+                    <Label text="Nombre Objeto" required="true"/>
+                    <Input value="{newDoc>/nombre_objeto}" maxLength="20" placeholder="Max 20 chars"/>
+                    
+                    <Label text="Tipo de Estructura" required="true"/>
+                    <Input value="{newDoc>/tipo_estructura}" maxLength="10" placeholder="Max 10 chars"/>
+                    
+                    <Label text="Formato" required="true"/>
+                    <Input value="{newDoc>/formato}" maxLength="5" placeholder="Max 5 chars"/>
+                    
+                    <Label text="Descripción" required="true"/>
+                    <TextArea value="{newDoc>/descripcion}" maxLength="120" rows="3" placeholder="Max 120 chars"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <buttons>
+            <Button text="Crear" type="Emphasized" press="onSubmitCreate"/>
+            <Button text="Cancelar" press="onDialogCancel"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

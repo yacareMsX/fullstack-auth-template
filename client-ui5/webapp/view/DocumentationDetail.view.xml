@@ -1,0 +1,49 @@
+<mvc:View controllerName="invoice.app.controller.DocumentationDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:u="sap.ui.unified"
+    xmlns:core="sap.ui.core"
+    xmlns:t="sap.ui.table" displayBlock="true" height="100%">
+    <Page title="Detalle Documentación" showNavButton="true" navButtonPress="onNavBack">
+        <headerContent>
+            <Button text="Guardar" type="Emphasized" icon="sap-icon://save" press="onSave"/>
+        </headerContent>
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Label text="Subir fichero estructura (XSD/XML)" design="Bold"/>
+                <u:FileUploader id="fileUploader" name="myFileUpload" uploadUrl="" tooltip="Seleccione un archivo XSD o XML" change="onFileChange" typeMissmatch="handleTypeMissmatch" style="Emphasized" fileType="xsd,xml" placeholder="Seleccione un archivo..." class="sapUiSmallMarginBottom"/>
+
+                <t:TreeTable id="fieldsTable" rows="{path:'fields>/root', parameters: {arrayNames:['children']}}" selectionMode="Single" enableColumnReordering="false" visibleRowCount="15">
+                    <t:columns>
+                        <t:Column width="30%">
+                            <Label text="Nombre Campo"/>
+                            <t:template>
+                                <Text text="{fields>name}" wrapping="false"/>
+                            </t:template>
+                        </t:Column>
+                        <t:Column width="40%">
+                            <Label text="Descripción"/>
+                            <t:template>
+                                <Text text="{fields>description}" wrapping="true"/>
+                            </t:template>
+                        </t:Column>
+                        <t:Column width="30%">
+                            <Label text="Estructura SAP / Acciones"/>
+                            <t:template>
+                                <HBox alignItems="Center" width="100%">
+                                    <Input value="{fields>sapStructure}" visible="{fields>isLeaf}" width="70%">
+                                        <layoutData>
+                                            <FlexItemData growFactor="1"/>
+                                        </layoutData>
+                                    </Input>
+                                    <Button icon="sap-icon://notes" type="Transparent" press="onOpenNoteDialog" tooltip="Notas" class="sapUiTinyMarginBegin"/>
+                                    <Button icon="sap-icon://lightbulb" type="Transparent" press="onAIAction" tooltip="Inteligencia Artificial" class="sapUiTinyMarginBegin" visible="{fields>isLeaf}"/>
+                                </HBox>
+                            </t:template>
+                        </t:Column>
+                    </t:columns>
+                </t:TreeTable>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

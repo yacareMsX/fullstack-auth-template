@@ -26,3 +26,10 @@ server:
         baseUri: "https://127.0.0.1:3000/api-docs"
         strictSSL: false
         secure: false
+    - name: ui5-middleware-simpleproxy
+      beforeMiddleware: serveResources
+      mountPath: /uploads
+      configuration:
+        baseUri: "https://127.0.0.1:3000/uploads"
+        strictSSL: false
+        secure: false

@@ -459,3 +459,111 @@ body,
     padding-bottom: 0.5rem;
     margin-bottom: 1rem !important;
 }
+
+/* Custom Light Theme Background Override */
+html.sapUiTheme-sap_horizon {
+    --sapBackgroundColor: #ffffff;
+    --sapShell_Background: #ffffff;
+    --sapShellColor: #ffffff;
+    /* Make header white */
+    --sapShell_TextColor: #000000;
+    /* Ensure text is dark */
+    --sapPageHeader_Background: #ffffff;
+    --sapPageFooter_Background: #ffffff;
+    --sapGroup_ContentBackground: #ffffff;
+    --sapList_Background: #ffffff;
+    --sapObjectHeader_Background: #ffffff;
+    --sapObjectPageSection_Background: #ffffff;
+}
+
+html.sapUiTheme-sap_horizon,
+.sapUiTheme-sap_horizon body,
+.sapUiTheme-sap_horizon .sapMPage,
+.sapUiTheme-sap_horizon .sapUxAPObjectPageLayout,
+.sapUiTheme-sap_horizon .sapUiBody,
+.sapUiTheme-sap_horizon .sapMPageBgStandard,
+.sapUiTheme-sap_horizon .homePage,
+.sapUiTheme-sap_horizon .sapMApp,
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSection,
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSubSection {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Hide Default Section Header but keep Anchor Bar working */
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSectionHeader {
+    display: none !important;
+}
+
+/* Custom Section Header Style */
+.customSectionHeader {
+    margin-bottom: 1rem !important;
+    margin-top: 0.5rem !important;
+}
+
+.customSectionTitle {
+    color: #1d2d3e !important;
+    /* Dark navy color provided in screenshot */
+    font-family: "Outfit", sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1.5rem !important;
+    margin-right: 0.5rem !important;
+}
+
+.customSectionInfoBtn .sapMBtnInner {
+    background: transparent !important;
+    border: none !important;
+    color: #0070f2 !important;
+    /* SAP Blue */
+}
+
+.customSectionInfoBtn .sapMBtnIcon {
+    font-size: 1.25rem !important;
+    color: #0070f2 !important;
+}
+
+/* Fix Focus Outline without covering content */
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSection:focus,
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSubSection:focus {
+    outline: none !important;
+    border: none !important;
+}
+
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSection:focus::before,
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSubSection:focus::before {
+    border: 1px solid #ffffff !important;
+    /* Make border white as requested */
+    outline: none !important;
+    background: transparent !important;
+    /* Ensure content is visible */
+    pointer-events: none !important;
+}
+
+/* Remove Blue Border/Underline from Anchor Bar */
+.sapUiTheme-sap_horizon .sapUxAPAnchorBar .sapMBtn::after {
+    display: none !important;
+    /* Hides the selection line */
+}
+
+.sapUiTheme-sap_horizon .sapUxAPAnchorBar .sapMBtnInner {
+    border-bottom: none !important;
+}
+
+.sapUiTheme-sap_horizon .sapUxAPAnchorBar .sapUxAPAnchorBarButtonSelected .sapMBtnContent {
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
+/* Restore Login Page Background - Override the global white force */
+html.sapUiTheme-sap_horizon .loginPage,
+html.sapUiTheme-sap_horizon .loginPage .sapMPage,
+html.sapUiTheme-sap_horizon .loginPage .sapMPageBgStandard {
+    background-image: url('../img/login_bg.png') !important;
+    background-color: transparent !important;
+    background-size: cover !important;
+    background-attachment: fixed !important;
+}

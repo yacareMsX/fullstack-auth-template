@@ -24,6 +24,7 @@
                     </Toolbar>
                 </headerToolbar>
                 <columns>
+                    <Column><Text text="Acrónimo"/></Column>
                     <Column><Text text="Filename"/></Column>
                     <Column><Text text="CN"/></Column>
                     <Column><Text text="Caducidad"/></Column>
@@ -32,6 +33,7 @@
                 <items>
                     <ColumnListItem type="Navigation" press="onItemPress">
                         <cells>
+                            <Text text="{certificates>acronimo}"/>
                             <Text text="{certificates>filename}"/>
                             <Text text="{certificates>cn}"/>
                             <Text text="{certificates>expiry_date}"/>

@@ -1,0 +1,53 @@
+<mvc:View
+    controllerName="invoice.app.controller.certificates.CertificateDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:u="sap.ui.unified"
+    xmlns:core="sap.ui.core">
+    
+    <Page title="{= ${certificate>/id} ? 'Detalle del Certificado' : 'Nuevo Certificado' }" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <f:SimpleForm editable="true" layout="ResponsiveGridLayout" title="Información General">
+                <f:content>
+                    <Label text="Acrónimo" required="true"/>
+                    <Input value="{certificate>/acronimo}" editable="{= !${certificate>/id} }"/>
+
+                    <Label text="Fichero (P12)" required="{= !${certificate>/id} }"/>
+                    <u:FileUploader
+                        id="fileUploader"
+                        name="p12File"
+                        fileType="p12,pfx"
+                        placeholder="Seleccione archivo P12..."
+                        visible="{= !${certificate>/id} }"/>
+                    <Input value="{certificate>/filename}" visible="{= !!${certificate>/id} }" editable="false"/>
+
+                    <Label text="Contraseña P12" visible="{= !${certificate>/id} }"/>
+                    <Input value="{certificate>/password}" type="Password" placeholder="Contraseña para abrir el certificado" visible="{= !${certificate>/id} }"/>
+                    
+                    <Label text="Common Name (CN)"/>
+                    <Input value="{certificate>/cn}" editable="false"/>
+                    
+                    <Label text="Fecha Creación"/>
+                    <DateTimePicker value="{certificate>/created_date}" valueFormat="yyyy-MM-ddTHH:mm:ss" displayFormat="yyyy-MM-dd HH:mm:ss" editable="false"/>
+                    
+                    <Label text="Fecha Caducidad"/>
+                    <DateTimePicker value="{certificate>/expiry_date}" valueFormat="yyyy-MM-ddTHH:mm:ss" displayFormat="yyyy-MM-dd HH:mm:ss" editable="false"/>
+                    
+                    <Label text="Cadena de Certificados"/>
+                    <TextArea value="{certificate>/chain}" rows="5" editable="false"/>
+                    
+                    <Label text="Activo"/>
+                    <Switch state="{certificate>/active}"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button text="Guardar" type="Emphasized" press="onSave"/>
+                <Button text="Cancelar" press="onCancel"/>
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

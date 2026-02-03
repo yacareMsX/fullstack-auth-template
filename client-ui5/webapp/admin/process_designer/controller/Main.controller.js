@@ -38,6 +38,8 @@ sap.ui.define([
                 else sKey = "workflowList"; // Fallback for detail view
             } else if (sRouteName === "xmlMapping") {
                 sKey = "xmlMapping";
+            } else if (sRouteName === "documentationXml") {
+                sKey = "documentationXml";
             }
 
             if (sKey && oSideNav) {
@@ -95,6 +97,8 @@ sap.ui.define([
                 oRouter.navTo("workflowList");
             } else if (sKey === "xmlMapping") {
                 oRouter.navTo("xmlMapping");
+            } else if (sKey === "documentationXml") {
+                oRouter.navTo("documentationXml");
             } else {
                 MessageToast.show("Opción seleccionada: " + sKey + ". Funcionalidad en construcción.");
             }

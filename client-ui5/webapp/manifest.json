@@ -43,7 +43,9 @@
                 "sap.m": {},
                 "sap.ui.core": {},
                 "sap.ui.layout": {},
-                "sap.tnt": {}
+                "sap.tnt": {},
+                "sap.f": {},
+                "sap.uxap": {}
             }
         },
         "models": {
@@ -316,6 +318,30 @@
                         "franceLayout",
                         "franceOriginList"
                     ]
+                },
+                {
+                    "name": "certificateLayout",
+                    "pattern": "certificates",
+                    "target": [
+                        "certificateLayout",
+                        "certificateList"
+                    ]
+                },
+                {
+                    "name": "certificateList",
+                    "pattern": "certificates/list",
+                    "target": [
+                        "certificateLayout",
+                        "certificateList"
+                    ]
+                },
+                {
+                    "name": "certificateDetail",
+                    "pattern": "certificates/detail/{id}",
+                    "target": [
+                        "certificateLayout",
+                        "certificateDetail"
+                    ]
                 }
             ],
             "targets": {
@@ -545,6 +571,26 @@
                     "controlId": "franceNavContainer",
                     "controlAggregation": "pages",
                     "parent": "franceLayout"
+                },
+                "certificateLayout": {
+                    "viewId": "certificateLayout",
+                    "viewName": "certificates.CertificateLayout",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "certificateList": {
+                    "viewId": "certificateList",
+                    "viewName": "certificates.CertificateList",
+                    "controlId": "certificateNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "certificateLayout"
+                },
+                "certificateDetail": {
+                    "viewId": "certificateDetail",
+                    "viewName": "certificates.CertificateDetail",
+                    "controlId": "certificateNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "certificateLayout"
                 }
             }
         }

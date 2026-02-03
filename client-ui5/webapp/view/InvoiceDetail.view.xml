@@ -266,17 +266,25 @@
             <OverflowToolbar>
                 <ToolbarSpacer/>
                 <Button 
-                    text="View PDF" 
-                    icon="sap-icon://pdf-attachment" 
-                    press="onViewPDF"/>
+                    text="Download XML" 
+                    icon="sap-icon://download" 
+                    press="onDownloadXML"
+                    visible="{= !!${detail>/xml_path}}"/>
+                <Button 
+                    text="View XML" 
+                    icon="sap-icon://show" 
+                    press="onViewXML"
+                    visible="{= !!${detail>/xml_path}}"/>
                 <Button 
                     text="Generate XML FacturaE" 
                     icon="sap-icon://attachment-e-pub" 
-                    press="onGenerateFacturaE"/>
+                    press="onGenerateFacturaE"
+                    visible="{= ${detail>/origen_descripcion} !== 'SAP'}"/>
                 <Button 
                     text="Generate XML UBL 2.1" 
                     icon="sap-icon://attachment-text-file" 
-                    press="onGenerateUBL"/>
+                    press="onGenerateUBL"
+                    visible="{= ${detail>/origen_descripcion} !== 'SAP'}"/>
                 <Button text="{i18n>edit}" type="Emphasized" press="onEdit" icon="sap-icon://edit" enabled="{= ${detail>/estado} === 'Draft'}"/>
             </OverflowToolbar>
         </footer>
