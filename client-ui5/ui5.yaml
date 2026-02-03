@@ -1,35 +1,27 @@
 specVersion: "3.0"
 metadata:
-  name: invoice.app
+  name: client-ui5
 type: application
-framework:
-  name: OpenUI5
-  version: "1.120.0"
-  libraries:
-    - name: sap.m
-    - name: sap.ui.core
-    - name: sap.ui.layout
-    - name: themelib_sap_horizon
 server:
   customMiddleware:
     - name: ui5-middleware-simpleproxy
       afterMiddleware: compression
       mountPath: /api
       configuration:
-        baseUri: "https://127.0.0.1:3000/api"
+        baseUri: "http://127.0.0.1:8080/api"
         strictSSL: false
         secure: false
     - name: ui5-middleware-simpleproxy
       afterMiddleware: compression
       mountPath: /api-docs
       configuration:
-        baseUri: "https://127.0.0.1:3000/api-docs"
+        baseUri: "http://127.0.0.1:8080/api-docs"
         strictSSL: false
         secure: false
     - name: ui5-middleware-simpleproxy
-      beforeMiddleware: serveResources
+      afterMiddleware: compression
       mountPath: /uploads
       configuration:
-        baseUri: "https://127.0.0.1:3000/uploads"
+        baseUri: "http://127.0.0.1:8080/uploads"
         strictSSL: false
         secure: false

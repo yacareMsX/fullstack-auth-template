@@ -9,6 +9,7 @@ sap.ui.define([
 
     return Controller.extend("invoice.app.controller.DocumentationXml", {
         onInit: function () {
+            console.log("DocumentationXml Controller Initialized"); // Debug log
             this.getView().setModel(new JSONModel([]), "doc");
             this.getView().setModel(new JSONModel({}), "view"); // For UI state like enabled buttons
             this._loadData();
@@ -18,6 +19,7 @@ sap.ui.define([
             fetch("/api/documentation-xml")
                 .then(res => res.json())
                 .then(data => {
+                    console.log("Data loaded:", data); // Debug log
                     this.getView().getModel("doc").setData(data);
                 })
                 .catch(err => {
@@ -27,6 +29,7 @@ sap.ui.define([
         },
 
         onSelectionChange: function (oEvent) {
+            console.log("onSelectionChange triggered"); // Debug log
             const oSelectedItem = oEvent.getParameter("listItem");
             this.getView().getModel("view").setProperty("/selectedItem", !!oSelectedItem);
         },
@@ -35,6 +38,7 @@ sap.ui.define([
             var oItem = oEvent.getSource();
             var oCtx = oItem.getBindingContext("doc");
             var sId = oCtx.getProperty("id");
+            console.log("onItemPress triggered. ID:", sId); // Debug log
             var oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("documentationDetail", {
                 id: sId

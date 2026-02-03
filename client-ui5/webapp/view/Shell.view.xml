@@ -7,10 +7,12 @@
 
     <VBox height="100%">
         <f:ShellBar title="{ui>/headerTitle}" homeIcon="img/t4s_logo.png" homeIconPressed="onNavHome" showMenuButton="true" menuButtonPressed="onMenuPress" showSearch="true" showNotifications="true" notificationsPressed="onNotificationsPress" showProductSwitcher="true" productSwitcherPressed="onProductSwitcherPress">
+            <!--
             <f:additionalContent>
                 <Button id="themeButton" icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="Toggle Theme"/>
                 <Avatar id="languageAvatar" displaySize="XS" press="onLanguagePress" tooltip="Select Language" class="sapUiTinyMarginBegin"/>
             </f:additionalContent>
+            -->
             <f:profile>
                 <Avatar press="onProfilePress" src="img/profile_pic.png" displaySize="XS"/>
             </f:profile>

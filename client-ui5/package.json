@@ -1,22 +1,14 @@
 {
     "name": "client-ui5",
-    "version": "1.0.0",
-    "description": "SAPUI5 Invoice Management Frontend",
+    "version": "0.0.1",
     "scripts": {
-        "start": "ui5 serve --port 8080 --accept-remote-connections --open index.html",
-        "build": "ui5 build"
+        "start": "ui5 serve --port 5174 --accept-remote-connections --open index.html",
+        "build": "ui5 build",
+        "test": "ui5 test"
     },
     "devDependencies": {
-        "@sapui5/types": "^1.120.0",
-        "@ui5/cli": "^3.11.13",
-        "ui5-middleware-simpleproxy": "^3.5.2"
-    },
-    "ui5": {
-        "dependencies": [
-            "@openui5/sap.m",
-            "@openui5/sap.ui.core",
-            "@openui5/sap.ui.layout",
-            "@openui5/themelib_sap_horizon"
-        ]
+        "@ui5/cli": "^3.0.0",
+        "@sap/ux-ui5-tooling": "1",
+        "ui5-middleware-simpleproxy": "^0.9.5"
     }
 }

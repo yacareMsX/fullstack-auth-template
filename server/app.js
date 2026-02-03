@@ -75,4 +75,8 @@ app.get('/api/countries', async (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    res.send('API Server is running. User interface is available at http://localhost:5173');
+});
+
 module.exports = app;

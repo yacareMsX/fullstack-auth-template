@@ -8,7 +8,7 @@
             <Button text="Borrar" type="Reject" icon="sap-icon://delete" press="onDialogDelete" enabled="{= !!${view>/selectedItem} }"/>
         </headerContent>
         <content>
-            <Table id="documentationTable" items="{doc>/}" mode="SingleSelectLeft" selectionChange="onSelectionChange" growing="true" growingThreshold="20">
+            <Table id="documentationTable" items="{doc>/}" mode="None" growing="true" growingThreshold="20">
                 <columns>
                     <Column>
                         <Text text="Nombre Objeto" />
