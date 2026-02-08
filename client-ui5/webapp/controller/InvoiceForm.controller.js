@@ -18,8 +18,17 @@ sap.ui.define([
 
         onInit: function () {
             var oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("invoiceNew").attachPatternMatched(this._onRouteMatched, this);
-            oRouter.getRoute("invoiceEdit").attachPatternMatched(this._onEditInvoice, this);
+            var oRouteNew = oRouter.getRoute("invoiceNew");
+            if (oRouteNew) {
+                oRouteNew.attachPatternMatched(this._onRouteMatched, this);
+            } else {
+                console.error("DEBUG: Route 'invoiceNew' not found in router! Check manifest.json");
+            }
+
+            var oRouteEdit = oRouter.getRoute("invoiceEdit");
+            if (oRouteEdit) {
+                oRouteEdit.attachPatternMatched(this._onEditInvoice, this);
+            }
 
             this._initializeModel();
         },

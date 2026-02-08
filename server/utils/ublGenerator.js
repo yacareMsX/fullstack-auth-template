@@ -16,12 +16,20 @@ function generateUBLXML(invoice) {
     // Helper to format date YYYY-MM-DD
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
-        return new Date(dateStr).toISOString().split('T')[0];
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return ""; // Handle Invalid Date
+            return date.toISOString().split('T')[0];
+        } catch (e) {
+            console.error("Error formatting date:", dateStr, e);
+            return "";
+        }
     };
 
     // Helper to format number with 2 decimals
     const formatNumber = (num) => {
-        return parseFloat(num || 0).toFixed(2);
+        if (num === null || num === undefined || isNaN(num)) return "0.00";
+        return parseFloat(num).toFixed(2);
     };
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';

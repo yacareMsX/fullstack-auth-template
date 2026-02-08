@@ -39,8 +39,16 @@
                 "sap.tnt": {},
                 "sap.ui.layout": {},
                 "sap.f": {},
-                "sap.uxap": {}
+                "sap.uxap": {},
+                "sap.viz": {}
             }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
         },
         "models": {
             "i18n": {
@@ -59,8 +67,7 @@
                 }
             },
             "security": {
-                "type": "sap.ui.model.json.JSONModel",
-                 "uri": "/api/auth/me"
+                "type": "sap.ui.model.json.JSONModel"
             }
         },
         "rootView": {
@@ -92,12 +99,12 @@
                 {
                     "name": "issueInvoices",
                     "pattern": "invoices/issued",
-                    "target": "issueInvoices"
+                    "target": "invoiceList"
                 },
                 {
                     "name": "receiptInvoices",
                     "pattern": "invoices/received",
-                    "target": "receiptInvoices"
+                    "target": "invoiceList"
                 },
                 {
                     "name": "invoiceDetail",
@@ -157,7 +164,7 @@
                 {
                     "name": "certificateList",
                     "pattern": "certificates",
-                    "target": "certificateLayout"
+                    "target": "certificateList"
                 },
                 {
                     "name": "documentationXml",
@@ -203,9 +210,203 @@
                     "name": "auditLog",
                     "pattern": "audit",
                     "target": "auditLog"
+                },
+                {
+                    "name": "catalogNew",
+                    "pattern": "catalog/new",
+                    "target": "catalogDetail"
+                },
+                {
+                    "name": "xmlMapping",
+                    "pattern": "admin/xml-mapping",
+                    "target": "xmlMapping"
+                },
+                {
+                    "name": "apiDocs",
+                    "pattern": "docs/api",
+                    "target": "apiDocs"
+                },
+                {
+                    "name": "invoiceNew",
+                    "pattern": "invoices/new/{tipo}",
+                    "target": "invoiceNew"
+                },
+                {
+                    "name": "franceDashboard",
+                    "pattern": "france/dashboard",
+                    "target": "franceDashboardContent"
+                },
+                {
+                    "name": "franceIssueList",
+                    "pattern": "france/invoices/issue/list",
+                    "target": "franceIssueList"
+                },
+                {
+                    "name": "franceReceiptList",
+                    "pattern": "france/invoices/receipt/list",
+                    "target": "franceReceiptList"
+                },
+                {
+                    "name": "franceIssueNew",
+                    "pattern": "france/invoices/issue/new",
+                    "target": "franceIssueNew"
+                },
+                {
+                    "name": "franceReceiptNew",
+                    "pattern": "france/invoices/receipt/new",
+                    "target": "franceReceiptNew"
+                },
+                {
+                    "name": "franceScanInvoice",
+                    "pattern": "france/scan",
+                    "target": "franceScanInvoice"
+                },
+                {
+                    "name": "franceCatalogNew",
+                    "pattern": "france/catalog/new",
+                    "target": "franceCatalogNew"
+                },
+                {
+                    "name": "franceCatalogList",
+                    "pattern": "france/catalog/list",
+                    "target": "franceCatalogList"
+                },
+                {
+                    "name": "franceIssuerManager",
+                    "pattern": "france/config/issuers",
+                    "target": "franceIssuerManager"
+                },
+                {
+                    "name": "franceReceiverManager",
+                    "pattern": "france/config/receivers",
+                    "target": "franceReceiverManager"
+                },
+                {
+                    "name": "franceOriginList",
+                    "pattern": "france/admin/origins",
+                    "target": "franceOriginList"
+                },
+                {
+                    "name": "franceInvoiceDetail",
+                    "pattern": "france/invoices/{invoiceId}",
+                    "target": "franceInvoiceDetail"
+                },
+                {
+                    "name": "franceInvoiceEdit",
+                    "pattern": "france/invoices/edit/{invoiceId}",
+                    "target": "franceInvoiceEdit"
+                },
+                {
+                    "name": "franceUbl21",
+                    "pattern": "france/invoices/{invoiceId}/ubl",
+                    "target": "franceFacturaUBL"
                 }
             ],
             "targets": {
+                "franceLayout": {
+                    "viewId": "franceLayout",
+                    "viewName": "france.FranceLayout",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "franceDashboardContent": {
+                    "viewId": "franceDashboardContent",
+                    "viewName": "france.FranceDashboard",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceIssueList": {
+                    "viewId": "franceIssueList",
+                    "viewName": "france.FranceInvoiceList",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceReceiptList": {
+                    "viewId": "franceReceiptList",
+                    "viewName": "france.FranceInvoiceList",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceIssueNew": {
+                    "viewId": "franceIssueNew",
+                    "viewName": "france.FranceInvoiceForm",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceReceiptNew": {
+                    "viewId": "franceReceiptNew",
+                    "viewName": "france.FranceInvoiceForm",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceScanInvoice": {
+                    "viewId": "franceScanInvoice",
+                    "viewName": "france.FranceScanInvoice",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceCatalogNew": {
+                    "viewId": "franceCatalogNew",
+                    "viewName": "france.FranceCatalogDetail",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceCatalogList": {
+                    "viewId": "franceCatalogList",
+                    "viewName": "france.FranceCatalogList",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceIssuerManager": {
+                    "viewId": "franceIssuerManager",
+                    "viewName": "france.FranceIssuerManager",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceReceiverManager": {
+                    "viewId": "franceReceiverManager",
+                    "viewName": "france.FranceReceiverManager",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceOriginList": {
+                    "viewId": "franceOriginList",
+                    "viewName": "france.FranceOriginList",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceInvoiceEdit": {
+                    "viewId": "franceInvoiceEdit",
+                    "viewName": "france.FranceInvoiceForm",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceInvoiceDetail": {
+                    "viewId": "franceInvoiceDetail",
+                    "viewName": "france.FranceInvoiceDetail",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
+                "franceFacturaUBL": {
+                    "viewId": "franceFacturaUBL",
+                    "viewName": "france.FranceFacturaUBL",
+                    "controlId": "franceNavContainer",
+                    "controlAggregation": "pages",
+                    "parent": "franceLayout"
+                },
                 "home": {
                     "viewId": "home",
                     "viewName": "Home",
@@ -232,7 +433,31 @@
                 },
                 "catalog": {
                     "viewId": "catalog",
-                    "viewName": "Catalog",
+                    "viewName": "CatalogList",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "catalogDetail": {
+                    "viewId": "catalogDetail",
+                    "viewName": "CatalogDetail",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "xmlMapping": {
+                    "viewId": "xmlMapping",
+                    "viewName": "XmlMapping",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "apiDocs": {
+                    "viewId": "apiDocs",
+                    "viewName": "ApiDocs",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "invoiceNew": {
+                    "viewId": "invoiceNew",
+                    "viewName": "InvoiceForm",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },
@@ -318,7 +543,7 @@
                 },
                 "invoiceCountryList": {
                     "viewId": "invoiceCountryList",
-                    "viewName": "InvoiceCountries",
+                    "viewName": "InvoiceCountriesList",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },
@@ -330,11 +555,11 @@
                 },
                 "model303": {
                     "viewId": "model303",
-                    "viewName": "statutory.Model303",
+                    "viewName": "statutory.Modelo303",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },
-                 "roleManagement": {
+                "roleManagement": {
                     "viewId": "roleManagement",
                     "viewName": "admin.RoleManagement",
                     "controlId": "shellNavContainer",
@@ -352,13 +577,12 @@
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },
-                 "auditLog": {
+                "auditLog": {
                     "viewId": "auditLog",
                     "viewName": "AuditLog",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 }
-
             }
         }
     }

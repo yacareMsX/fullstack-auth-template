@@ -78,10 +78,10 @@ sap.ui.define([
                     oRouter.navTo("franceReceiptList", { tipo: "RECEIPT" });
                     break;
                 case "franceIssueNew":
-                    oRouter.navTo("franceIssueNew", { tipo: "ISSUE" });
+                    oRouter.navTo("franceIssueNew");
                     break;
                 case "franceReceiptNew":
-                    oRouter.navTo("franceReceiptNew", { tipo: "RECEIPT" });
+                    oRouter.navTo("franceReceiptNew");
                     break;
                 case "franceScanInvoice":
                     oRouter.navTo("franceScanInvoice");

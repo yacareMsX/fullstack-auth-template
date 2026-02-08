@@ -318,13 +318,15 @@ router.get('/:id/factur-x', authenticateToken, async (req, res) => {
         // Generate XML
         const xmlContent = generateUBLXML(invoice);
 
+        const lang = req.query.lang || 'es'; // Default to Spanish
+
         // Generate Factur-X PDF
-        const doc = generateFacturX(invoice, xmlContent);
+        const doc = generateFacturX(invoice, xmlContent, lang);
 
         // Set response headers
         const filename = `factur-x_${invoice.serie || ''}${invoice.numero}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
 
         // Pipe PDF to response
         doc.pipe(res);
@@ -333,6 +335,66 @@ router.get('/:id/factur-x', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error generating Factur-X:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Generate UBL XML for invoice
+router.get('/:id/xml', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { generateUBLXML } = require('../../utils/ublGenerator');
+
+        // Get invoice with all details
+        const invoiceResult = await db.query(
+            `SELECT f.*,
+    e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
+    r.email as receptor_email, r.telefono as receptor_telefono
+       FROM factura f
+       JOIN emisor e ON f.id_emisor = e.id_emisor
+       JOIN receptor r ON f.id_receptor = r.id_receptor
+       WHERE f.id_factura = $1`,
+            [id]
+        );
+
+        if (invoiceResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const invoice = invoiceResult.rows[0];
+
+        // Get invoice lines
+        const linesResult = await db.query(
+            `SELECT lf.*, i.codigo as impuesto_codigo, i.descripcion as impuesto_descripcion
+       FROM linea_factura lf
+       LEFT JOIN impuesto i ON lf.id_impuesto = i.id_impuesto
+       WHERE lf.id_factura = $1
+       ORDER BY lf.created_at ASC`,
+            [id]
+        );
+
+        invoice.lineas = linesResult.rows;
+
+        // Generate XML
+        const xmlContent = generateUBLXML(invoice);
+
+        // Set response headers
+        const filename = `invoice_${invoice.serie || ''}${invoice.numero}.xml`;
+        res.setHeader('Content-Type', 'application/xml');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        // Send XML
+        res.send(xmlContent);
+
+    } catch (error) {
+        console.error('Error in GET /:id/xml:', error);
+        res.status(500).json({
+            error: 'Internal server error',
+            details: error.message,
+            stack: error.stack
+        });
     }
 });
 
@@ -345,7 +407,7 @@ router.post('/', authenticateToken, async (req, res) => {
         const {
             numero, serie, fecha_emision, fecha_vencimiento,
             id_emisor, id_receptor, metodo_pago, codigo_tipo, id_origen,
-            invoice_country_id, lineas = []
+            invoice_country_id, lineas = [], estado // Add estado here
         } = req.body;
 
         const countryId = invoice_country_id || 1;
@@ -378,16 +440,18 @@ router.post('/', authenticateToken, async (req, res) => {
 
         const total = subtotal + impuestos_totales;
 
-        // Create invoice
+        const validEstados = ['BORRADOR', 'EMITIDA', 'ENVIADA', 'FIRMADA', 'REGISTRADA', 'RECHAZADA', 'PAGADA', 'CANCELADA', 'PENDIENTE'];
+        const statusToSave = (estado && validEstados.includes(estado)) ? estado : 'BORRADOR';
+
         const invoiceResult = await client.query(
             `INSERT INTO factura(
         numero, serie, fecha_emision, fecha_vencimiento,
         id_emisor, id_receptor, metodo_pago, codigo_tipo, id_origen,
         subtotal, impuestos_totales, total, estado, invoice_country_id
-    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'BORRADOR', $13)
+    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 RETURNING * `,
             [numero, serie, fecha_emision, fecha_vencimiento, id_emisor, id_receptor,
-                metodo_pago, codigo_tipo, id_origen || 1, subtotal, impuestos_totales, total, countryId]
+                metodo_pago, codigo_tipo, id_origen || 1, subtotal, impuestos_totales, total, statusToSave, countryId]
         );
 
         const invoice = invoiceResult.rows[0];
@@ -449,7 +513,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
         const {
             numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion,
             id_emisor, id_receptor, estado, metodo_pago,
-            subtotal, impuestos_totales, total, tipo, invoice_country_id,
+            subtotal, impuestos_totales, total, codigo_tipo, invoice_country_id,
             lineas = []
         } = req.body;
 
@@ -470,14 +534,14 @@ router.put('/:id', authenticateToken, async (req, res) => {
                 subtotal = $10,
                 impuestos_totales = $11,
                 total = $12,
-                tipo = $13,
+                codigo_tipo = $13,
                 invoice_country_id = $14
             WHERE id_factura = $15
             RETURNING *`,
             [
                 numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion || null,
                 id_emisor, id_receptor, estado, metodo_pago,
-                subtotal, impuestos_totales, total, tipo,
+                subtotal, impuestos_totales, total, codigo_tipo,
                 countryId, id
             ]
         );

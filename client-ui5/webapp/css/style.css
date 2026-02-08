@@ -567,3 +567,16 @@ html.sapUiTheme-sap_horizon .loginPage .sapMPageBgStandard {
     background-size: cover !important;
     background-attachment: fixed !important;
 }
+
+/* Force White Background globally as per user request */
+.sapMGlobalBackgroundColor,
+.sapMGenericTile, 
+.sapMPage, 
+.sapMPageBg, 
+.sapUiGlobalBackgroundColor,
+.sapMApp,
+.sapMShell,
+.sapMShellBG {
+    background-color: #ffffff !important;
+    background-image: none !important;
+}

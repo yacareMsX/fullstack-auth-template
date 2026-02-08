@@ -10,8 +10,15 @@ sap.ui.define([
 
         onInit: function () {
             var oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("certificateList").attachPatternMatched(this._onRouteMatched, this);
-            oRouter.getRoute("certificateLayout").attachPatternMatched(this._onRouteMatched, this); // Also load on layout root
+            var oRouteList = oRouter.getRoute("certificateList");
+            if (oRouteList) {
+                oRouteList.attachPatternMatched(this._onRouteMatched, this);
+            }
+
+            var oRouteLayout = oRouter.getRoute("certificateLayout");
+            if (oRouteLayout) {
+                oRouteLayout.attachPatternMatched(this._onRouteMatched, this);
+            }
         },
 
         _onRouteMatched: function () {

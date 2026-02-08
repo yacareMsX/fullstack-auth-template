@@ -97,6 +97,12 @@ sap.ui.define([
             } else {
                 sap.m.MessageToast.show("Navigation to Country Detail not available");
             }
+        },
+
+        formatDate: function (date) {
+            if (!date) return "";
+            var oDate = new Date(date);
+            return oDate.toLocaleDateString();
         }
     });
 });

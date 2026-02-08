@@ -1,99 +1,12 @@
-<mvc:View
-    controllerName="invoice.app.controller.france.FranceLayout"
+<mvc:View controllerName="invoice.app.controller.france.FranceLayout"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:tnt="sap.tnt"
-    xmlns:core="sap.ui.core"
-    displayBlock="true"
-    height="100%">
-    
-    <tnt:ToolPage id="toolPage">
+    xmlns:core="sap.ui.core" displayBlock="true" height="100%">
 
-
-        <!-- Side Navigation -->
-        <tnt:sideContent>
-            <tnt:SideNavigation
-                expanded="{ui>/franceSidebarExpanded}"
-                itemSelect="onItemSelect"
-                visible="{ui>/franceSidebarVisible}">
-                <tnt:NavigationList>
-                    <tnt:NavigationListItem
-                        text="Dashboard"
-                        icon="sap-icon://bbyd-dashboard"
-                        key="franceDashboard"/>
-
-                    <tnt:NavigationListItem
-                        text="{i18n>issueInvoices}"
-                        icon="sap-icon://create-form"
-                        expanded="false">
-                        <tnt:NavigationListItem
-                            text="{i18n>invoiceList}"
-                            key="franceIssueList"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>createNew}"
-                            key="franceIssueNew"/>
-                    </tnt:NavigationListItem>
-                    
-                    <tnt:NavigationListItem
-                        text="{i18n>receiptInvoices}"
-                        icon="sap-icon://inbox"
-                        expanded="false">
-                        <tnt:NavigationListItem
-                            text="{i18n>invoiceList}"
-                            key="franceReceiptList"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>createNew}"
-                            key="franceReceiptNew"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>newScanningInvoice}"
-                            key="franceScanInvoice"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>uploadExcel}"
-                            key="uploadExcel"/>
-                    </tnt:NavigationListItem>
-                    
-                    <tnt:NavigationListItem
-                        text="{i18n>catalog}"
-                        icon="sap-icon://product"
-                        expanded="false">
-                        <tnt:NavigationListItem
-                            text="{i18n>createItem}"
-                            key="franceCatalogNew"/>
-                        <tnt:NavigationListItem
-                            text="{i18n>itemList}"
-                            key="franceCatalogList"/>
-                    </tnt:NavigationListItem>
-
-                    <tnt:NavigationListItem
-                        text="{i18n>config}"
-                        icon="sap-icon://action-settings"
-                        expanded="false">
-                        <tnt:NavigationListItem text="{i18n>issuers}" key="franceIssuerManager"/>
-                        <tnt:NavigationListItem text="{i18n>receivers}" key="franceReceiverManager"/>
-                    </tnt:NavigationListItem>
-
-
-
-                    <tnt:NavigationListItem
-                        text="{i18n>admin}"
-                        icon="sap-icon://action-settings"
-                        expanded="false">
-                        <tnt:NavigationListItem
-                            text="{i18n>origins}"
-                            key="franceOriginList"/>
-                    </tnt:NavigationListItem>
-
-                </tnt:NavigationList>
-            </tnt:SideNavigation>
-        </tnt:sideContent>
-        
-        <!-- Main Content -->
-        <tnt:mainContents>
-            <NavContainer id="franceNavContainer" height="100%">
-                <pages>
-                    <!-- Default page will be loaded via manifest -->
-                </pages>
-            </NavContainer>
-        </tnt:mainContents>
-    </tnt:ToolPage>
+    <NavContainer id="franceNavContainer" height="100%">
+        <pages>
+            <!-- Default page will be loaded via manifest -->
+        </pages>
+    </NavContainer>
 </mvc:View>

@@ -1,0 +1,75 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout"
+    xmlns:code="sap.ui.codeeditor"
+    xmlns:form="sap.ui.layout.form">
+    <Dialog contentWidth="1200px" contentHeight="800px">
+        <customHeader>
+            <Bar>
+                <contentMiddle>
+                    <Title text="{i18n>sendInvoiceWizardTitle}"/>
+                </contentMiddle>
+                <contentRight>
+                    <Button id="wizardNextBtn" text="{i18n>nextStep}" type="Emphasized" press="onWizardNextStep"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+        <Wizard id="invoiceWizard" showNextButton="false" renderMode="Page">
+            <WizardStep id="step1" title="{i18n>step1UBL}" validated="true" activate="onActivateStep1">
+                <VBox class="sapUiMediumMarginBottom">
+                    <Text text="{i18n>step1Desc}" class="sapTntInfoLabel"/>
+                </VBox>
+                <VBox alignItems="Center" justifyContent="Center" visible="{wizard>/step1/busy}">
+                    <BusyIndicator visible="true" text="{i18n>generatingUBL}" class="sapUiLargeMarginTop"/>
+                </VBox>
+                <VBox visible="{wizard>/step1/success}" height="100%">
+                    <code:CodeEditor value="{wizard>/step1/xmlContent}" type="xml" editable="false" height="400px" width="100%"/>
+                    <Toolbar>
+                        <ToolbarSpacer/>
+                        <Button text="{i18n>downloadXML}" icon="sap-icon://download" press="onDownloadXML" type="Emphasized"/>
+                    </Toolbar>
+                </VBox>
+                <VBox visible="{wizard>/step1/error}" alignItems="Center">
+                    <core:Icon src="sap-icon://error" size="4rem" color="#BB0000" class="sapUiMediumMarginBottom"/>
+                    <Title text="{i18n>ublGeneratedError}" level="H3"/>
+                    <Text text="{wizard>/step1/errorText}" class="sapUiSmallMarginTop"/>
+                    <Button text="{i18n>retry}" icon="sap-icon://refresh" press="onRetryStep1" class="sapUiMediumMarginTop"/>
+                </VBox>
+            </WizardStep>
+            <WizardStep id="step2" title="{i18n>step2PDF}" validated="true" activate="onActivateStep2">
+                <VBox class="sapUiMediumMarginBottom">
+                    <Text text="{i18n>step2Desc}" class="sapTntInfoLabel"/>
+                </VBox>
+                <VBox alignItems="Center" justifyContent="Center" visible="{wizard>/step2/busy}">
+                    <BusyIndicator visible="true" text="{i18n>generatingPDF}" class="sapUiLargeMarginTop"/>
+                </VBox>
+                <VBox visible="{wizard>/step2/success}" height="100%">
+                    <core:HTML content='&lt;iframe src="{wizard>/step2/pdfSource}" width="100%" height="500px" style="border: none;"&gt;&lt;/iframe&gt;' />
+                    <Toolbar>
+                        <ToolbarSpacer/>
+                        <Button text="{i18n>downloadPDF}" icon="sap-icon://download" press="onDownloadPDF" type="Emphasized"/>
+                    </Toolbar>
+                </VBox>
+                <VBox visible="{wizard>/step2/error}" alignItems="Center">
+                    <core:Icon src="sap-icon://error" size="4rem" color="#BB0000" class="sapUiMediumMarginBottom"/>
+                    <Title text="{i18n>pdfGeneratedError}" level="H3"/>
+                    <Text text="{wizard>/step2/errorText}" class="sapUiSmallMarginTop"/>
+                    <Button text="{i18n>retry}" icon="sap-icon://refresh" press="onRetryStep2" class="sapUiMediumMarginTop"/>
+                </VBox>
+            </WizardStep>
+            <WizardStep id="step3" title="{i18n>step3Send}" validated="true" activate="onActivateStep3">
+                <VBox class="sapUiMediumMarginBottom">
+                    <Text text="{i18n>step3Desc}" class="sapTntInfoLabel"/>
+                </VBox>
+                <VBox alignItems="Center" justifyContent="Center" height="300px">
+                    <core:Icon src="sap-icon://paper-plane" size="4rem" color="#0a6ed1" class="sapUiMediumMarginBottom"/>
+                    <Title text="{i18n>readyToSend}" level="H3"/>
+                    <Text text="{i18n>readyToSendDesc}" class="sapUiSmallMarginTop"/>
+                </VBox>
+            </WizardStep>
+        </Wizard>
+        <buttons>
+            <Button text="{i18n>cancel}" press="onWizardCancel"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

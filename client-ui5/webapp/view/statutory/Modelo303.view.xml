@@ -1,11 +1,9 @@
-<mvc:View
-    controllerName="invoice.app.controller.statutory.Modelo303"
+<mvc:View controllerName="invoice.app.controller.statutory.Modelo303"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:l="sap.ui.layout"
     xmlns:core="sap.ui.core"
-    xmlns:form="sap.ui.layout.form"
-    displayBlock="true">
+    xmlns:form="sap.ui.layout.form" displayBlock="true">
 
     <Page title="{i18n>tile301}" showNavButton="false">
         <headerContent>
@@ -43,7 +41,7 @@
                     <!-- Tab 2: IVA Devengado -->
                     <IconTabFilter icon="sap-icon://money-bills" text="{i18n>m303_devengado}">
                         <VBox class="sapUiSmallMargin">
-                            
+
                             <!-- Régimen General -->
                             <Panel headerText="{i18n>m303_generalRegime}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
                                 <l:Grid defaultSpan="L4 M4 S12">
@@ -187,18 +185,18 @@
                                 </l:Grid>
                             </Panel>
 
-                             <Title text="{i18n>m303_totals}" level="H3" class="sapUiMediumMarginTop"/>
-                             <form:SimpleForm editable="false" layout="ResponsiveGridLayout">
+                            <Title text="{i18n>m303_totals}" level="H3" class="sapUiMediumMarginTop"/>
+                            <form:SimpleForm editable="false" layout="ResponsiveGridLayout">
                                 <Label text="{i18n>m303_totalDevengado} [27]"/>
                                 <Input value="{modelo303>/total_devengado}"/>
-                             </form:SimpleForm>
+                            </form:SimpleForm>
                         </VBox>
                     </IconTabFilter>
 
                     <!-- Tab 3: IVA Deducible -->
                     <IconTabFilter icon="sap-icon://sales-quote" text="{i18n>m303_deducible}">
-                         <VBox class="sapUiSmallMargin">
-                            
+                        <VBox class="sapUiSmallMargin">
+
                             <!-- Operaciones Interiores Corrientes -->
                             <Panel headerText="{i18n>m303_internalOps}" expandable="true" expanded="true" class="sapUiSmallMarginBottom" width="auto">
                                 <l:Grid defaultSpan="L6 M6 S12">
@@ -261,27 +259,27 @@
                                 <Input value="{modelo303>/total_deducible}" editable="false"/>
                             </form:SimpleForm>
 
-                         </VBox>
+                        </VBox>
                     </IconTabFilter>
 
                     <!-- Tab 4: Resultado -->
                     <IconTabFilter icon="sap-icon://simulate" text="{i18n>m303_result}">
-                         <form:SimpleForm editable="false" layout="ResponsiveGridLayout" title="{i18n>m303_liquid_result}">
+                        <form:SimpleForm editable="false" layout="ResponsiveGridLayout" title="{i18n>m303_liquid_result}">
                             <form:content>
                                 <Label text="{i18n>m303_totalDevengadoBox} [27]"/>
                                 <Input value="{modelo303>/total_devengado}"/>
                                 <Label text="{i18n>m303_totalDeducibleBox} [45]"/>
                                 <Input value="{modelo303>/total_deducible}"/>
                                 <Label text="{i18n>m303_resultDifference} [46] ([27] - [45])" design="Bold"/>
-                                <Input value="{modelo303>/result_difference}" state="{= ${modelo303>/result_difference} >= 0 ? 'Success' : 'Error' }"/>
-                                
+                                <Input value="{modelo303>/result_difference}" valueState="{= ${modelo303>/result_difference} >= 0 ? 'Success' : 'Error' }"/>
+
                                 <Label text="{i18n>m303_prevResult} [70]"/>
                                 <Input value="{modelo303>/prev_period_result}" type="Number"/>
-                                
+
                                 <Label text="{i18n>m303_finalResult} [71]" design="Bold"/>
                                 <Input value="{modelo303>/final_result}" class="sapUiMediumMarginTop" />
                             </form:content>
-                         </form:SimpleForm>
+                        </form:SimpleForm>
                     </IconTabFilter>
 
                     <!-- Tab 5: Información Adicional -->

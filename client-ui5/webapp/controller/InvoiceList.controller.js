@@ -20,16 +20,29 @@ sap.ui.define([
 
             // Attach to route pattern matched
             var oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("invoiceList").attachPatternMatched(this._onRouteMatched, this);
+            oRouter.getRoute("invoices").attachPatternMatched(this._onRouteMatched, this);
+            oRouter.getRoute("issueInvoices").attachPatternMatched(this._onRouteMatched, this);
+            oRouter.getRoute("receiptInvoices").attachPatternMatched(this._onRouteMatched, this);
         },
 
         _onRouteMatched: function (oEvent) {
-            var sTipo = oEvent.getParameter("arguments").tipo || "ISSUE";
+            var sRouteName = oEvent.getParameter("name");
+            var oArgs = oEvent.getParameter("arguments");
+            var sTipo = "ISSUE"; // Default
+
+            if (sRouteName === "issueInvoices") {
+                sTipo = "ISSUE";
+            } else if (sRouteName === "receiptInvoices") {
+                sTipo = "RECEIPT";
+            } else if (oArgs && oArgs.tipo) {
+                sTipo = oArgs.tipo;
+            }
+
             var oModel = this.getView().getModel("invoiceList");
             oModel.setProperty("/tipo", sTipo);
 
             // Update page title based on tipo
-            var sTitle = sTipo === "ISSUE" ? "Issue Invoices" : "Receipt Invoices";
+            var sTitle = sTipo === "ISSUE" ? "Facturas Emitidas" : "Facturas Recibidas";
             oModel.setProperty("/pageTitle", sTitle);
 
             this._loadInvoices();

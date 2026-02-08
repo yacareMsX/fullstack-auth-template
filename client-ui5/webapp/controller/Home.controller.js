@@ -80,7 +80,7 @@ sap.ui.define([
         },
 
         onNavigateToModelo303: function () {
-            this.getOwnerComponent().getRouter().navTo("modelo303");
+            this.getOwnerComponent().getRouter().navTo("model303");
         },
 
         onNavigateToFrance: function () {
@@ -88,7 +88,7 @@ sap.ui.define([
         },
 
         onNavigateToCertificates: function () {
-            this.getOwnerComponent().getRouter().navTo("certificateLayout");
+            this.getOwnerComponent().getRouter().navTo("certificateList");
         },
 
         onGenericTilePress: function (oEvent) {

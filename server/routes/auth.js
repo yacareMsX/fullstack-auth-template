@@ -231,6 +231,102 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/me', authenticateToken, async (req, res) => {
+    try {
+        const userRes = await db.query(
+            `SELECT u.id, u.email, u.role_id, r.name as role, 
+                    p.first_name, p.last_name
+             FROM users u
+             JOIN roles r ON u.role_id = r.id
+             LEFT JOIN profiles p ON u.id = p.user_id
+             WHERE u.id = $1`,
+            [req.user.userId]
+        );
+
+        if (userRes.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = userRes.rows[0];
+
+        // Get Permissions
+        const permissionsRes = await db.query(
+            `SELECT DISTINCT ao.code
+             FROM roles r
+             JOIN role_rol_profiles rrp ON r.id = rrp.role_id
+             JOIN rol_profiles rp ON rrp.profile_id = rp.id
+             JOIN rol_profile_auth_objects rpao ON rp.id = rpao.profile_id
+             JOIN authorization_objects ao ON rpao.auth_object_id = ao.id
+             WHERE r.id = $1`,
+            [user.role_id]
+        );
+        const permissions = permissionsRes.rows.map(row => row.code);
+
+        res.json({
+            user: {
+                id: user.id,
+                email: user.email,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                role: user.role,
+                permissions: permissions
+            }
+        });
+    } catch (err) {
+        console.error('Me error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Alias for /api/auth/me (since router is mounted at /api)
+router.get('/auth/me', authenticateToken, async (req, res) => {
+    // Redirect logic or duplicate handler. Duplicating for simplicity.
+    try {
+        const userRes = await db.query(
+            `SELECT u.id, u.email, u.role_id, r.name as role, 
+                    p.first_name, p.last_name
+             FROM users u
+             JOIN roles r ON u.role_id = r.id
+             LEFT JOIN profiles p ON u.id = p.user_id
+             WHERE u.id = $1`,
+            [req.user.userId]
+        );
+
+        if (userRes.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = userRes.rows[0];
+
+        // Get Permissions
+        const permissionsRes = await db.query(
+            `SELECT DISTINCT ao.code
+             FROM roles r
+             JOIN role_rol_profiles rrp ON r.id = rrp.role_id
+             JOIN rol_profiles rp ON rrp.profile_id = rp.id
+             JOIN rol_profile_auth_objects rpao ON rp.id = rpao.profile_id
+             JOIN authorization_objects ao ON rpao.auth_object_id = ao.id
+             WHERE r.id = $1`,
+            [user.role_id]
+        );
+        const permissions = permissionsRes.rows.map(row => row.code);
+
+        res.json({
+            user: {
+                id: user.id,
+                email: user.email,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                role: user.role,
+                permissions: permissions
+            }
+        });
+    } catch (err) {
+        console.error('Auth/Me error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 router.post('/logout', authenticateToken, async (req, res) => {
     try {
         await db.query('UPDATE users SET is_online = false WHERE id = $1', [req.user.userId]);

@@ -229,7 +229,7 @@ sap.ui.define([
 
                 condiciones_pago: "Net 30",
                 moneda: "EUR",
-                estado: "Draft",
+                estado: "BORRADOR",
                 tipo_factura: "F1",
 
                 // Fields for display binding
@@ -414,7 +414,12 @@ sap.ui.define([
                     oModel.setProperty("/fecha_emision", data.fecha_emision);
                     oModel.setProperty("/fecha_vencimiento", data.fecha_vencimiento || "");
                     oModel.setProperty("/id_emisor", data.id_emisor);
+                    oModel.setProperty("/emisor_nombre", data.emisor_nombre);
+                    oModel.setProperty("/emisor_direccion", data.emisor_direccion);
+
                     oModel.setProperty("/id_receptor", data.id_receptor);
+                    oModel.setProperty("/receptor_nombre", data.receptor_nombre);
+                    oModel.setProperty("/receptor_direccion", data.receptor_direccion);
                     oModel.setProperty("/metodo_pago", data.metodo_pago || "TRANSFERENCIA");
                     oModel.setProperty("/codigo_tipo", data.codigo_tipo || "01");
                     oModel.setProperty("/id_origen", data.id_origen || 3);
@@ -774,7 +779,11 @@ sap.ui.define([
                 codigo_tipo: oData.codigo_tipo || "01",
                 id_origen: oData.id_origen,
                 lineas: oData.lineas,
-                invoice_country_id: 3
+                invoice_country_id: 3,
+                estado: oData.estado, // Include status in payload
+                subtotal: parseFloat(oData.totals.subtotal),
+                impuestos_totales: parseFloat(oData.totals.impuestos),
+                total: parseFloat(oData.totals.total)
             };
 
             console.log("DEBUG: Saving invoice payload:", oPayload);

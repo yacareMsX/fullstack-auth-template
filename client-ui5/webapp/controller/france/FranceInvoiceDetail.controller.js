@@ -19,7 +19,7 @@ sap.ui.define([
                 // Default props for new invoice
                 condiciones_pago: "Net 30",
                 moneda: "EUR",
-                estado: "Draft",
+                estado: "BORRADOR",
                 lineas: []
             });
             this.getView().setModel(oViewModel, "detail");
@@ -30,6 +30,14 @@ sap.ui.define([
                 { id: "2", name: "Client B", nif: "B98765432", address: "456 Avenue, Town", email: "info@clientb.com", phone: "555-0202" }
             ]);
             this.getView().setModel(oClientsModel, "clients");
+        },
+
+        onExit: function () {
+            if (this._oWizardDialog) {
+                this._oWizardDialog.destroy();
+                this._oWizardDialog = null;
+            }
+            this._pWizardDialog = null;
         },
 
         _onObjectMatched: function (oEvent) {
@@ -229,7 +237,7 @@ sap.ui.define([
         },
 
         onChangeStatus: function (oEvent) {
-            var sNewStatus = oEvent.getSource().getText();
+            var sNewStatus = oEvent.getSource().getSelectedKey();
             var oModel = this.getView().getModel("detail");
             var sInvoiceId = oModel.getProperty("/id_factura");
             var that = this;
@@ -315,6 +323,256 @@ sap.ui.define([
 
         onNavBack: function () {
             window.history.go(-1);
+        },
+
+        // ============================================================
+        // WIZARD LOGIC
+        // ============================================================
+
+        onOpenSendWizard: function () {
+            var that = this;
+            var oView = this.getView();
+
+            if (!this._pWizardDialog) {
+                this._pWizardDialog = sap.ui.core.Fragment.load({
+                    id: oView.getId(),
+                    name: "invoice.app.view.france.FranceInvoiceWizard",
+                    controller: this
+                }).then(function (oDialog) {
+                    that._oWizardDialog = oDialog;
+                    oView.addDependent(oDialog);
+                    return oDialog;
+                });
+            }
+
+            this._pWizardDialog.then(function (oDialog) {
+                that._initWizardModel();
+                oDialog.open();
+            });
+        },
+
+        _initWizardModel: function () {
+            var oWizardModel = new JSONModel({
+                step1: { busy: true, success: false, error: false, errorText: "" },
+                step2: { busy: true, success: false, error: false, errorText: "" },
+                step3: { busy: false }
+            });
+            this.getView().setModel(oWizardModel, "wizard");
+
+            // Reset Wizard to step 1
+            var oWizard = this.byId("invoiceWizard");
+            if (oWizard) {
+                var oFirstStep = oWizard.getSteps()[0];
+                oWizard.discardProgress(oFirstStep);
+                oWizard.goToStep(oFirstStep);
+            }
+
+            // Trigger Step 1 immediately
+            this.onActivateStep1();
+        },
+
+        onWizardCancel: function () {
+            if (this._oWizardDialog) {
+                this._oWizardDialog.close();
+            }
+        },
+
+        onWizardComplete: function () {
+            var that = this;
+            var oModel = this.getView().getModel("detail");
+            var sInvoiceId = oModel.getProperty("/id_factura");
+            var sToken = localStorage.getItem("auth_token");
+
+            // Update status to 'EMITIDA'
+            // We use the existing PATCH endpoint or we can assume completing the wizard does it.
+            // The requirement says: "Este será el paso final que cuando completemos cambiará la factura a estado Emitida"
+
+            this.getView().setBusy(true);
+            fetch("/api/invoices/facturas/" + sInvoiceId + "/estado", {
+                method: "PATCH",
+                headers: {
+                    "Authorization": "Bearer " + sToken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ estado: "ENVIADA" })
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    that.getView().setBusy(false);
+                    oModel.setProperty("/estado", "ENVIADA");
+                    MessageToast.show("Invoice Sent successfully!");
+                    that.onWizardCancel();
+                })
+                .catch(function (err) {
+                    that.getView().setBusy(false);
+                    console.error("Error updating status:", err);
+                    MessageToast.show("Error finalizing invoice");
+                });
+        },
+
+        onWizardNextStep: function () {
+            var oWizard = this.byId("invoiceWizard");
+            var oValidationStep = oWizard.getCurrentStep();
+            var iProgress = oWizard.getProgressStep();
+
+            // Check if it is the last step
+            var aSteps = oWizard.getSteps();
+            var oLastStep = aSteps[aSteps.length - 1];
+
+            if (oValidationStep === oLastStep.getId()) {
+                this.onWizardComplete();
+            } else {
+                oWizard.nextStep();
+            }
+        },
+
+        _updateWizardButtonState: function () {
+            var oWizard = this.byId("invoiceWizard");
+            if (!oWizard) return;
+
+            var oBtn = this.byId("wizardNextBtn");
+            if (!oBtn) return;
+
+            var sCurrentStep = oWizard.getCurrentStep();
+            var aSteps = oWizard.getSteps();
+            var oLastStep = aSteps[aSteps.length - 1];
+
+            if (sCurrentStep === oLastStep.getId()) {
+                oBtn.setText(this.getView().getModel("i18n").getResourceBundle().getText("sendInvoice"));
+                oBtn.setIcon("sap-icon://paper-plane");
+            } else {
+                oBtn.setText(this.getView().getModel("i18n").getResourceBundle().getText("nextStep"));
+                oBtn.setIcon("sap-icon://slim-arrow-right");
+            }
+        },
+
+        // --- STEP 1: UBL GENERATION ---
+        // --- STEP 1: UBL GENERATION ---
+        onActivateStep1: function () {
+            this._updateWizardButtonState();
+            var that = this;
+            var oWizardModel = this.getView().getModel("wizard");
+            oWizardModel.setProperty("/step1", { busy: true, success: false, error: false, errorText: "", xmlContent: "" });
+
+            var oModel = this.getView().getModel("detail");
+            var sInvoiceId = oModel.getProperty("/id_factura");
+            var sToken = localStorage.getItem("auth_token");
+
+            fetch("/api/invoices/facturas/" + sInvoiceId + "/xml", {
+                headers: { "Authorization": "Bearer " + sToken }
+            })
+                .then(function (res) {
+                    if (!res.ok) throw new Error("Failed to generate UBL XML");
+                    return res.text();
+                })
+                .then(function (xmlContent) {
+                    // Simulate a small delay for better UX
+                    setTimeout(function () {
+                        oWizardModel.setProperty("/step1", {
+                            busy: false,
+                            success: true,
+                            error: false,
+                            xmlContent: xmlContent
+                        });
+                    }, 500);
+                })
+                .catch(function (err) {
+                    oWizardModel.setProperty("/step1", { busy: false, success: false, error: true, errorText: err.message });
+                });
+        },
+
+        onRetryStep1: function () {
+            this.onActivateStep1();
+        },
+
+        onDownloadXML: function () {
+            var oWizardModel = this.getView().getModel("wizard");
+            var sXmlContent = oWizardModel.getProperty("/step1/xmlContent");
+            if (sXmlContent) {
+                var element = document.createElement('a');
+                element.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(sXmlContent));
+                element.setAttribute('download', "invoice_ubl.xml");
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            } else {
+                this.onActivateStep1();
+            }
+        },
+
+        // --- STEP 2: PDF FACTUR-X GENERATION ---
+        onActivateStep2: function () {
+            this._updateWizardButtonState();
+            var that = this;
+            var oWizardModel = this.getView().getModel("wizard");
+            // Don't reset if we already have it to avoid re-fetching on back/forward
+            if (oWizardModel.getProperty("/step2/success") && oWizardModel.getProperty("/step2/pdfSource")) {
+                return;
+            }
+
+            oWizardModel.setProperty("/step2", { busy: true, success: false, error: false, errorText: "", pdfSource: "" });
+
+            var oModel = this.getView().getModel("detail");
+            var sInvoiceId = oModel.getProperty("/id_factura");
+            var sToken = localStorage.getItem("auth_token");
+
+            var sLang = sap.ui.getCore().getConfiguration().getLanguage();
+            // Normalize to 'en' or 'es'
+            if (sLang.indexOf("es") === 0) sLang = "es";
+            else sLang = "en";
+
+            fetch("/api/invoices/facturas/" + sInvoiceId + "/factur-x?lang=" + sLang, {
+                headers: { "Authorization": "Bearer " + sToken }
+            })
+                .then(function (res) {
+                    if (!res.ok) throw new Error("Failed to generate Factur-X PDF");
+                    return res.blob();
+                })
+                .then(function (blob) {
+                    var pdfBlob = new Blob([blob], { type: "application/pdf" });
+                    var sPdfUrl = URL.createObjectURL(pdfBlob);
+                    setTimeout(function () {
+                        oWizardModel.setProperty("/step2", {
+                            busy: false,
+                            success: true,
+                            error: false,
+                            pdfSource: sPdfUrl
+                        });
+                    }, 500);
+                })
+                .catch(function (err) {
+                    oWizardModel.setProperty("/step2", { busy: false, success: false, error: true, errorText: err.message });
+                });
+        },
+
+        onRetryStep2: function () {
+            this.onActivateStep2();
+        },
+
+        onDownloadPDF: function () {
+            var oWizardModel = this.getView().getModel("wizard");
+            var sPdfUrl = oWizardModel.getProperty("/step2/pdfSource");
+
+            if (sPdfUrl) {
+                var a = document.createElement("a");
+                a.href = sPdfUrl;
+                a.download = "invoice_factur-x.pdf";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                // If not ready, try fetching
+                // But usually this button is only visible if success is true
+                MessageToast.show("PDF not ready to download");
+            }
+        },
+
+
+        // --- STEP 3: SEND ---
+        onActivateStep3: function () {
+            // Nothing to do, just waiting for user confirmation
         }
+
     });
 });

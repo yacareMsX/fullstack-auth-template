@@ -6,13 +6,12 @@
     xmlns:core="sap.ui.core" displayBlock="true" height="100%">
 
     <VBox height="100%">
-        <f:ShellBar title="{ui>/headerTitle}" homeIcon="img/t4s_logo.png" homeIconPressed="onNavHome" showMenuButton="true" menuButtonPressed="onMenuPress" showSearch="true" showNotifications="true" notificationsPressed="onNotificationsPress" showProductSwitcher="true" productSwitcherPressed="onProductSwitcherPress">
-            <!--
+        <f:ShellBar title="{ui>/headerTitle}" homeIcon="img/home.svg" homeIconPressed="onNavHome" showMenuButton="{ui>/menuVisible}" showNavButton="{ui>/backButtonVisible}" menuButtonPressed="onMenuPress" navButtonPressed="onNavBack" showSearch="true" showNotifications="true" notificationsPressed="onNotificationsPress" showProductSwitcher="true" productSwitcherPressed="onProductSwitcherPress">
             <f:additionalContent>
-                <Button id="themeButton" icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="Toggle Theme"/>
-                <Avatar id="languageAvatar" displaySize="XS" press="onLanguagePress" tooltip="Select Language" class="sapUiTinyMarginBegin"/>
+                <!-- Button id="themeButton" icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="Toggle Theme"/ -->
+                <!-- Button icon="sap-icon://home" type="Transparent" press="onNavHome" tooltip="Home"/ -->
+                <Button id="languageButton" icon="sap-icon://world" type="Transparent" press="onLanguagePress" tooltip="{i18n>selectLanguage}"/>
             </f:additionalContent>
-            -->
             <f:profile>
                 <Avatar press="onProfilePress" src="img/profile_pic.png" displaySize="XS"/>
             </f:profile>
@@ -24,35 +23,69 @@
             </tnt:layoutData>
             <!-- Side Navigation -->
             <tnt:sideContent>
-                <tnt:SideNavigation expanded="{ui>/shellSidebarExpanded}" itemSelect="onItemSelect" visible="{ui>/shellSidebarVisible}">
+                <tnt:SideNavigation expanded="{ui>/shellSidebarExpanded}" itemSelect="onItemSelect">
                     <tnt:NavigationList>
-                        <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bbyd-dashboard" key="dashboard"/>
+                        <!-- Default Sidebar Items -->
+                        <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bbyd-dashboard" key="dashboard" visible="{ui>/shellSidebarVisible}"/>
 
-                        <tnt:NavigationListItem text="{i18n>issueInvoices}" icon="sap-icon://create-form" expanded="false">
+                        <tnt:NavigationListItem text="{i18n>issueInvoices}" icon="sap-icon://create-form" expanded="false" visible="{ui>/shellSidebarVisible}">
                             <tnt:NavigationListItem text="{i18n>invoiceList}" key="issueList"/>
                             <tnt:NavigationListItem text="{i18n>createNew}" key="issueNew"/>
                         </tnt:NavigationListItem>
 
-                        <tnt:NavigationListItem text="{i18n>receiptInvoices}" icon="sap-icon://inbox" expanded="false">
+                        <tnt:NavigationListItem text="{i18n>receiptInvoices}" icon="sap-icon://inbox" expanded="false" visible="{ui>/shellSidebarVisible}">
                             <tnt:NavigationListItem text="{i18n>invoiceList}" key="receiptList"/>
                             <tnt:NavigationListItem text="{i18n>createNew}" key="receiptNew"/>
                             <tnt:NavigationListItem text="{i18n>newScanningInvoice}" key="scanInvoice"/>
                             <tnt:NavigationListItem text="{i18n>uploadExcel}" key="uploadExcel"/>
                         </tnt:NavigationListItem>
 
-                        <tnt:NavigationListItem text="{i18n>catalog}" icon="sap-icon://product" expanded="false">
+                        <tnt:NavigationListItem text="{i18n>catalog}" icon="sap-icon://product" expanded="false" visible="{ui>/shellSidebarVisible}">
                             <tnt:NavigationListItem text="{i18n>createItem}" key="catalogNew"/>
                             <tnt:NavigationListItem text="{i18n>itemList}" key="catalogList"/>
                         </tnt:NavigationListItem>
 
-                        <tnt:NavigationListItem text="{i18n>config}" icon="sap-icon://action-settings" expanded="false">
+                        <tnt:NavigationListItem text="{i18n>config}" icon="sap-icon://action-settings" expanded="false" visible="{ui>/shellSidebarVisible}">
                             <tnt:NavigationListItem text="{i18n>issuers}" key="issuerManager"/>
                             <tnt:NavigationListItem text="{i18n>receivers}" key="receiverManager"/>
                         </tnt:NavigationListItem>
 
-                        <tnt:NavigationListItem text="{i18n>admin}" icon="sap-icon://action-settings" expanded="false">
+                        <tnt:NavigationListItem text="{i18n>admin}" icon="sap-icon://action-settings" expanded="false" visible="{ui>/shellSidebarVisible}">
                             <tnt:NavigationListItem text="{i18n>origins}" key="originList"/>
                             <tnt:NavigationListItem text="Gestor de Certificados" icon="sap-icon://certificate" key="certificateLayout"/>
+                        </tnt:NavigationListItem>
+
+                        <!-- Statutory Sidebar Items -->
+                        <tnt:NavigationListItem text="{i18n>tile301}" icon="sap-icon://form" key="model303" visible="{ui>/statutorySidebarVisible}"/>
+                        <tnt:NavigationListItem text="{i18n>tile349}" icon="sap-icon://form" key="model349" visible="{ui>/statutorySidebarVisible}"/>
+                        <tnt:NavigationListItem text="{i18n>tile322}" icon="sap-icon://form" key="model322" visible="{ui>/statutorySidebarVisible}"/>
+
+                        <!-- France Sidebar Items -->
+                        <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bbyd-dashboard" key="franceDashboard" visible="{ui>/franceSidebarVisible}"/>
+
+                        <tnt:NavigationListItem text="{i18n>issueInvoices}" icon="sap-icon://create-form" expanded="false" visible="{ui>/franceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>invoiceList}" key="franceIssueList"/>
+                            <tnt:NavigationListItem text="{i18n>createNew}" key="franceIssueNew"/>
+                        </tnt:NavigationListItem>
+
+                        <tnt:NavigationListItem text="{i18n>receiptInvoices}" icon="sap-icon://inbox" expanded="false" visible="{ui>/franceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>invoiceList}" key="franceReceiptList"/>
+                            <tnt:NavigationListItem text="{i18n>createNew}" key="franceReceiptNew"/>
+                            <tnt:NavigationListItem text="{i18n>newScanningInvoice}" key="franceScanInvoice"/>
+                        </tnt:NavigationListItem>
+
+                        <tnt:NavigationListItem text="{i18n>catalog}" icon="sap-icon://product" expanded="false" visible="{ui>/franceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>createItem}" key="franceCatalogNew"/>
+                            <tnt:NavigationListItem text="{i18n>itemList}" key="franceCatalogList"/>
+                        </tnt:NavigationListItem>
+
+                        <tnt:NavigationListItem text="{i18n>config}" icon="sap-icon://action-settings" expanded="false" visible="{ui>/franceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>issuers}" key="franceIssuerManager"/>
+                            <tnt:NavigationListItem text="{i18n>receivers}" key="franceReceiverManager"/>
+                        </tnt:NavigationListItem>
+
+                        <tnt:NavigationListItem text="{i18n>admin}" icon="sap-icon://action-settings" expanded="false" visible="{ui>/franceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>origins}" key="franceOriginList"/>
                         </tnt:NavigationListItem>
 
                     </tnt:NavigationList>

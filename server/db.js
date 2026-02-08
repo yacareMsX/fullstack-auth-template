@@ -7,6 +7,9 @@ let dbConfig = {
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+  ssl: false,
+  connectionTimeoutMillis: 5000,
+  allowExitOnIdle: true
 };
 
 // Check for VCAP_SERVICES (SAP BTP)

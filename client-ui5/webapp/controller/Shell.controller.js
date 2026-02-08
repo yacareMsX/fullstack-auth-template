@@ -15,13 +15,13 @@ sap.ui.define([
                 shellSidebarExpanded: true,
 
                 // Sub-App Sidebars
-                statutorySidebarVisible: true,
+                statutorySidebarVisible: false,
                 statutorySidebarExpanded: true,
 
-                franceSidebarVisible: true,
+                franceSidebarVisible: false,
                 franceSidebarExpanded: true,
 
-                certificateSidebarVisible: true,
+                certificateSidebarVisible: false,
                 certificateSidebarExpanded: true,
 
                 menuVisible: false, // Default to false for Home
@@ -117,60 +117,59 @@ sap.ui.define([
 
         onMenuPress: function () {
             var oUIModel = this.getView().getModel("ui");
-            var sContext = this._sCurrentContext || "shell";
-
-            if (sContext === "shell") {
-                var bExpanded = oUIModel.getProperty("/shellSidebarExpanded");
-                oUIModel.setProperty("/shellSidebarExpanded", !bExpanded);
-            } else if (sContext === "france") {
-                var bExpanded = oUIModel.getProperty("/franceSidebarExpanded");
-                oUIModel.setProperty("/franceSidebarExpanded", !bExpanded);
-            } else if (sContext === "statutory") {
-                var bExpanded = oUIModel.getProperty("/statutorySidebarExpanded");
-                oUIModel.setProperty("/statutorySidebarExpanded", !bExpanded);
-            } else if (sContext === "certificate") {
-                var bExpanded = oUIModel.getProperty("/certificateSidebarExpanded");
-                oUIModel.setProperty("/certificateSidebarExpanded", !bExpanded);
-            }
+            var bExpanded = oUIModel.getProperty("/shellSidebarExpanded");
+            oUIModel.setProperty("/shellSidebarExpanded", !bExpanded);
         },
 
         onNavBack: function () {
             this.getOwnerComponent().getRouter().navTo("home");
         },
 
+        _resetSidebars: function (oUIModel) {
+            oUIModel.setProperty("/shellSidebarVisible", false);
+            oUIModel.setProperty("/statutorySidebarVisible", false);
+            oUIModel.setProperty("/franceSidebarVisible", false);
+            oUIModel.setProperty("/certificateSidebarVisible", false);
+        },
+
         _onRouteMatched: function (oEvent) {
             var sRouteName = oEvent.getParameter("name");
+            console.log("DEBUG SHELL ROUTE:", sRouteName);
 
             var oUIModel = this.getView().getModel("ui");
+            // Reset all sidebars first
+            this._resetSidebars(oUIModel);
+
+            // Force consistent header defaults immediately
+            oUIModel.setProperty("/menuVisible", false);
+            oUIModel.setProperty("/backButtonVisible", false);
+
             var oToolPage = this.byId("toolPage"); // Keep this if needed for other things, but rely on model for visibility
             var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
             var sAppTitle = oResourceBundle.getText("appTitle");
 
             // Hide sidebar and menu button on Home screen
             if (sRouteName === "home") {
-                oUIModel.setProperty("/shellSidebarVisible", false);
-                oUIModel.setProperty("/menuVisible", false);
+                // Sidebars already hidden by _resetSidebars
                 oUIModel.setProperty("/headerVisible", true);
-                oUIModel.setProperty("/backButtonVisible", false);
                 oUIModel.setProperty("/headerTitle", sAppTitle);
                 oUIModel.setProperty("/shellSidebarExpanded", false);
-            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0 || sRouteName.indexOf("france") === 0 || sRouteName.indexOf("certificate") === 0)) {
+            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("model") === 0 || sRouteName.indexOf("france") === 0 || sRouteName.indexOf("certificate") === 0)) {
                 // Statutory/France/Cert App Mode
                 // Show Global Header (Unified)
                 oUIModel.setProperty("/headerVisible", true);
 
-                // Hide Global Sidebar (Sub-App handles its own)
-                oUIModel.setProperty("/shellSidebarVisible", false);
+                // Sidebar visibility handled below per app
 
-                // Hide Menu Button (Global Sidebar is hidden, so toggling it is useless)
-                oUIModel.setProperty("/menuVisible", false);
+                // Show Menu Button to allow toggling sidebar
+                oUIModel.setProperty("/menuVisible", true);
 
-                // Show Back Button (To allow navigation back to Home/Dashboard)
-                oUIModel.setProperty("/backButtonVisible", true);
+                // Show Back Button -> DISABLED to keep Home Icon visible
+                oUIModel.setProperty("/backButtonVisible", false);
 
                 // Update Title? Optional, sub-apps might behave better with a generic title or we let them update it if they have access to the model.
                 // Keeping previous title logic implies we set it here.
-                if (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("modelo") === 0) {
+                if (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("model") === 0) {
                     this._sCurrentContext = "statutory";
                     oUIModel.setProperty("/headerTitle", "Compliance Hub - Statutory Report");
                     oUIModel.setProperty("/statutorySidebarVisible", true);
@@ -184,15 +183,25 @@ sap.ui.define([
                     oUIModel.setProperty("/certificateSidebarVisible", true);
                 }
 
-                oUIModel.setProperty("/shellSidebarExpanded", false);
+                // Default to collapsed text (icons only) unless user expands
+                // We keep current state if it persists, or force collapse? User said "ahora no sale fijo".
+                // Let's NOT force collapse every time. Let it persist if model state is kept.
+                // But lines 199 forced it.
+                // oUIModel.setProperty("/shellSidebarExpanded", false); // Removed forced collapse
             } else {
                 this._sCurrentContext = "shell";
-                oUIModel.setProperty("/shellSidebarVisible", true);
+                oUIModel.setProperty("/shellSidebarVisible", true); // Re-enable default shell sidebar
                 oUIModel.setProperty("/sidebarVisible", true); // Fallback for any missed bindings
+
+                // Force Consistent Header
                 oUIModel.setProperty("/menuVisible", true);
                 oUIModel.setProperty("/headerVisible", true);
-                oUIModel.setProperty("/backButtonVisible", true);
+                oUIModel.setProperty("/backButtonVisible", false);
+
+                // Force expand by default to ensuring visibility. User can collapse later.
                 oUIModel.setProperty("/shellSidebarExpanded", true);
+
+                console.log("DEBUG: Default Shell Context. SidebarVisible:", oUIModel.getProperty("/shellSidebarVisible"), "Expanded:", oUIModel.getProperty("/shellSidebarExpanded"));
 
                 // Dynamic Title Logic
                 var sPageTitle = "eInvoice Ley C&C";
@@ -207,13 +216,13 @@ sap.ui.define([
 
             switch (sKey) {
                 case "dashboard":
-                    oRouter.navTo("home");
+                    oRouter.navTo("dashboard");
                     break;
                 case "issueList":
-                    oRouter.navTo("invoiceList", { tipo: "ISSUE" });
+                    oRouter.navTo("issueInvoices");
                     break;
                 case "receiptList":
-                    oRouter.navTo("invoiceList", { tipo: "RECEIPT" });
+                    oRouter.navTo("receiptInvoices");
                     break;
                 case "issueNew":
                     oRouter.navTo("invoiceNew", { tipo: "ISSUE" });
@@ -228,10 +237,11 @@ sap.ui.define([
                     sap.m.MessageToast.show("Coming soon");
                     break;
                 case "catalogNew":
-                    oRouter.navTo("catalogNew");
+                    // TODO: Create catalogNew route or point to catalogDetail with 'new'
+                    oRouter.navTo("catalogNew"); // Now defined
                     break;
                 case "catalogList":
-                    oRouter.navTo("catalogList");
+                    oRouter.navTo("catalog"); // Fixed target
                     break;
                 case "issuerManager":
                     oRouter.navTo("issuerManager");
@@ -247,7 +257,7 @@ sap.ui.define([
                     oRouter.navTo("workflowList");
                     break;
                 case "workflowNew":
-                    oRouter.navTo("workflowNew");
+                    oRouter.navTo("workflowDesigner"); // Assuming designer handles new
                     break;
                 case "originList":
                     oRouter.navTo("originList");
@@ -265,7 +275,51 @@ sap.ui.define([
                     oRouter.navTo("invoiceCountryList");
                     break;
                 case "certificateLayout":
-                    oRouter.navTo("certificateLayout");
+                    oRouter.navTo("certificateList");
+                    break;
+                case "model303":
+                    oRouter.navTo("model303");
+                    break;
+                case "model349":
+                    sap.m.MessageToast.show("Modelo 349 no disponible");
+                    break;
+                case "model322":
+                    sap.m.MessageToast.show("Modelo 202 no disponible");
+                    break;
+
+                // France Navigation
+                case "franceDashboard":
+                    oRouter.navTo("franceDashboard");
+                    break;
+                case "franceIssueList":
+                    oRouter.navTo("franceIssueList");
+                    break;
+                case "franceIssueNew":
+                    oRouter.navTo("franceIssueNew");
+                    break;
+                case "franceReceiptList":
+                    oRouter.navTo("franceReceiptList");
+                    break;
+                case "franceReceiptNew":
+                    oRouter.navTo("franceReceiptNew");
+                    break;
+                case "franceScanInvoice":
+                    oRouter.navTo("franceScanInvoice");
+                    break;
+                case "franceCatalogNew":
+                    oRouter.navTo("franceCatalogNew");
+                    break;
+                case "franceCatalogList":
+                    oRouter.navTo("franceCatalogList");
+                    break;
+                case "franceIssuerManager":
+                    oRouter.navTo("franceIssuerManager");
+                    break;
+                case "franceReceiverManager":
+                    oRouter.navTo("franceReceiverManager");
+                    break;
+                case "franceOriginList":
+                    oRouter.navTo("franceOriginList");
                     break;
             }
 
@@ -276,7 +330,7 @@ sap.ui.define([
         },
 
         onNavHome: function () {
-            this.getOwnerComponent().getRouter().navTo("dashboard");
+            this.getOwnerComponent().getRouter().navTo("home");
         },
 
         onLanguagePress: function (oEvent) {
