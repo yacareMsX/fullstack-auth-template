@@ -300,6 +300,21 @@
                     "name": "franceUbl21",
                     "pattern": "france/invoices/{invoiceId}/ubl",
                     "target": "franceFacturaUBL"
+                },
+                {
+                    "name": "facturaE",
+                    "pattern": "invoices/{invoiceId}/facturae",
+                    "target": "facturaE"
+                },
+                {
+                    "name": "ubl21",
+                    "pattern": "invoices/{invoiceId}/ubl",
+                    "target": "facturaUBL"
+                },
+                {
+                    "name": "invoiceEdit",
+                    "pattern": "invoices/edit/{invoiceId}",
+                    "target": "invoiceEdit"
                 }
             ],
             "targets": {
@@ -415,7 +430,7 @@
                 },
                 "invoiceList": {
                     "viewId": "invoiceList",
-                    "viewName": "InvoiceList",
+                    "viewName": "spain.InvoiceList",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },
@@ -427,7 +442,7 @@
                 },
                 "dashboard": {
                     "viewId": "dashboard",
-                    "viewName": "Dashboard",
+                    "viewName": "spain.Dashboard",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },
@@ -580,6 +595,24 @@
                 "auditLog": {
                     "viewId": "auditLog",
                     "viewName": "AuditLog",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "facturaE": {
+                    "viewId": "facturaE",
+                    "viewName": "FacturaE",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "facturaUBL": {
+                    "viewId": "facturaUBL",
+                    "viewName": "FacturaUBL",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "invoiceEdit": {
+                    "viewId": "invoiceEdit",
+                    "viewName": "InvoiceForm",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 }

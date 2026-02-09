@@ -7,7 +7,7 @@ sap.ui.define([
 ], function (Controller, JSONModel, MessageToast, DateFormat, formatter) {
     "use strict";
 
-    return Controller.extend("invoice.app.controller.Dashboard", {
+    return Controller.extend("invoice.app.controller.spain.Dashboard", {
 
         formatter: formatter,
 

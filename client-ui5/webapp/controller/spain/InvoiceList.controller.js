@@ -7,7 +7,7 @@ sap.ui.define([
 ], function (Controller, JSONModel, Filter, FilterOperator, formatter) {
     "use strict";
 
-    return Controller.extend("invoice.app.controller.InvoiceList", {
+    return Controller.extend("invoice.app.controller.spain.InvoiceList", {
         formatter: formatter,
 
         onInit: function () {

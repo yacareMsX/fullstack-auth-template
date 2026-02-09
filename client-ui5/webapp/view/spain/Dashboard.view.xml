@@ -1,5 +1,4 @@
-<mvc:View
-    controllerName="invoice.app.controller.Dashboard"
+<mvc:View controllerName="invoice.app.controller.spain.Dashboard"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:f="sap.f"
@@ -24,37 +23,25 @@
                 <layout:HorizontalLayout allowWrapping="true">
                     <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" header="{i18n>totalRevenue}" subheader="{i18n>allTime}">
                         <TileContent>
-                            <ObjectNumber
-                                number="{path: 'dashboard>/kpi/totalRevenue', formatter: '.formatter.currency'}"
-                                state="Success"
-                                class="kpiValue"/>
+                            <ObjectNumber number="{path: 'dashboard>/kpi/totalRevenue', formatter: '.formatter.currency'}" state="Success" class="kpiValue"/>
                         </TileContent>
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" header="{i18n>invoicesCount}" subheader="{i18n>totalCount}">
                         <TileContent>
-                            <ObjectNumber
-                                number="{path: 'dashboard>/kpi/totalCount', formatter: '.formatter.number'}"
-                                state="None"
-                                class="kpiValue"/>
+                            <ObjectNumber number="{path: 'dashboard>/kpi/totalCount', formatter: '.formatter.number'}" state="None" class="kpiValue"/>
                         </TileContent>
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" header="{i18n>outstanding}" subheader="{i18n>unpaidAmount}">
                         <TileContent>
-                            <ObjectNumber
-                                number="{path: 'dashboard>/kpi/outstandingAmount', formatter: '.formatter.currency'}"
-                                state="Error"
-                                class="kpiValue"/>
+                            <ObjectNumber number="{path: 'dashboard>/kpi/outstandingAmount', formatter: '.formatter.currency'}" state="Error" class="kpiValue"/>
                         </TileContent>
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" header="{i18n>avgTicket}" subheader="{i18n>perInvoice}">
                         <TileContent>
-                            <ObjectNumber
-                                number="{path: 'dashboard>/kpi/averageTicket', formatter: '.formatter.currency'}"
-                                state="None"
-                                class="kpiValue"/>
+                            <ObjectNumber number="{path: 'dashboard>/kpi/averageTicket', formatter: '.formatter.currency'}" state="None" class="kpiValue"/>
                         </TileContent>
                     </GenericTile>
                 </layout:HorizontalLayout>
@@ -63,7 +50,7 @@
 
         <f:content>
             <VBox class="sapUiSmallMargin">
-                
+
                 <!-- Charts Section (Adapted to Lists due to missing Viz library) -->
                 <layout:Grid defaultSpan="L6 M12 S12" class="sapUiMediumMarginBottom">
                     <!-- Revenue Trend List -->
@@ -79,10 +66,7 @@
                                             <Title text="{dashboard>month}" level="H5"/>
                                         </VBox>
                                         <VBox width="70%">
-                                            <ProgressIndicator 
-                                                percentValue="{dashboard>percent}" 
-                                                displayValue="{path: 'dashboard>revenue', formatter: '.formatter.currency'} EUR" 
-                                                state="Information"/>
+                                            <ProgressIndicator percentValue="{dashboard>percent}" displayValue="{path: 'dashboard>revenue', formatter: '.formatter.currency'} EUR" state="Information"/>
                                         </VBox>
                                     </HBox>
                                 </CustomListItem>
@@ -97,10 +81,7 @@
                         </f:header>
                         <f:content>
                             <List items="{dashboard>/charts/status}">
-                                <ObjectListItem
-                                    title="{dashboard>status}"
-                                    number="{path: 'dashboard>count', formatter: '.formatter.number'}"
-                                    numberUnit="{i18n>invoicesCount}">
+                                <ObjectListItem title="{dashboard>status}" number="{path: 'dashboard>count', formatter: '.formatter.number'}" numberUnit="{i18n>invoicesCount}">
                                     <firstStatus>
                                         <ObjectStatus text="{dashboard>percent}%" state="{= ${dashboard>status} === 'PAGADA' ? 'Success' : ${dashboard>status} === 'PENDIENTE' ? 'Warning' : 'None'}"/>
                                     </firstStatus>
@@ -118,11 +99,21 @@
                     <f:content>
                         <Table items="{dashboard>/recentInvoices}" growing="false">
                             <columns>
-                                <Column><Text text="{i18n>number}"/></Column>
-                                <Column><Text text="{i18n>issuer}"/></Column>
-                                <Column><Text text="{i18n>date}"/></Column>
-                                <Column hAlign="End"><Text text="{i18n>amount}"/></Column>
-                                <Column hAlign="End"><Text text="{i18n>status}"/></Column>
+                                <Column>
+                                    <Text text="{i18n>number}"/>
+                                </Column>
+                                <Column>
+                                    <Text text="{i18n>issuer}"/>
+                                </Column>
+                                <Column>
+                                    <Text text="{i18n>date}"/>
+                                </Column>
+                                <Column hAlign="End">
+                                    <Text text="{i18n>amount}"/>
+                                </Column>
+                                <Column hAlign="End">
+                                    <Text text="{i18n>status}"/>
+                                </Column>
                             </columns>
                             <items>
                                 <ColumnListItem type="Navigation" press="onNavToInvoiceDetail">
