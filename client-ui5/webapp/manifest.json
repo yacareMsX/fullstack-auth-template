@@ -60,7 +60,7 @@
             "ui": {
                 "type": "sap.ui.model.json.JSONModel",
                 "settings": {
-                    "headerTitle": "Compliance Hub",
+                    "headerTitle": "Deliom Compliance",
                     "themeIcon": "sap-icon://light-mode",
                     "shellSidebarExpanded": true,
                     "shellSidebarVisible": true

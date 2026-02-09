@@ -88,6 +88,9 @@
                             <tnt:NavigationListItem text="{i18n>origins}" key="franceOriginList"/>
                         </tnt:NavigationListItem>
 
+                        <!-- Business Mappings Sidebar Items -->
+                        <tnt:NavigationListItem text="Business Mappings" icon="sap-icon://opportunity" key="documentationXml" visible="{ui>/businessMappingsSidebarVisible}"/>
+
                     </tnt:NavigationList>
                 </tnt:SideNavigation>
             </tnt:sideContent>

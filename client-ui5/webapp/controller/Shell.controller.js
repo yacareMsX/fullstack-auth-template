@@ -11,18 +11,10 @@ sap.ui.define([
             // Initialize UI model for shell state
             var oUIModel = new sap.ui.model.json.JSONModel({
                 // Global Shell Sidebar
-                shellSidebarVisible: false, // Default to false for Home
-                shellSidebarExpanded: true,
-
-                // Sub-App Sidebars
-                statutorySidebarVisible: false,
-                statutorySidebarExpanded: true,
-
-                franceSidebarVisible: false,
-                franceSidebarExpanded: true,
-
-                certificateSidebarVisible: false,
                 certificateSidebarExpanded: true,
+
+                businessMappingsSidebarVisible: false,
+                businessMappingsSidebarExpanded: true,
 
                 menuVisible: false, // Default to false for Home
                 headerTitle: "Home",
@@ -130,6 +122,7 @@ sap.ui.define([
             oUIModel.setProperty("/statutorySidebarVisible", false);
             oUIModel.setProperty("/franceSidebarVisible", false);
             oUIModel.setProperty("/certificateSidebarVisible", false);
+            oUIModel.setProperty("/businessMappingsSidebarVisible", false);
         },
 
         _onRouteMatched: function (oEvent) {
@@ -167,8 +160,6 @@ sap.ui.define([
                 // Show Back Button -> DISABLED to keep Home Icon visible
                 oUIModel.setProperty("/backButtonVisible", false);
 
-                // Update Title? Optional, sub-apps might behave better with a generic title or we let them update it if they have access to the model.
-                // Keeping previous title logic implies we set it here.
                 if (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("model") === 0) {
                     this._sCurrentContext = "statutory";
                     oUIModel.setProperty("/headerTitle", "Compliance Hub - Statutory Report");
@@ -183,11 +174,17 @@ sap.ui.define([
                     oUIModel.setProperty("/certificateSidebarVisible", true);
                 }
 
-                // Default to collapsed text (icons only) unless user expands
-                // We keep current state if it persists, or force collapse? User said "ahora no sale fijo".
-                // Let's NOT force collapse every time. Let it persist if model state is kept.
-                // But lines 199 forced it.
-                // oUIModel.setProperty("/shellSidebarExpanded", false); // Removed forced collapse
+            } else if (sRouteName && sRouteName.indexOf("documentation") > -1) {
+                // Business Mappings Mode
+                this._sCurrentContext = "businessMappings";
+                oUIModel.setProperty("/headerVisible", true);
+                oUIModel.setProperty("/headerTitle", "Business Mappings");
+                oUIModel.setProperty("/menuVisible", true);
+                oUIModel.setProperty("/backButtonVisible", false);
+
+                oUIModel.setProperty("/businessMappingsSidebarVisible", true);
+                oUIModel.setProperty("/shellSidebarVisible", false);
+
             } else {
                 this._sCurrentContext = "shell";
                 oUIModel.setProperty("/shellSidebarVisible", true); // Re-enable default shell sidebar

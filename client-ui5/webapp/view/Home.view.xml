@@ -1,12 +1,9 @@
-<mvc:View
-    controllerName="invoice.app.controller.Home"
+<mvc:View controllerName="invoice.app.controller.Home"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:layout="sap.ui.layout"
     xmlns:uxap="sap.uxap"
-    xmlns:core="sap.ui.core"
-    displayBlock="true"
-    height="100%">
+    xmlns:core="sap.ui.core" displayBlock="true" height="100%">
 
     <uxap:ObjectPageLayout id="ObjectPageLayout" showTitleInHeaderContent="true" showHeaderContent="true" showFooter="false" enableLazyLoading="true" upperCaseAnchorBar="false">
         <uxap:headerTitle>
@@ -31,26 +28,38 @@
                                     <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
                                 </HBox>
                                 <layout:HorizontalLayout allowWrapping="true">
-                                <GenericTile header="{i18n>tileEinvoiceFace}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FACE} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://document-text"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tileTbai}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_TBAI} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://official-service"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tileLeyCC}" press="onNavigateToDashboard" visible="{= !!${security>/APP_TILE_LEY_CC} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://bbyd-dashboard"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tileEinvoicePolonia}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_POLONIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://world"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tileEinvoiceFrancia}" press="onNavigateToFrance" visible="{= !!${security>/APP_TILE_FRANCIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://world"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tileEinvoiceBelgica}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_BELGICA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://world"/></TileContent>
-                                </GenericTile>
-                            </layout:HorizontalLayout>
-                        </VBox>
+                                    <GenericTile header="{i18n>tileEinvoiceFace}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FACE} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://document-text"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tileTbai}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_TBAI} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://official-service"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tileLeyCC}" press="onNavigateToDashboard" visible="{= !!${security>/APP_TILE_LEY_CC} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://bbyd-dashboard"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tileEinvoicePolonia}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_POLONIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://world"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tileEinvoiceFrancia}" press="onNavigateToFrance" visible="{= !!${security>/APP_TILE_FRANCIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://world"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tileEinvoiceBelgica}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_BELGICA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://world"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                </layout:HorizontalLayout>
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
@@ -66,17 +75,23 @@
                                     <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
                                 </HBox>
                                 <layout:HorizontalLayout allowWrapping="true">
-                                <GenericTile header="{i18n>tileSii}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_SII} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://bar-chart"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tileVerifactu}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_VERIFACTU} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://receipt"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tileFranceReporting}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FRANCE_REPORTING} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://line-chart"/></TileContent>
-                                </GenericTile>
-                            </layout:HorizontalLayout>
-                        </VBox>
+                                    <GenericTile header="{i18n>tileSii}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_SII} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://bar-chart"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tileVerifactu}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_VERIFACTU} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://receipt"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tileFranceReporting}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FRANCE_REPORTING} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://line-chart"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                </layout:HorizontalLayout>
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
@@ -92,17 +107,23 @@
                                     <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
                                 </HBox>
                                 <layout:HorizontalLayout allowWrapping="true">
-                                <GenericTile header="{i18n>tile301}" press="onNavigateToModelo303" visible="{= !!${security>/APP_TILE_301} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://form"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tile349}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_349} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://form"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>tile322}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_322} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://form"/></TileContent>
-                                </GenericTile>
-                            </layout:HorizontalLayout>
-                        </VBox>
+                                    <GenericTile header="{i18n>tile301}" press="onNavigateToModelo303" visible="{= !!${security>/APP_TILE_301} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://form"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tile349}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_349} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://form"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>tile322}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_322} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://form"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                </layout:HorizontalLayout>
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
@@ -118,17 +139,23 @@
                                     <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
                                 </HBox>
                                 <layout:HorizontalLayout allowWrapping="true">
-                                <GenericTile header="{i18n>userManagement}" press="onNavigateToUserManagement" visible="{= !!${security>/APP_USER_MANAGEMENT} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://user-settings"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>invoiceCountriesTitle}" press="onNavigateToCountries" visible="{= !!${security>/APP_TILE_COUNTRIES} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://world"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>certificatesManagement}" press="onNavigateToCertificates" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://badge"/></TileContent>
-                                </GenericTile>
-                            </layout:HorizontalLayout>
-                        </VBox>
+                                    <GenericTile header="{i18n>userManagement}" press="onNavigateToUserManagement" visible="{= !!${security>/APP_USER_MANAGEMENT} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://user-settings"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>invoiceCountriesTitle}" press="onNavigateToCountries" visible="{= !!${security>/APP_TILE_COUNTRIES} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://world"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>certificatesManagement}" press="onNavigateToCertificates" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://badge"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                </layout:HorizontalLayout>
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
@@ -144,14 +171,50 @@
                                     <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
                                 </HBox>
                                 <layout:HorizontalLayout allowWrapping="true">
-                                <GenericTile header="{i18n>approvalProcesses}" press="onNavigateToWorkflow" visible="{= !!${security>/APP_TILE_WORKFLOW} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://process"/></TileContent>
-                                </GenericTile>
-                                <GenericTile header="{i18n>xmlDesign}" press="onNavigateToXmlDesign" visible="{= !!${security>/APP_TILE_XML_DESIGN} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://opportunity"/></TileContent>
-                                </GenericTile>
-                            </layout:HorizontalLayout>
-                        </VBox>
+                                    <GenericTile header="{i18n>approvalProcesses}" press="onNavigateToWorkflow" visible="{= !!${security>/APP_TILE_WORKFLOW} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://process"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="{i18n>xmlDesign}" press="onNavigateToXmlDesign" visible="{= !!${security>/APP_TILE_XML_DESIGN} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://opportunity"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                </layout:HorizontalLayout>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <uxap:ObjectPageSection title="School" id="school" visible="true">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMarginBottom">
+                                <HBox alignItems="Center" class="customSectionHeader">
+                                    <Title text="School" level="H2" class="customSectionTitle"/>
+                                    <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
+                                </HBox>
+                                <layout:HorizontalLayout allowWrapping="true">
+                                    <GenericTile header="Business Mappings" press="onNavigateToBusinessMappings" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://business-objects-experience"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="Tutoriales" press="onNavigateToTutorials" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://video"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile header="Help" press="onNavigateToHelp" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://sys-help"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                </layout:HorizontalLayout>
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
@@ -161,17 +224,19 @@
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection>
                         <uxap:blocks>
-                             <VBox class="sapUiSmallMarginBottom">
+                            <VBox class="sapUiSmallMarginBottom">
                                 <HBox alignItems="Center" class="customSectionHeader">
                                     <Title text="{i18n>audit}" level="H2" class="customSectionTitle"/>
                                     <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
                                 </HBox>
                                 <layout:HorizontalLayout allowWrapping="true">
-                                <GenericTile header="{i18n>auditLog}" press="onNavigateToAudit" visible="{= !!${security>/APP_MENU_AUDIT} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://shield"/></TileContent>
-                                </GenericTile>
-                            </layout:HorizontalLayout>
-                        </VBox>
+                                    <GenericTile header="{i18n>auditLog}" press="onNavigateToAudit" visible="{= !!${security>/APP_MENU_AUDIT} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://shield"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                </layout:HorizontalLayout>
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
@@ -181,17 +246,19 @@
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection>
                         <uxap:blocks>
-                             <VBox class="sapUiSmallMarginBottom">
+                            <VBox class="sapUiSmallMarginBottom">
                                 <HBox alignItems="Center" class="customSectionHeader">
                                     <Title text="APIs" level="H2" class="customSectionTitle"/>
                                     <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
                                 </HBox>
                                 <layout:HorizontalLayout allowWrapping="true">
-                                <GenericTile header="{i18n>apiDocs}" press="onNavigateToApiDocs" visible="{= !!${security>/APP_MENU_API_DOCS} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
-                                    <TileContent><ImageContent src="sap-icon://api"/></TileContent>
-                                </GenericTile>
-                            </layout:HorizontalLayout>
-                        </VBox>
+                                    <GenericTile header="{i18n>apiDocs}" press="onNavigateToApiDocs" visible="{= !!${security>/APP_MENU_API_DOCS} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                        <TileContent>
+                                            <ImageContent src="sap-icon://api"/>
+                                        </TileContent>
+                                    </GenericTile>
+                                </layout:HorizontalLayout>
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>

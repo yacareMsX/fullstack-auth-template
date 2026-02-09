@@ -25,7 +25,7 @@
                     </tnt:NavigationListItem>
                     <tnt:NavigationListItem text="{i18n>mappingTool}" icon="sap-icon://opportunity" expanded="true">
                         <tnt:NavigationListItem text="{i18n>xmlMapping}" key="xmlMapping"/>
-                        <tnt:NavigationListItem text="Documentación XML" key="documentationXml"/>
+
                     </tnt:NavigationListItem>
                 </tnt:NavigationList>
             </tnt:SideNavigation>

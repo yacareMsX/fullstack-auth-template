@@ -2,7 +2,7 @@
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core" displayBlock="true" height="100%">
-    <Page title="Documentación XML" showNavButton="false">
+    <Page title="Business Mappings" showNavButton="false">
         <headerContent>
             <Button text="Crear" type="Emphasized" icon="sap-icon://add" press="onDialogCreate"/>
             <Button text="Borrar" type="Reject" icon="sap-icon://delete" press="onDialogDelete" enabled="{= !!${view>/selectedItem} }"/>

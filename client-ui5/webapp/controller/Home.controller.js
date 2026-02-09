@@ -91,6 +91,18 @@ sap.ui.define([
             this.getOwnerComponent().getRouter().navTo("certificateList");
         },
 
+        onNavigateToBusinessMappings: function () {
+            this.getOwnerComponent().getRouter().navTo("documentationXml");
+        },
+
+        onNavigateToTutorials: function () {
+            sap.m.MessageToast.show("Coming soon: Tutoriales");
+        },
+
+        onNavigateToHelp: function () {
+            sap.m.MessageToast.show("Coming soon: Help");
+        },
+
         onGenericTilePress: function (oEvent) {
             var sTileHeader = oEvent.getSource().getHeader();
             sap.m.MessageToast.show("Funcionalidad '" + sTileHeader + "' próximamente disponible");
