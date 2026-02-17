@@ -28,7 +28,7 @@
                                     <Button icon="sap-icon://information" type="Transparent" press="onShowInfo" class="customSectionInfoBtn" tooltip="{i18n>info}"/>
                                 </HBox>
                                 <layout:HorizontalLayout allowWrapping="true">
-                                    <GenericTile header="{i18n>tileEinvoiceFace}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_FACE} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
+                                    <GenericTile header="{i18n>tileEinvoiceFace}" press="onNavigateToFaceDashboard" visible="{= !!${security>/APP_TILE_FACE} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                         <TileContent>
                                             <ImageContent src="sap-icon://document-text"/>
                                         </TileContent>

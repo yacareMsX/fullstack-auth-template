@@ -1,0 +1,893 @@
+
+const express = require('express');
+const { authenticateToken } = require('../../../middleware/auth');
+const db = require('../../../db');
+const { logAction } = require('../../../utils/audit');
+const router = express.Router();
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+const { signXml } = require('../../../utils/xml_signer');
+
+// Encryption Configuration (Must match certificates.js)
+const ALGORITHM = 'aes-256-gcm';
+const ENCRYPTION_KEY = crypto.scryptSync(process.env.JWT_SECRET || 'fallback-secret', 'salt', 32);
+
+function decrypt(encryptedHex, ivHex) {
+    const iv = Buffer.from(ivHex, 'hex');
+    const encryptedBytes = Buffer.from(encryptedHex, 'hex');
+    const authTagLength = 16;
+    const authTag = encryptedBytes.slice(encryptedBytes.length - authTagLength);
+    const encryptedContent = encryptedBytes.slice(0, encryptedBytes.length - authTagLength);
+
+    const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+    decipher.setAuthTag(authTag);
+    const decrypted = Buffer.concat([decipher.update(encryptedContent), decipher.final()]);
+    return decrypted;
+}
+
+
+// Get all invoices with filters
+/**
+ * @swagger
+ * /api/invoices/facturas:
+ *   get:
+ *     summary: Retrieve a list of invoices
+ *     tags: [Invoices]
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [ISSUE, RECEIPT]
+ *         description: Type of invoice (ISSUE or RECEIPT)
+ *       - in: query
+ *         name: estado
+ *         schema:
+ *           type: string
+ *         description: Filter by status (e.g., PENDIENTE, PAGADA)
+ *     responses:
+ *       200:
+ *         description: A list of invoices
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id_factura:
+ *                     type: integer
+ *                   numero:
+ *                     type: string
+ *                   total:
+ *                     type: number
+ *                   estado:
+ *                     type: string
+ */
+// Get next invoice number
+router.get('/next-number', authenticateToken, async (req, res) => {
+    try {
+        const countryId = 6; // Force Face (6)
+        const prefix = countryId == 3 ? 'INV-FR-%' : 'INV-ISUE-%';
+        const displayPrefix = countryId == 3 ? 'INV-FR-' : 'INV-ISUE-';
+
+        // Find the latest invoice number for the specific country and prefix
+        const result = await db.query(
+            "SELECT numero FROM factura WHERE numero LIKE $1 AND invoice_country_id = $2 ORDER BY numero DESC LIMIT 1",
+            [prefix, countryId]
+        );
+
+        let nextSequence = 1;
+        if (result.rows.length > 0) {
+            const lastNumber = result.rows[0].numero;
+            // Expected format: INV-ISUE-000000000001
+            const parts = lastNumber.split('-');
+            if (parts.length === 3) {
+                const currentSeq = parseInt(parts[2], 10);
+                if (!isNaN(currentSeq)) {
+                    nextSequence = currentSeq + 1;
+                }
+            }
+        }
+
+        const paddedSeq = nextSequence.toString().padStart(11, '0');
+        const nextNumber = `${displayPrefix}${paddedSeq}`;
+
+        res.json({ nextNumber });
+    } catch (error) {
+        console.error('Error generating next number:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/', authenticateToken, async (req, res) => {
+    try {
+        console.log('[FACE DEBUG] GET /api/face/invoices/facturas called');
+        const { estado, tipo, id_emisor, id_receptor, fecha_desde, fecha_hasta, invoice_country_id, limit = 50, offset = 0 } = req.query;
+        const countryId = 6; // Force Face (6)
+        console.log('[FACE DEBUG] Enforcing countryId:', countryId);
+
+        let query = `
+      SELECT f.*,
+    e.nombre as emisor_nombre,
+    r.nombre as receptor_nombre,
+    o.descripcion as origen_descripcion
+      FROM factura f
+      JOIN emisor e ON f.id_emisor = e.id_emisor
+      JOIN receptor r ON f.id_receptor = r.id_receptor
+      LEFT JOIN origenes o ON f.id_origen = o.id_origen
+      WHERE f.invoice_country_id = $1
+    `;
+        const params = [countryId];
+        let paramCount = 2;
+
+        if (tipo) {
+            // Map legacy tipo to codigo_tipo
+            let codigoTipo = tipo;
+            if (tipo === 'ISSUE') codigoTipo = '01';
+            if (tipo === 'RECEIPT') codigoTipo = '02';
+
+            query += ` AND f.codigo_tipo = $${paramCount} `;
+            params.push(codigoTipo);
+            paramCount++;
+        }
+
+        if (estado) {
+            query += ` AND f.estado = $${paramCount} `;
+            params.push(estado);
+            paramCount++;
+        }
+
+        if (id_emisor) {
+            query += ` AND f.id_emisor = $${paramCount} `;
+            params.push(id_emisor);
+            paramCount++;
+        }
+
+        if (id_receptor) {
+            query += ` AND f.id_receptor = $${paramCount} `;
+            params.push(id_receptor);
+            paramCount++;
+        }
+
+        if (fecha_desde) {
+            query += ` AND f.fecha_emision >= $${paramCount} `;
+            params.push(fecha_desde);
+            paramCount++;
+        }
+
+        if (fecha_hasta) {
+            query += ` AND f.fecha_emision <= $${paramCount} `;
+            params.push(fecha_hasta);
+            paramCount++;
+        }
+
+        query += ` ORDER BY f.fecha_emision DESC, f.numero DESC LIMIT $${paramCount} OFFSET $${paramCount + 1} `;
+        params.push(limit, offset);
+
+        const result = await db.query(query, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching invoices:', error);
+        require('fs').writeFileSync('error.log', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get invoice by ID with details
+router.get('/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Get invoice with issuer and receiver details
+        const invoiceResult = await db.query(
+            `SELECT f.*, o.descripcion as origen_descripcion,
+    e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
+    r.email as receptor_email, r.telefono as receptor_telefono
+       FROM factura f
+       JOIN emisor e ON f.id_emisor = e.id_emisor
+       JOIN receptor r ON f.id_receptor = r.id_receptor
+       LEFT JOIN origenes o ON f.id_origen = o.id_origen
+       WHERE f.id_factura = $1 AND f.invoice_country_id = 6`,
+            [id]
+        );
+
+        if (invoiceResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const invoice = invoiceResult.rows[0];
+
+        // Get invoice lines
+        const linesResult = await db.query(
+            `SELECT lf.*, i.codigo as impuesto_codigo, i.descripcion as impuesto_descripcion
+       FROM linea_factura lf
+       LEFT JOIN impuesto i ON lf.id_impuesto = i.id_impuesto
+       WHERE lf.id_factura = $1
+       ORDER BY lf.created_at ASC`,
+            [id]
+        );
+
+        invoice.lineas = linesResult.rows;
+
+        res.json(invoice);
+    } catch (error) {
+        console.error('Error fetching invoice:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Generate PDF for invoice
+router.get('/:id/pdf', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { generateInvoicePDF } = require('../../../utils/pdfGenerator');
+
+        // Get invoice with all details
+        const invoiceResult = await db.query(
+            `SELECT f.*,
+    e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
+    r.email as receptor_email, r.telefono as receptor_telefono
+       FROM factura f
+       JOIN emisor e ON f.id_emisor = e.id_emisor
+       JOIN receptor r ON f.id_receptor = r.id_receptor
+       WHERE f.id_factura = $1 AND f.invoice_country_id = 6`,
+            [id]
+        );
+
+        if (invoiceResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const invoice = invoiceResult.rows[0];
+
+        // Get invoice lines
+        const linesResult = await db.query(
+            `SELECT lf.*, i.codigo as impuesto_codigo, i.descripcion as impuesto_descripcion
+       FROM linea_factura lf
+       LEFT JOIN impuesto i ON lf.id_impuesto = i.id_impuesto
+       WHERE lf.id_factura = $1
+       ORDER BY lf.created_at ASC`,
+            [id]
+        );
+
+        invoice.lineas = linesResult.rows;
+
+        // Generate PDF
+        const doc = generateInvoicePDF(invoice);
+
+        // Set response headers
+        const filename = `invoice_${invoice.serie || ''}${invoice.numero}.pdf`;
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        // Pipe PDF to response
+        doc.pipe(res);
+        doc.end();
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Generate Factur-X for invoice
+router.get('/:id/factur-x', authenticateToken, async (req, res) => {
+    console.log(`[Factur-X] Request received for invoice ID: ${req.params.id}`);
+    console.log(`[Factur-X] User: ${req.user ? req.user.email : 'Unauthenticated'}`);
+    try {
+        const { id } = req.params;
+        const { generateFacturX } = require('../../../utils/pdfGenerator');
+        const { generateUBLXML } = require('../../../utils/ublGenerator');
+
+        // Get invoice with all details
+        const invoiceResult = await db.query(
+            `SELECT f.*,
+    e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
+    r.email as receptor_email, r.telefono as receptor_telefono
+       FROM factura f
+       JOIN emisor e ON f.id_emisor = e.id_emisor
+       JOIN receptor r ON f.id_receptor = r.id_receptor
+       WHERE f.id_factura = $1 AND f.invoice_country_id = 6`,
+            [id]
+        );
+
+        if (invoiceResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const invoice = invoiceResult.rows[0];
+
+        // Get invoice lines
+        const linesResult = await db.query(
+            `SELECT lf.*, i.codigo as impuesto_codigo, i.descripcion as impuesto_descripcion
+       FROM linea_factura lf
+       LEFT JOIN impuesto i ON lf.id_impuesto = i.id_impuesto
+       WHERE lf.id_factura = $1
+       ORDER BY lf.created_at ASC`,
+            [id]
+        );
+
+        invoice.lineas = linesResult.rows;
+
+        // Generate XML
+        const xmlContent = generateUBLXML(invoice);
+
+        const lang = req.query.lang || 'es'; // Default to Spanish
+
+        // Generate Factur-X PDF
+        const doc = generateFacturX(invoice, xmlContent, lang);
+
+        // Set response headers
+        const filename = `factur-x_${invoice.serie || ''}${invoice.numero}.pdf`;
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+
+        // Pipe PDF to response
+        doc.pipe(res);
+        doc.end();
+
+    } catch (error) {
+        console.error('Error generating Factur-X:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Generate UBL XML for invoice
+router.get('/:id/xml', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { generateUBLXML } = require('../../../utils/ublGenerator');
+
+        // Get invoice with all details
+        const invoiceResult = await db.query(
+            `SELECT f.*,
+    e.nombre as emisor_nombre, e.nif as emisor_nif, e.direccion as emisor_direccion,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    e.email as emisor_email, e.telefono as emisor_telefono,
+    r.nombre as receptor_nombre, r.nif as receptor_nif, r.direccion as receptor_direccion,
+    r.email as receptor_email, r.telefono as receptor_telefono
+       FROM factura f
+       JOIN emisor e ON f.id_emisor = e.id_emisor
+       JOIN receptor r ON f.id_receptor = r.id_receptor
+       WHERE f.id_factura = $1 AND f.invoice_country_id = 6`,
+            [id]
+        );
+
+        if (invoiceResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const invoice = invoiceResult.rows[0];
+
+        // Get invoice lines
+        const linesResult = await db.query(
+            `SELECT lf.*, i.codigo as impuesto_codigo, i.descripcion as impuesto_descripcion
+       FROM linea_factura lf
+       LEFT JOIN impuesto i ON lf.id_impuesto = i.id_impuesto
+       WHERE lf.id_factura = $1
+       ORDER BY lf.created_at ASC`,
+            [id]
+        );
+
+        invoice.lineas = linesResult.rows;
+
+        // Generate XML
+        const xmlContent = generateUBLXML(invoice);
+
+        // Set response headers
+        const filename = `invoice_${invoice.serie || ''}${invoice.numero}.xml`;
+        res.setHeader('Content-Type', 'application/xml');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        // Send XML
+        res.send(xmlContent);
+
+    } catch (error) {
+        console.error('Error in GET /:id/xml:', error);
+        res.status(500).json({
+            error: 'Internal server error',
+            details: error.message,
+            stack: error.stack
+        });
+    }
+});
+
+
+// Create invoice
+router.post('/', authenticateToken, async (req, res) => {
+    const client = await db.pool.connect();
+
+    try {
+        const {
+            numero, serie, fecha_emision, fecha_vencimiento,
+            id_emisor, id_receptor, metodo_pago, codigo_tipo, id_origen,
+            invoice_country_id, lineas = [], estado // Add estado here
+        } = req.body;
+
+        const countryId = 6; // Force Face (6)
+
+        const missingFields = [];
+        if (!numero) missingFields.push('numero');
+        if (!fecha_emision) missingFields.push('fecha_emision');
+        if (!id_emisor) missingFields.push('id_emisor');
+        if (!id_receptor) missingFields.push('id_receptor');
+        if (!codigo_tipo) missingFields.push('codigo_tipo');
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                error: `Missing required fields: ${missingFields.join(', ')} `
+            });
+        }
+
+        await client.query('BEGIN');
+
+        // Calculate totals from lines
+        let subtotal = 0;
+        let impuestos_totales = 0;
+
+        lineas.forEach(linea => {
+            const lineSubtotal = parseFloat(linea.cantidad) * parseFloat(linea.precio_unitario);
+            const lineImpuesto = parseFloat(linea.importe_impuesto || 0);
+            subtotal += lineSubtotal;
+            impuestos_totales += lineImpuesto;
+        });
+
+        const total = subtotal + impuestos_totales;
+
+        const validEstados = ['BORRADOR', 'EMITIDA', 'ENVIADA', 'FIRMADA', 'REGISTRADA', 'RECHAZADA', 'PAGADA', 'CANCELADA', 'PENDIENTE'];
+        const statusToSave = (estado && validEstados.includes(estado)) ? estado : 'BORRADOR';
+
+        const invoiceResult = await client.query(
+            `INSERT INTO factura(
+        numero, serie, fecha_emision, fecha_vencimiento,
+        id_emisor, id_receptor, metodo_pago, codigo_tipo, id_origen,
+        subtotal, impuestos_totales, total, estado, invoice_country_id
+    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+RETURNING * `,
+            [numero, serie, fecha_emision, fecha_vencimiento, id_emisor, id_receptor,
+                metodo_pago, codigo_tipo, id_origen || 1, subtotal, impuestos_totales, total, statusToSave, countryId]
+        );
+
+        const invoice = invoiceResult.rows[0];
+
+        // Create invoice lines
+        const createdLines = [];
+        for (const linea of lineas) {
+            const lineResult = await client.query(
+                `INSERT INTO linea_factura(
+    id_factura, descripcion, cantidad, precio_unitario,
+    porcentaje_impuesto, importe_impuesto, total_linea, id_impuesto
+) VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING * `,
+                [
+                    invoice.id_factura, linea.descripcion, linea.cantidad, linea.precio_unitario,
+                    linea.porcentaje_impuesto, linea.importe_impuesto, linea.total_linea, linea.id_impuesto
+                ]
+            );
+            createdLines.push(lineResult.rows[0]);
+        }
+
+        // Log creation
+        await client.query(
+            `INSERT INTO log_factura(id_factura, accion, usuario)
+VALUES($1, 'CREADA', $2)`,
+            [invoice.id_factura, req.user.email]
+        );
+
+        await client.query('COMMIT');
+
+        // Log to system audit
+        try {
+            await logAction(req.user.userId, 'CREATE_INVOICE', 'INVOICE', invoice.id_factura, { numero: invoice.numero, total: invoice.total }, req.ip);
+        } catch (logErr) {
+            console.error('Failed to log invoice creation:', logErr);
+        }
+
+        invoice.lineas = createdLines;
+        res.status(201).json(invoice);
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error creating invoice:', error);
+        if (error.constraint === 'factura_unica') {
+            return res.status(409).json({ error: 'Invoice number and series combination already exists' });
+        }
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+    } finally {
+        client.release();
+    }
+});
+
+// Update Invoice Fields
+router.put('/:id', authenticateToken, async (req, res) => {
+    const client = await db.pool.connect();
+    try {
+        await client.query('BEGIN');
+        const { id } = req.params;
+        const {
+            numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion,
+            id_emisor, id_receptor, estado, metodo_pago,
+            subtotal, impuestos_totales, total, codigo_tipo, invoice_country_id,
+            lineas = []
+        } = req.body;
+
+        const countryId = 6; // Force Face (6)
+
+        // Update Invoice
+        const updateResult = await client.query(
+            `UPDATE factura SET
+                numero = $1,
+                serie = $2,
+                fecha_emision = $3,
+                fecha_vencimiento = $4,
+                fecha_operacion = $5,
+                id_emisor = $6,
+                id_receptor = $7,
+                estado = $8,
+                metodo_pago = $9,
+                subtotal = $10,
+                impuestos_totales = $11,
+                total = $12,
+                codigo_tipo = $13,
+                invoice_country_id = $14
+            WHERE id_factura = $15
+            RETURNING *`,
+            [
+                numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion || null,
+                id_emisor, id_receptor, estado, metodo_pago,
+                subtotal, impuestos_totales, total, codigo_tipo,
+                countryId, id
+            ]
+        );
+
+        if (updateResult.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        // Delete existing lines and insert new ones
+        await client.query('DELETE FROM linea_factura WHERE id_factura = $1', [id]);
+
+        const createdLines = [];
+        for (const linea of lineas) {
+            const lineResult = await client.query(
+                `INSERT INTO linea_factura(
+                    id_factura, descripcion, cantidad, precio_unitario,
+                    porcentaje_impuesto, importe_impuesto, total_linea, id_impuesto
+                ) VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+                RETURNING *`,
+                [
+                    id, linea.descripcion, linea.cantidad, linea.precio_unitario,
+                    linea.porcentaje_impuesto, linea.importe_impuesto, linea.total_linea, linea.id_impuesto
+                ]
+            );
+            createdLines.push(lineResult.rows[0]);
+        }
+
+        await client.query('COMMIT');
+
+        // Log update
+        logAction(req.user.userId, 'UPDATE_INVOICE', 'INVOICE', id, { numero, total }, req.ip);
+
+        const updatedInvoice = updateResult.rows[0];
+        updatedInvoice.lineas = createdLines;
+        res.json(updatedInvoice);
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error updating invoice:', error);
+        if (error.constraint === 'factura_unica') {
+            return res.status(409).json({ error: 'Invoice number and series combination already exists' });
+        }
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+    } finally {
+        client.release();
+    }
+});
+
+/**
+         * @swagger
+         * /api/invoices/facturas:
+         *   post:
+         *     summary: Create a new invoice
+         *     tags: [Invoices]
+         *     requestBody:
+         *       required: true
+         *       content:
+         *         application/json:
+         *           schema:
+         *             type: object
+         *             required: [numero, fecha_emision, id_emisor, id_receptor]
+         *             properties:
+         *               numero:
+         *                 type: string
+         *               fecha_emision:
+         *                 type: string
+         *                 format: date
+         *               total:
+         *                 type: number
+         *     responses:
+         *       201:
+         *         description: Invoice created successfully
+         */
+router.post('/facturas', authenticateToken, async (req, res) => {
+    const client = await db.pool.connect();
+    try {
+        await client.query('BEGIN');
+        const {
+            numero, fecha_emision, fecha_vencimiento,
+            id_emisor, id_receptor, id_origen,
+            moneda, subtotal, impuestos, total,
+            estado, notas, items, serie, metodo_pago, tipo, pdf_path
+        } = req.body;
+
+        // Insert Invoice
+        const invoiceRes = await client.query(
+            `INSERT INTO factura (
+        numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion,
+        id_emisor, id_receptor, id_origen,
+        moneda, subtotal, impuestos, total,
+        estado, notas, metodo_pago, tipo, pdf_path, invoice_country_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 6)
+      RETURNING id_factura`,
+            [
+                numero, serie, fecha_emision, fecha_vencimiento, fecha_operacion || null,
+                id_emisor, id_receptor, id_origen,
+                moneda, subtotal, impuestos, total,
+                estado || 'PENDIENTE', notas, metodo_pago, tipo || 'ISSUE', pdf_path
+            ]
+        );
+        const invoiceId = invoiceRes.rows[0].id_factura;
+
+        // Insert Items
+        if (items && items.length > 0) {
+            for (const item of items) {
+                await client.query(
+                    `INSERT INTO linea_factura (
+            id_factura, descripcion, cantidad,
+            precio_unitario, subtotal, tasa_impuesto, total
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [
+                        invoiceId, item.descripcion, item.cantidad,
+                        item.precio_unitario, item.subtotal, item.tasa_impuesto, item.total
+                    ]
+                );
+            }
+        }
+
+        await client.query('COMMIT');
+
+        // Log creation
+        logAction(req.user.id, 'CREATE_INVOICE', 'INVOICE', invoiceId, { numero, total }, req.ip);
+
+        res.status(201).json({ message: 'Invoice created successfully', id: invoiceId });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Error creating invoice:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        client.release();
+    }
+});
+
+/**
+ * @swagger
+ * /api/invoices/facturas/{id}:
+ *   put:
+ *     summary: Update an invoice
+ *     tags: [Invoices]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               estado:
+ *                 type: string
+ *               notas:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Invoice updated successfully
+ */
+router.put('/:id', authenticateToken, async (req, res) => {
+    // Simplified update (full update logic is complex)
+    try {
+        const { id } = req.params;
+        const { estado, notas } = req.body;
+
+        await db.query(
+            'UPDATE factura SET estado = COALESCE($1, estado), notas = COALESCE($2, notas), invoice_country_id = 6 WHERE id_factura = $3',
+            [estado, notas, id]
+        );
+
+        // Log update
+        logAction(req.user.userId, 'UPDATE_INVOICE', 'INVOICE', id, { estado, notas }, req.ip);
+
+        res.json({ message: 'Invoice updated successfully' });
+    } catch (err) {
+        console.error('Error updating invoice:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Change invoice status
+router.patch('/:id/estado', authenticateToken, async (req, res) => {
+    const client = await db.pool.connect();
+
+    try {
+        const { id } = req.params;
+        const { estado } = req.body;
+
+        const validEstados = ['BORRADOR', 'EMITIDA', 'ENVIADA', 'FIRMADA', 'REGISTRADA', 'RECHAZADA', 'PAGADA', 'CANCELADA'];
+        if (!validEstados.includes(estado)) {
+            return res.status(400).json({ error: 'Invalid status' });
+        }
+
+        await client.query('BEGIN');
+
+        const result = await client.query(
+            'UPDATE factura SET estado = $1 WHERE id_factura = $2 RETURNING *',
+            [estado, id]
+        );
+
+        if (result.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        await client.query('COMMIT');
+
+        // Log status change
+        logAction(req.user.userId, 'UPDATE_INVOICE_STATUS', 'INVOICE', id, { oldStatus: result.rows[0].estado, newStatus: estado }, req.ip);
+
+        res.json(result.rows[0]);
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error changing invoice status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        client.release();
+    }
+});
+
+// Get invoice logs
+router.get('/:id/logs', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await db.query(
+            'SELECT * FROM log_factura WHERE id_factura = $1 ORDER BY fecha DESC',
+            [id]
+        );
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching invoice logs:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * @swagger
+ * /api/invoices/facturas/{id}:
+ *   delete:
+ *     summary: Delete an invoice
+ *     tags: [Invoices]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Invoice deleted successfully
+ */
+router.delete('/:id', authenticateToken, async (req, res) => {
+    const client = await db.pool.connect();
+    try {
+        await client.query('BEGIN');
+        const { id } = req.params;
+
+        // Delete items first (FK constraint)
+        await client.query('DELETE FROM linea_factura WHERE id_factura = $1', [id]);
+
+        // Delete invoice
+        const result = await client.query('DELETE FROM factura WHERE id_factura = $1', [id]);
+
+        if (result.rowCount === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        await client.query('COMMIT');
+        res.json({ message: 'Invoice deleted successfully' });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Error deleting invoice:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        client.release();
+    }
+});
+
+
+// Sign Invoice XML (FacturaE)
+router.post('/:id/sign', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { xml, certificate_id, password } = req.body;
+
+        if (!xml || !certificate_id) {
+            return res.status(400).json({ error: 'XML and certificate_id are required' });
+        }
+
+        // 1. Fetch Certificate
+        const certResult = await db.query(
+            'SELECT * FROM certificates WHERE id = $1',
+            [certificate_id]
+        );
+
+        if (certResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Certificate not found' });
+        }
+        const cert = certResult.rows[0];
+
+        // 2. Decrypt P12
+        let p12Buffer;
+        try {
+            p12Buffer = decrypt(cert.encrypted_p12, cert.iv);
+        } catch (e) {
+            console.error("Decryption failed:", e);
+            return res.status(500).json({ error: 'Failed to access certificate secure storage' });
+        }
+
+        // 3. Sign XML
+        const signedXml = signXml(xml, p12Buffer, password);
+
+        // 4. Save Signed XML
+        const filename = `signed_invoice_${id}_${Date.now()}.xml`;
+        const uploadsDir = path.join(__dirname, '../../../uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+        const filePath = path.join(uploadsDir, filename);
+        fs.writeFileSync(filePath, signedXml);
+
+        // 5. Update Invoice Status and Path
+        await db.query(
+            "UPDATE factura SET estado = 'FIRMADA', xml_path = $1 WHERE id_factura = $2",
+            [`uploads/${filename}`, id]
+        );
+
+        // 6. Return result
+        res.json({
+            signedXml,
+            message: 'Invoice signed and saved successfully',
+            xml_path: `uploads/${filename}`
+        });
+
+    } catch (error) {
+        console.error('Error signing XML:', error);
+        res.status(500).json({ error: 'Internal server error: ' + error.message });
+    }
+});
+
+module.exports = router;

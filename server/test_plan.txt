@@ -1,0 +1,13 @@
+#!/bin/bash
+# authenticate first to get token
+# Assuming a way to get token or I can just mock it if I disable auth for a second, but better to use a valid token if I can.
+# Actually, I can just grab the token from the browser local storage if I were the user, but I am not.
+# I will try to login first if there is a login endpoint, or...
+# Wait, I see `authenticateToken` middleware. I probably need a token.
+# Let's try to temporarily disable auth in `server/routes/face/catalog.js` for one second to test, OR just add a console log and rely on the user.
+# Disabling auth is risky but fastest for me to verify.
+# BETTER: Add BIG FAT CONSOLE LOGS to `server/routes/face/catalog.js` and `server/routes/catalog.js` and ask user to click.
+
+# Let's go with Console Logs + Server Restart. It's safer and I can see the logs in the terminal I'm running.
+
+# But first, I will check `server/routes/catalog.js` to see what IT does.

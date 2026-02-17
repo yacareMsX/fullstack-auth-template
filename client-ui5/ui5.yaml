@@ -8,20 +8,20 @@ server:
       afterMiddleware: compression
       mountPath: /api
       configuration:
-        baseUri: "http://127.0.0.1:3000/api"
+        baseUri: "http://127.0.0.1:8080/api"
         strictSSL: false
         secure: false
     - name: ui5-middleware-simpleproxy
       afterMiddleware: compression
       mountPath: /api-docs
       configuration:
-        baseUri: "http://127.0.0.1:3000/api-docs"
+        baseUri: "http://127.0.0.1:8080/api-docs"
         strictSSL: false
         secure: false
     - name: ui5-middleware-simpleproxy
       afterMiddleware: compression
       mountPath: /uploads
       configuration:
-        baseUri: "http://127.0.0.1:3000/uploads"
+        baseUri: "http://127.0.0.1:8080/uploads"
         strictSSL: false
         secure: false

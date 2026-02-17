@@ -53,7 +53,15 @@ sap.ui.define([
                             throw new Error(errData.error || "Invalid credentials");
                         });
                     }
-                    return response.json();
+                    var contentType = response.headers.get("content-type");
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        return response.json();
+                    } else {
+                        // If not JSON (e.g. 504 Gateway Timeout HTML), throw error with status text
+                        return response.text().then(text => {
+                            throw new Error("Server Error (" + response.status + "): " + (text.substring(0, 50) + "..."));
+                        });
+                    }
                 })
                 .then(function (data) {
                     console.log("[Login] Success data received:", data);

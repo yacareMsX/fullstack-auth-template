@@ -51,6 +51,10 @@ sap.ui.define([
             this.getOwnerComponent().getRouter().navTo("dashboard");
         },
 
+        onNavigateToFaceDashboard: function () {
+            this.getOwnerComponent().getRouter().navTo("faceDashboard");
+        },
+
         onNavigateToUserManagement: function () {
             // Navigate to the standalone app
             window.location.href = "admin/user_management/index.html";

@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const db = require('./db');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const authRoutes = require('./routes/auth');
 const googleAuthRoutes = require('./routes/google_auth');
@@ -37,6 +37,7 @@ app.use('/api/auth', googleAuthRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/invoices', invoiceRoutes);
+app.use('/api/face', require('./routes/face'));
 app.use('/api/catalog', catalogRoutes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/scan', scanRoutes);

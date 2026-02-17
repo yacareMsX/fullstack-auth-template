@@ -1,0 +1,136 @@
+<mvc:View controllerName="invoice.app.controller.face.FaceDashboard"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns:card="sap.f.cards"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout">
+
+    <f:DynamicPage headerExpanded="true" class="sapUiSizeCompact">
+        <f:title>
+            <f:DynamicPageTitle>
+                <f:heading>
+                    <HBox alignItems="Center">
+                        <Button icon="sap-icon://nav-back" press="onNavBack" type="Transparent" class="sapUiTinyMarginEnd" tooltip="{i18n>goBack}"/>
+                        <Title text="{i18n>dashboardTitle}"/>
+                    </HBox>
+                </f:heading>
+            </f:DynamicPageTitle>
+        </f:title>
+
+        <f:header>
+            <f:DynamicPageHeader pinnable="true">
+                <layout:HorizontalLayout allowWrapping="true">
+                    <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" header="{i18n>totalRevenue}" subheader="{i18n>allTime}">
+                        <TileContent>
+                            <ObjectNumber number="{path: 'dashboard>/kpi/totalRevenue', formatter: '.formatter.currency'}" state="Success" class="kpiValue"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" header="{i18n>invoicesCount}" subheader="{i18n>totalCount}">
+                        <TileContent>
+                            <ObjectNumber number="{path: 'dashboard>/kpi/totalCount', formatter: '.formatter.number'}" state="None" class="kpiValue"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" header="{i18n>outstanding}" subheader="{i18n>unpaidAmount}">
+                        <TileContent>
+                            <ObjectNumber number="{path: 'dashboard>/kpi/outstandingAmount', formatter: '.formatter.currency'}" state="Error" class="kpiValue"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" header="{i18n>avgTicket}" subheader="{i18n>perInvoice}">
+                        <TileContent>
+                            <ObjectNumber number="{path: 'dashboard>/kpi/averageTicket', formatter: '.formatter.currency'}" state="None" class="kpiValue"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:HorizontalLayout>
+            </f:DynamicPageHeader>
+        </f:header>
+
+        <f:content>
+            <VBox class="sapUiSmallMargin">
+
+                <!-- Charts Section (Adapted to Lists due to missing Viz library) -->
+                <layout:Grid defaultSpan="L6 M12 S12" class="sapUiMediumMarginBottom">
+                    <!-- Revenue Trend List -->
+                    <f:Card>
+                        <f:header>
+                            <card:Header title="{i18n>revenueTrend}" iconSrc="sap-icon://line-chart"/>
+                        </f:header>
+                        <f:content>
+                            <List items="{dashboard>/charts/revenue}">
+                                <CustomListItem>
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMargin">
+                                        <VBox width="30%">
+                                            <Title text="{dashboard>month}" level="H5"/>
+                                        </VBox>
+                                        <VBox width="70%">
+                                            <ProgressIndicator percentValue="{dashboard>percent}" displayValue="{path: 'dashboard>revenue', formatter: '.formatter.currency'} EUR" state="Information"/>
+                                        </VBox>
+                                    </HBox>
+                                </CustomListItem>
+                            </List>
+                        </f:content>
+                    </f:Card>
+
+                    <!-- Status Distribution List -->
+                    <f:Card>
+                        <f:header>
+                            <card:Header title="{i18n>statusMix}" iconSrc="sap-icon://pie-chart"/>
+                        </f:header>
+                        <f:content>
+                            <List items="{dashboard>/charts/status}">
+                                <ObjectListItem title="{dashboard>status}" number="{path: 'dashboard>count', formatter: '.formatter.number'}" numberUnit="{i18n>invoicesCount}">
+                                    <firstStatus>
+                                        <ObjectStatus text="{dashboard>percent}%" state="{= ${dashboard>status} === 'PAGADA' ? 'Success' : ${dashboard>status} === 'PENDIENTE' ? 'Warning' : 'None'}"/>
+                                    </firstStatus>
+                                </ObjectListItem>
+                            </List>
+                        </f:content>
+                    </f:Card>
+                </layout:Grid>
+
+                <!-- Recent Invoices Table -->
+                <f:Card>
+                    <f:header>
+                        <card:Header title="{i18n>recentInvoices}" iconSrc="sap-icon://history"/>
+                    </f:header>
+                    <f:content>
+                        <Table items="{dashboard>/recentInvoices}" growing="false">
+                            <columns>
+                                <Column>
+                                    <Text text="{i18n>number}"/>
+                                </Column>
+                                <Column>
+                                    <Text text="{i18n>issuer}"/>
+                                </Column>
+                                <Column>
+                                    <Text text="{i18n>date}"/>
+                                </Column>
+                                <Column hAlign="End">
+                                    <Text text="{i18n>amount}"/>
+                                </Column>
+                                <Column hAlign="End">
+                                    <Text text="{i18n>status}"/>
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem type="Navigation" press="onNavToInvoiceDetail">
+                                    <cells>
+                                        <ObjectIdentifier title="{dashboard>numero}"/>
+                                        <Text text="{dashboard>emisor_nombre}"/>
+                                        <Text text="{path: 'dashboard>fecha_emision', type: 'sap.ui.model.type.Date', formatOptions: {style: 'medium'}}"/>
+                                        <ObjectNumber number="{path: 'dashboard>total', formatter: '.formatter.currency'}" unit="{dashboard>moneda}" state="{= ${dashboard>total} > 1000 ? 'Error' : 'Success' }"/>
+                                        <ObjectStatus text="{dashboard>estado}" state="{= ${dashboard>estado} === 'PAGADA' ? 'Success' : ${dashboard>estado} === 'PENDIENTE' ? 'Warning' : 'None'}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </f:content>
+                </f:Card>
+
+            </VBox>
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>

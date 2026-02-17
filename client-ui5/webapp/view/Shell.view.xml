@@ -88,6 +88,30 @@
                             <tnt:NavigationListItem text="{i18n>origins}" key="franceOriginList"/>
                         </tnt:NavigationListItem>
 
+                        <!-- Face Sidebar Items -->
+                        <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bbyd-dashboard" key="faceDashboard" visible="{ui>/faceSidebarVisible}"/>
+
+                        <tnt:NavigationListItem text="{i18n>issueInvoices}" icon="sap-icon://create-form" expanded="false" visible="{ui>/faceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>invoiceList}" key="faceIssueList"/>
+                            <tnt:NavigationListItem text="{i18n>createNew}" key="faceIssueNew"/>
+                        </tnt:NavigationListItem>
+
+                        <tnt:NavigationListItem text="{i18n>receiptInvoices}" icon="sap-icon://inbox" expanded="false" visible="{ui>/faceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>invoiceList}" key="faceReceiptList"/>
+                            <tnt:NavigationListItem text="{i18n>createNew}" key="faceReceiptNew"/>
+                            <tnt:NavigationListItem text="{i18n>newScanningInvoice}" key="faceScanInvoice"/>
+                        </tnt:NavigationListItem>
+
+                        <tnt:NavigationListItem text="{i18n>catalog}" icon="sap-icon://product" expanded="false" visible="{ui>/faceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>createItem}" key="faceCatalogNew"/>
+                            <tnt:NavigationListItem text="{i18n>itemList}" key="faceCatalogList"/>
+                        </tnt:NavigationListItem>
+
+                        <tnt:NavigationListItem text="{i18n>config}" icon="sap-icon://action-settings" expanded="false" visible="{ui>/faceSidebarVisible}">
+                            <tnt:NavigationListItem text="{i18n>issuers}" key="faceIssuerManager"/>
+                            <tnt:NavigationListItem text="{i18n>receivers}" key="faceReceiverManager"/>
+                        </tnt:NavigationListItem>
+
                         <!-- Business Mappings Sidebar Items -->
                         <tnt:NavigationListItem text="Business Mappings" icon="sap-icon://opportunity" key="documentationXml" visible="{ui>/businessMappingsSidebarVisible}"/>
 

@@ -80,6 +80,7 @@ router.get('/products/:id', authenticateToken, async (req, res) => {
 
 // Create product
 router.post('/products', authenticateToken, async (req, res) => {
+    console.log('[GENERIC DEBUG] POST /api/catalog/products called');
     const client = await db.pool.connect();
     try {
         const { sku, tipo, precio_base, id_impuesto, translations, prices } = req.body;

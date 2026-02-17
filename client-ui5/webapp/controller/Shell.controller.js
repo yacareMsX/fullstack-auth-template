@@ -16,6 +16,8 @@ sap.ui.define([
                 businessMappingsSidebarVisible: false,
                 businessMappingsSidebarExpanded: true,
 
+                faceSidebarVisible: false,
+
                 menuVisible: false, // Default to false for Home
                 headerTitle: "Home",
                 headerVisible: true,
@@ -123,6 +125,7 @@ sap.ui.define([
             oUIModel.setProperty("/franceSidebarVisible", false);
             oUIModel.setProperty("/certificateSidebarVisible", false);
             oUIModel.setProperty("/businessMappingsSidebarVisible", false);
+            oUIModel.setProperty("/faceSidebarVisible", false);
         },
 
         _onRouteMatched: function (oEvent) {
@@ -147,7 +150,7 @@ sap.ui.define([
                 oUIModel.setProperty("/headerVisible", true);
                 oUIModel.setProperty("/headerTitle", sAppTitle);
                 oUIModel.setProperty("/shellSidebarExpanded", false);
-            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("model") === 0 || sRouteName.indexOf("france") === 0 || sRouteName.indexOf("certificate") === 0)) {
+            } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("model") === 0 || sRouteName.indexOf("france") === 0 || sRouteName.indexOf("certificate") === 0 || sRouteName.indexOf("face") === 0)) {
                 // Statutory/France/Cert App Mode
                 // Show Global Header (Unified)
                 oUIModel.setProperty("/headerVisible", true);
@@ -172,6 +175,11 @@ sap.ui.define([
                     this._sCurrentContext = "certificate";
                     oUIModel.setProperty("/headerTitle", "Gestor de Certificados");
                     oUIModel.setProperty("/certificateSidebarVisible", true);
+                } else if (sRouteName.indexOf("face") === 0) {
+                    this._sCurrentContext = "face";
+                    oUIModel.setProperty("/headerTitle", "Compliance Hub - eInvoice FACE");
+                    oUIModel.setProperty("/faceSidebarVisible", true);
+                    oUIModel.setProperty("/shellSidebarVisible", false);
                 }
 
             } else if (sRouteName && sRouteName.indexOf("documentation") > -1) {
@@ -317,6 +325,41 @@ sap.ui.define([
                     break;
                 case "franceOriginList":
                     oRouter.navTo("franceOriginList");
+                    break;
+                case "franceOriginList":
+                    oRouter.navTo("franceOriginList");
+                    break;
+
+                // Face Navigation
+                case "faceDashboard":
+                    oRouter.navTo("faceDashboard");
+                    break;
+                case "faceIssueList":
+                    oRouter.navTo("faceIssueInvoices");
+                    break;
+                case "faceReceiptList":
+                    oRouter.navTo("faceReceiptInvoices");
+                    break;
+                case "faceIssueNew":
+                    oRouter.navTo("faceInvoiceNew", { tipo: "ISSUE" });
+                    break;
+                case "faceReceiptNew":
+                    oRouter.navTo("faceInvoiceNew", { tipo: "RECEIPT" });
+                    break;
+                case "faceScanInvoice":
+                    oRouter.navTo("faceScanInvoice");
+                    break;
+                case "faceCatalogNew":
+                    oRouter.navTo("faceCatalogNew"); // Ensure this route exists in manifest
+                    break;
+                case "faceCatalogList":
+                    oRouter.navTo("faceCatalogList"); // Ensure this route exists in manifest
+                    break;
+                case "faceIssuerManager":
+                    oRouter.navTo("faceIssuerManager");
+                    break;
+                case "faceReceiverManager":
+                    oRouter.navTo("faceReceiverManager");
                     break;
             }
 

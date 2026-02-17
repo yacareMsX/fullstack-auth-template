@@ -1,0 +1,98 @@
+<mvc:View
+    controllerName="invoice.app.controller.face.FaceCatalogDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+
+    <Page title="{= ${detail>/id_producto} ? 'Edit Product' : 'New Product' }" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <form:SimpleForm 
+                editable="true" 
+                layout="ResponsiveGridLayout"
+                title="General Information"
+                labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+                columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                <form:content>
+                    <Label text="SKU" required="true"/>
+                    <Input value="{detail>/sku}"/>
+                    
+                    <Label text="{i18n>type}"/>
+                    <Select selectedKey="{detail>/tipo}">
+                        <core:Item key="producto" text="Product"/>
+                        <core:Item key="servicio" text="Service"/>
+                    </Select>
+
+                    <Label text="Base Price"/>
+                    <Input value="{detail>/precio_base}" type="Number" description="EUR"/>
+
+                    <Label text="Tax ID"/>
+                    <Input value="{detail>/id_impuesto}" type="Number" placeholder="ID from Tax Table"/>
+
+                    <Label text="{i18n>status}"/>
+                    <Switch state="{detail>/activo}" customTextOn="Active" customTextOff="Inactive"/>
+                </form:content>
+            </form:SimpleForm>
+
+            <Panel headerText="Translations" class="sapUiMediumMarginTop">
+                <Table items="{detail>/translations}" mode="Delete" delete="onDeleteTranslation">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <Title text="Translations"/>
+                            <ToolbarSpacer/>
+                            <Button icon="sap-icon://add" press="onAddTranslation"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column width="100px"><Text text="Language"/></Column>
+                        <Column><Text text="Name"/></Column>
+                        <Column><Text text="Description"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Input value="{detail>codigo_idioma}" placeholder="es, en..."/>
+                                <Input value="{detail>nombre}"/>
+                                <Input value="{detail>descripcion}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </Panel>
+
+            <Panel headerText="Regional Prices" class="sapUiMediumMarginTop">
+                <Table items="{detail>/prices}" mode="Delete" delete="onDeletePrice">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <Title text="Prices by Country"/>
+                            <ToolbarSpacer/>
+                            <Button icon="sap-icon://add" press="onAddPrice"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column width="100px"><Text text="Country"/></Column>
+                        <Column width="100px"><Text text="Currency"/></Column>
+                        <Column><Text text="Price"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Input value="{detail>codigo_pais}" placeholder="ES, US..."/>
+                                <Input value="{detail>moneda}" placeholder="EUR, USD..."/>
+                                <Input value="{detail>precio}" type="Number"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </Panel>
+        </content>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button text="Save" type="Emphasized" press="onSave"/>
+                <Button text="Cancel" press="onNavBack"/>
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

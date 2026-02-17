@@ -315,6 +315,81 @@
                     "name": "invoiceEdit",
                     "pattern": "invoices/edit/{invoiceId}",
                     "target": "invoiceEdit"
+                },
+                {
+                    "name": "faceDashboard",
+                    "pattern": "face/dashboard",
+                    "target": "faceDashboard"
+                },
+                {
+                    "name": "faceInvoiceList",
+                    "pattern": "face/invoices",
+                    "target": "faceInvoiceList"
+                },
+                {
+                    "name": "faceIssueInvoices",
+                    "pattern": "face/invoices/issue",
+                    "target": "faceInvoiceList"
+                },
+                {
+                    "name": "faceReceiptInvoices",
+                    "pattern": "face/invoices/receipt",
+                    "target": "faceInvoiceList"
+                },
+                {
+                    "name": "faceInvoiceDetail",
+                    "pattern": "face/invoices/{invoiceId}",
+                    "target": "faceInvoiceDetail"
+                },
+                {
+                    "name": "faceInvoiceNew",
+                    "pattern": "face/invoices/new/{tipo}",
+                    "target": "faceInvoiceNew"
+                },
+                {
+                    "name": "faceInvoiceEdit",
+                    "pattern": "face/invoices/edit/{invoiceId}",
+                    "target": "faceInvoiceEdit"
+                },
+                {
+                    "name": "faceScanInvoice",
+                    "pattern": "face/scan",
+                    "target": "faceScanInvoice"
+                },
+                {
+                    "name": "faceFacturaE",
+                    "pattern": "face/invoices/{invoiceId}/facturae",
+                    "target": "faceFacturaE"
+                },
+                {
+                    "name": "faceUbl21",
+                    "pattern": "face/invoices/{invoiceId}/ubl",
+                    "target": "faceUbl21"
+                },
+                {
+                    "name": "faceCatalogNew",
+                    "pattern": "face/catalog/new",
+                    "target": "faceCatalogNew"
+                },
+                {
+                    "name": "faceCatalogEdit",
+                    "pattern": "face/catalog/{productId}",
+                    "target": "faceCatalogEdit"
+                },
+                {
+                    "name": "faceCatalogList",
+                    "pattern": "face/catalog",
+                    "target": "faceCatalogList"
+                },
+                {
+                    "name": "faceIssuerManager",
+                    "pattern": "face/config/issuers",
+                    "target": "faceIssuerManager"
+                },
+                {
+                    "name": "faceReceiverManager",
+                    "pattern": "face/config/receivers",
+                    "target": "faceReceiverManager"
                 }
             ],
             "targets": {
@@ -613,6 +688,84 @@
                 "invoiceEdit": {
                     "viewId": "invoiceEdit",
                     "viewName": "InvoiceForm",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceDashboard": {
+                    "viewId": "faceDashboard",
+                    "viewName": "face.FaceDashboard",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceInvoiceList": {
+                    "viewId": "faceInvoiceList",
+                    "viewName": "face.FaceInvoiceList",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceInvoiceDetail": {
+                    "viewId": "faceInvoiceDetail",
+                    "viewName": "face.FaceInvoiceDetail",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceInvoiceNew": {
+                    "viewId": "faceInvoiceNew",
+                    "viewName": "face.FaceInvoiceForm",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceInvoiceEdit": {
+                    "viewId": "faceInvoiceEdit",
+                    "viewName": "face.FaceInvoiceForm",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceScanInvoice": {
+                    "viewId": "faceScanInvoice",
+                    "viewName": "face.FaceScanInvoice",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceFacturaE": {
+                    "viewId": "faceFacturaE",
+                    "viewName": "face.FaceFacturaE",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceUbl21": {
+                    "viewId": "faceUbl21",
+                    "viewName": "face.FaceFacturaUBL",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceCatalogNew": {
+                    "viewId": "faceCatalogNew",
+                    "viewName": "face.FaceCatalogDetail",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceCatalogEdit": {
+                    "viewId": "faceCatalogEdit",
+                    "viewName": "face.FaceCatalogDetail",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceCatalogList": {
+                    "viewId": "faceCatalogList",
+                    "viewName": "face.FaceCatalogList",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceIssuerManager": {
+                    "viewId": "faceIssuerManager",
+                    "viewName": "face.FaceIssuerManager",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "faceReceiverManager": {
+                    "viewId": "faceReceiverManager",
+                    "viewName": "face.FaceReceiverManager",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 }

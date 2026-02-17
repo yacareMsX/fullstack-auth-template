@@ -1,0 +1,49 @@
+<mvc:View
+    controllerName="invoice.app.controller.face.FaceReceiverManager"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">
+    
+    <Page title="Manage Receivers (Face)" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <Table
+                id="receiversTable"
+                items="{receiver>/receivers}"
+                mode="SingleSelectMaster"
+                growing="true"
+                growingThreshold="20">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="Receivers" level="H2"/>
+                        <ToolbarSpacer/>
+                        <Button 
+                            text="New Receiver" 
+                            icon="sap-icon://add" 
+                            type="Emphasized"
+                            press="onCreateReceiver"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column><Text text="Name"/></Column>
+                    <Column><Text text="NIF"/></Column>
+                    <Column><Text text="Email"/></Column>
+                    <Column><Text text="Phone"/></Column>
+                    <Column width="8em"><Text text="Actions"/></Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <ObjectIdentifier title="{receiver>nombre}"/>
+                            <Text text="{receiver>nif}"/>
+                            <Text text="{receiver>email}"/>
+                            <Text text="{receiver>telefono}"/>
+                            <HBox>
+                                <Button icon="sap-icon://edit" type="Transparent" press="onEditReceiver"/>
+                                <Button icon="sap-icon://delete" type="Transparent" press="onDeleteReceiver"/>
+                            </HBox>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>
