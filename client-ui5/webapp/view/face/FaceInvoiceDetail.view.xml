@@ -1,17 +1,12 @@
-<mvc:View
-    controllerName="invoice.app.controller.face.FaceInvoiceDetail"
+<mvc:View controllerName="invoice.app.controller.face.FaceInvoiceDetail"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
     xmlns:layout="sap.ui.layout"
     xmlns:form="sap.ui.layout.form">
-    
-    <Page 
-        title="{i18n>invoiceDetail}" 
-        showNavButton="true" 
-        navButtonPress="onNavBack"
-        enableScrolling="true">
-        
+
+    <Page title="{i18n>invoiceDetail}" showNavButton="true" navButtonPress="onNavBack" enableScrolling="true">
+
         <content>
             <layout:Splitter height="100%" width="100%">
                 <layout:contentAreas>
@@ -20,49 +15,42 @@
                         <layout:layoutData>
                             <layout:SplitterLayoutData size="auto" resizable="true"/>
                         </layout:layoutData>
-                
+
                         <!-- HEADER SECTIONS: FROM / TO -->
                         <layout:Grid defaultSpan="L6 M6 S12" class="sapUiMediumMarginBottom">
-                            
+
                             <!-- FROM SECTION -->
                             <VBox class="cardLikeSection">
                                 <Title text="{i18n>from}" level="H3" class="sapUiSmallMarginBottom sectionHeader"/>
-                                
+
                                 <Label text="{i18n>name}" design="Bold"/>
                                 <Input value="{detail>/emisor_nombre}" placeholder="{i18n>companyName}" class="sapUiSmallMarginBottom" editable="false"/>
-                                
+
                                 <Label text="{i18n>address}" design="Bold"/>
                                 <TextArea value="{detail>/emisor_direccion}" rows="4" width="100%" placeholder="{i18n>addressPlaceholder}" editable="false"/>
                             </VBox>
-                            
+
                             <!-- TO SECTION -->
                             <VBox class="cardLikeSection">
                                 <Title text="{i18n>to}" level="H3" class="sapUiSmallMarginBottom sectionHeader"/>
-                                
+
                                 <Label text="{i18n>selectClient}" design="Bold"/>
-                                <ComboBox 
-                                    width="100%"
-                                    items="{clients>/}"
-                                    selectedKey="{detail>/receptor_id}"
-                                    placeholder="{i18n>chooseClient}"
-                                    change="onClientSelect"
-                                    class="sapUiSmallMarginBottom"
-                                    editable="false">
+                                <ComboBox width="100%" items="{clients>/}" selectedKey="{detail>/receptor_id}" placeholder="{i18n>chooseClient}" change="onClientSelect" class="sapUiSmallMarginBottom" editable="false">
                                     <core:Item key="{clients>id}" text="{clients>name}"/>
                                 </ComboBox>
-                                
+
                                 <Label text="{i18n>name}" design="Bold"/>
                                 <Input value="{detail>/receptor_nombre}" placeholder="{i18n>clientName}" class="sapUiSmallMarginBottom" editable="false"/>
-                                
+
                                 <Label text="{i18n>address}" design="Bold"/>
                                 <TextArea value="{detail>/receptor_direccion}" rows="3" width="100%" placeholder="{i18n>clientAddress}" editable="false"/>
                             </VBox>
                         </layout:Grid>
-                        
+
                         <!-- INVOICE DETAILS SECTION -->
                         <VBox class="cardLikeSection sapUiMediumMarginBottom">
                             <Title text="{i18n>invoiceDetails}" level="H3" class="sapUiMediumMarginBottom sectionHeader"/>
-                            
+
                             <layout:Grid defaultSpan="L4 M6 S12" vSpacing="1" hSpacing="1">
                                 <!-- Row 1 -->
                                 <VBox>
@@ -73,38 +61,32 @@
                                         <core:Item key="R1" text="Factura Rectificativa - R1"/>
                                     </ComboBox>
                                 </VBox>
-                                
+
                                 <VBox>
                                     <Label text="{i18n>invoiceNumber}" design="Bold"/>
                                     <Input value="{detail>/numero}" placeholder="INV-XXXX" editable="false"/>
                                 </VBox>
-                                
+
                                 <VBox>
                                     <Label text="{i18n>issueDate}" design="Bold"/>
-                                    <DatePicker 
-                                        value="{
+                                    <DatePicker value="{
                                             path: 'detail>/fecha_emision',
                                             type: 'sap.ui.model.type.Date',
                                             formatOptions: { pattern: 'dd/MM/yyyy' }
-                                        }" 
-                                        width="100%"
-                                        editable="false"/>
+                                        }" width="100%" editable="false"/>
                                 </VBox>
 
                                 <VBox>
                                     <Label text="{i18n>operationDate}" design="Bold"/>
-                                    <DatePicker 
-                                        value="{
+                                    <DatePicker value="{
                                             path: 'detail>/fecha_operacion', 
                                             type: 'sap.ui.model.type.Date', 
                                             formatOptions: { pattern: 'dd/MM/yyyy' }
-                                        }" 
-                                        width="100%"
-                                        editable="false"/>
+                                        }" width="100%" editable="false"/>
                                 </VBox>
-                                
+
                                 <!-- Row 2 -->
-                                <VBox></VBox><!-- Empty slot for spacing if needed or just flow -->
+                                <VBox></VBox>                                <!-- Empty slot for spacing if needed or just flow -->
 
                                 <!-- Row 3 (Status) -->
                                 <VBox>
@@ -120,40 +102,37 @@
                         </VBox>
 
                         <!-- PAYMENT DETAILS SECTION -->
-                         <VBox class="cardLikeSection sapUiMediumMarginBottom">
+                        <VBox class="cardLikeSection sapUiMediumMarginBottom">
                             <Title text="{i18n>paymentDetail}" level="H3" class="sapUiMediumMarginBottom sectionHeader"/>
                             <layout:Grid defaultSpan="L4 M6 S12" vSpacing="1" hSpacing="1">
                                 <!-- Row 1 (Matches Form) -->
                                 <VBox>
-                                     <Label text="{i18n>paymentTerms}" design="Bold"/>
-                                     <ComboBox width="100%" selectedKey="{detail>/condiciones_pago}" editable="false">
-                                         <core:Item key="Net 30" text="Net 30"/>
-                                         <core:Item key="Net 60" text="Net 60"/>
-                                         <core:Item key="Immediate" text="Immediate"/>
-                                     </ComboBox>
-                                 </VBox>
+                                    <Label text="{i18n>paymentTerms}" design="Bold"/>
+                                    <ComboBox width="100%" selectedKey="{detail>/condiciones_pago}" editable="false">
+                                        <core:Item key="Net 30" text="Net 30"/>
+                                        <core:Item key="Net 60" text="Net 60"/>
+                                        <core:Item key="Immediate" text="Immediate"/>
+                                    </ComboBox>
+                                </VBox>
 
                                 <VBox>
                                     <Label text="{i18n>paymentDate}" design="Bold"/>
-                                    <DatePicker 
-                                        value="{
+                                    <DatePicker value="{
                                             path: 'detail>/fecha_pago',
                                             type: 'sap.ui.model.type.Date',
                                             formatOptions: { pattern: 'dd/MM/yyyy' }
-                                        }" 
-                                        width="100%"
-                                        editable="false"/>
+                                        }" width="100%" editable="false"/>
                                 </VBox>
 
-                                 <VBox>
-                                     <Label text="{i18n>currency}" design="Bold"/>
-                                     <ComboBox width="100%" selectedKey="{detail>/moneda}" editable="false">
-                                         <core:Item key="EUR" text="EUR"/>
-                                         <core:Item key="USD" text="USD"/>
-                                         <core:Item key="GBP" text="GBP"/>
-                                     </ComboBox>
-                                 </VBox>
-                                 
+                                <VBox>
+                                    <Label text="{i18n>currency}" design="Bold"/>
+                                    <ComboBox width="100%" selectedKey="{detail>/moneda}" editable="false">
+                                        <core:Item key="EUR" text="EUR"/>
+                                        <core:Item key="USD" text="USD"/>
+                                        <core:Item key="GBP" text="GBP"/>
+                                    </ComboBox>
+                                </VBox>
+
                                 <!-- Row 2 (Extra Read-Only Info Removed to match Form) -->
                             </layout:Grid>
                         </VBox>
@@ -164,11 +143,7 @@
                             <layout:Grid defaultSpan="L6 M6 S12">
                                 <VBox>
                                     <Label text="{i18n>retention}"/>
-                                    <ComboBox 
-                                        width="100%" 
-                                        selectedKey="{detail>/retencion}"
-                                        placeholder="{i18n>selectRetention}"
-                                        editable="false">
+                                    <ComboBox width="100%" selectedKey="{detail>/retencion}" placeholder="{i18n>selectRetention}" editable="false">
                                         <core:Item key="0" text="{i18n>noRetention}"/>
                                         <core:Item key="7" text="IRPF (7%)"/>
                                         <core:Item key="15" text="IRPF (15%)"/>
@@ -180,16 +155,28 @@
                             </layout:Grid>
                         </VBox>
 
-                         <!-- Line Items Table -->
+                        <!-- Line Items Table -->
                         <Panel headerText="{i18n>lineItems}" class="sapUiMediumMarginBottom cardLikeSection">
                             <Table items="{detail>/lineas}" mode="None">
                                 <columns>
-                                    <Column><Text text="{i18n>description}"/></Column>
-                                    <Column hAlign="End" width="100px"><Text text="{i18n>qty}"/></Column>
-                                    <Column hAlign="End" width="120px"><Text text="{i18n>price}"/></Column>
-                                    <Column hAlign="End" width="80px"><Text text="{i18n>tax}"/></Column>
-                                    <Column hAlign="End" width="140px"><Text text="{i18n>taxAmount}"/></Column>
-                                    <Column hAlign="End" width="150px"><Text text="{i18n>total}"/></Column>
+                                    <Column>
+                                        <Text text="{i18n>description}"/>
+                                    </Column>
+                                    <Column hAlign="End" width="100px">
+                                        <Text text="{i18n>qty}"/>
+                                    </Column>
+                                    <Column hAlign="End" width="120px">
+                                        <Text text="{i18n>price}"/>
+                                    </Column>
+                                    <Column hAlign="End" width="80px">
+                                        <Text text="{i18n>tax}"/>
+                                    </Column>
+                                    <Column hAlign="End" width="140px">
+                                        <Text text="{i18n>taxAmount}"/>
+                                    </Column>
+                                    <Column hAlign="End" width="150px">
+                                        <Text text="{i18n>total}"/>
+                                    </Column>
                                 </columns>
                                 <items>
                                     <ColumnListItem>
@@ -199,10 +186,7 @@
                                             <ObjectNumber number="{detail>precio_unitario}" unit="EUR"/>
                                             <Text text="{detail>porcentaje_impuesto}%"/>
                                             <ObjectNumber number="{detail>importe_impuesto}" unit="EUR"/>
-                                            <ObjectNumber 
-                                                number="{detail>total_linea}" 
-                                                unit="EUR" 
-                                                emphasized="true"/>
+                                            <ObjectNumber number="{detail>total_linea}" unit="EUR" emphasized="true"/>
                                         </cells>
                                     </ColumnListItem>
                                 </items>
@@ -210,15 +194,15 @@
                         </Panel>
 
                         <!-- TOTALS SECTION -->
-                         <layout:Grid defaultSpan="L6 M6 S12" class="sapUiMediumMarginBottom">
-                            <VBox><!-- Spacer --></VBox>
-                            
+                        <layout:Grid defaultSpan="L6 M6 S12" class="sapUiMediumMarginBottom">
+                            <VBox>                                <!-- Spacer --></VBox>
+
                             <VBox class="cardLikeSection">
                                 <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
                                     <Label text="{i18n>taxableBase}" design="Bold" class="sapUiSmallMarginTop"/>
                                     <Title text="{parts:[{path:'detail>/totals/subtotal'}], formatter: '.formatter.currencyValue'}" level="H3"/>
                                 </HBox>
-                                
+
                                 <!-- Dynamic Tax Breakdown -->
                                 <VBox items="{detail>/totals/taxBreakdown}">
                                     <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
@@ -226,14 +210,14 @@
                                         <Text text="{parts:[{path:'detail>amount'}], formatter: '.formatter.currencyValue'}" class="sapUiSmallMarginTop"/>
                                     </HBox>
                                 </VBox>
-                                
+
                                 <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginBottom">
                                     <Label text="{i18n>retention} ({detail>/retencion}%)" class="sapUiSmallMarginTop negativeValue"/>
                                     <Text text="- {parts:[{path:'detail>/totals/retencion'}], formatter: '.formatter.currencyValue'}" class="sapUiSmallMarginTop negativeValue"/>
                                 </HBox>
-                                
+
                                 <core:HTML content="&lt;hr style='border:none; border-top:1px solid #ddd; margin: 1rem 0;' /&gt;" />
-                                
+
                                 <HBox justifyContent="SpaceBetween">
                                     <Title text="{i18n>total}" level="H2"/>
                                     <Title text="{parts:[{path:'detail>/totals/total'}], formatter: '.formatter.currencyValue'}" level="H2"/>
@@ -248,43 +232,25 @@
                         <layoutData>
                             <layout:SplitterLayoutData size="{detail>/pdfPanelSize}" resizable="true"/>
                         </layoutData>
-                        
+
                         <Title text="PDF Document" class="sapUiSmallMarginBottom sectionHeader"/>
-                        
+
                         <!-- PDF Viewer Container -->
                         <VBox height="100%" width="100%" renderType="Bare">
-                            <core:HTML 
-                                content='&lt;iframe src="{detail>/pdfSource}" width="100%" height="100%" style="border:none; height: 80vh;"&gt;&lt;/iframe&gt;'
-                                visible="{= !!${detail>/pdfSource}}"/>
+                            <core:HTML content='&lt;iframe src="{detail>/pdfSource}" width="100%" height="100%" style="border:none; height: 80vh;"&gt;&lt;/iframe&gt;' visible="{= !!${detail>/pdfSource}}"/>
                         </VBox>
                     </VBox>
                 </layout:contentAreas>
             </layout:Splitter>
         </content>
-        
+
         <footer>
             <OverflowToolbar>
                 <ToolbarSpacer/>
-                <Button 
-                    text="Download XML" 
-                    icon="sap-icon://download" 
-                    press="onDownloadXML"
-                    visible="{= !!${detail>/xml_path}}"/>
-                <Button 
-                    text="View XML" 
-                    icon="sap-icon://show" 
-                    press="onViewXML"
-                    visible="{= !!${detail>/xml_path}}"/>
-                <Button 
-                    text="Generate XML FacturaE" 
-                    icon="sap-icon://attachment-e-pub" 
-                    press="onGenerateFacturaE"
-                    visible="{= ${detail>/origen_descripcion} !== 'SAP'}"/>
-                <Button 
-                    text="Generate XML UBL 2.1" 
-                    icon="sap-icon://attachment-text-file" 
-                    press="onGenerateUBL"
-                    visible="{= ${detail>/origen_descripcion} !== 'SAP'}"/>
+                <Button text="Download XML" icon="sap-icon://download" press="onDownloadXML" visible="{= !!${detail>/xml_path}}"/>
+                <Button text="View XML" icon="sap-icon://show" press="onViewXML" visible="{= !!${detail>/xml_path}}"/>
+                <Button text="Generate XML FacturaE" icon="sap-icon://attachment-e-pub" press="onGenerateFacturaE" visible="{= ${detail>/origen_descripcion} !== 'SAP'}"/>
+
                 <Button text="{i18n>edit}" type="Emphasized" press="onEdit" icon="sap-icon://edit" enabled="{= ${detail>/estado} === 'Draft'}"/>
             </OverflowToolbar>
         </footer>

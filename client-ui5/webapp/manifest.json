@@ -332,11 +332,6 @@
                     "target": "faceInvoiceList"
                 },
                 {
-                    "name": "faceReceiptInvoices",
-                    "pattern": "face/invoices/receipt",
-                    "target": "faceInvoiceList"
-                },
-                {
                     "name": "faceInvoiceDetail",
                     "pattern": "face/invoices/{invoiceId}",
                     "target": "faceInvoiceDetail"
@@ -350,11 +345,6 @@
                     "name": "faceInvoiceEdit",
                     "pattern": "face/invoices/edit/{invoiceId}",
                     "target": "faceInvoiceEdit"
-                },
-                {
-                    "name": "faceScanInvoice",
-                    "pattern": "face/scan",
-                    "target": "faceScanInvoice"
                 },
                 {
                     "name": "faceFacturaE",
@@ -728,12 +718,6 @@
                 "faceInvoiceEdit": {
                     "viewId": "faceInvoiceEdit",
                     "viewName": "face.FaceInvoiceForm",
-                    "controlId": "shellNavContainer",
-                    "controlAggregation": "pages"
-                },
-                "faceScanInvoice": {
-                    "viewId": "faceScanInvoice",
-                    "viewName": "face.FaceScanInvoice",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },

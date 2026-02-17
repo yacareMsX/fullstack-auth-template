@@ -22,7 +22,6 @@ sap.ui.define([
             var oRouter = this.getOwnerComponent().getRouter();
             oRouter.getRoute("faceInvoiceList").attachPatternMatched(this._onRouteMatched, this);
             oRouter.getRoute("faceIssueInvoices").attachPatternMatched(this._onRouteMatched, this);
-            oRouter.getRoute("faceReceiptInvoices").attachPatternMatched(this._onRouteMatched, this);
         },
 
         _onRouteMatched: function (oEvent) {
@@ -32,8 +31,6 @@ sap.ui.define([
 
             if (sRouteName === "faceIssueInvoices") {
                 sTipo = "ISSUE";
-            } else if (sRouteName === "faceReceiptInvoices") {
-                sTipo = "RECEIPT";
             } else if (oArgs && oArgs.tipo) {
                 sTipo = oArgs.tipo;
             }

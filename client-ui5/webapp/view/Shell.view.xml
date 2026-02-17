@@ -96,11 +96,7 @@
                             <tnt:NavigationListItem text="{i18n>createNew}" key="faceIssueNew"/>
                         </tnt:NavigationListItem>
 
-                        <tnt:NavigationListItem text="{i18n>receiptInvoices}" icon="sap-icon://inbox" expanded="false" visible="{ui>/faceSidebarVisible}">
-                            <tnt:NavigationListItem text="{i18n>invoiceList}" key="faceReceiptList"/>
-                            <tnt:NavigationListItem text="{i18n>createNew}" key="faceReceiptNew"/>
-                            <tnt:NavigationListItem text="{i18n>newScanningInvoice}" key="faceScanInvoice"/>
-                        </tnt:NavigationListItem>
+
 
                         <tnt:NavigationListItem text="{i18n>catalog}" icon="sap-icon://product" expanded="false" visible="{ui>/faceSidebarVisible}">
                             <tnt:NavigationListItem text="{i18n>createItem}" key="faceCatalogNew"/>
