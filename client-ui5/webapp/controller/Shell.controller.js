@@ -126,6 +126,7 @@ sap.ui.define([
             oUIModel.setProperty("/certificateSidebarVisible", false);
             oUIModel.setProperty("/businessMappingsSidebarVisible", false);
             oUIModel.setProperty("/faceSidebarVisible", false);
+            oUIModel.setProperty("/helpSidebarVisible", false);
         },
 
         _onRouteMatched: function (oEvent) {
@@ -150,6 +151,22 @@ sap.ui.define([
                 oUIModel.setProperty("/headerVisible", true);
                 oUIModel.setProperty("/headerTitle", sAppTitle);
                 oUIModel.setProperty("/shellSidebarExpanded", false);
+            } else if (sRouteName === "help") {
+                this._sCurrentContext = "help";
+                oUIModel.setProperty("/headerVisible", true);
+                oUIModel.setProperty("/menuVisible", true);
+                oUIModel.setProperty("/backButtonVisible", false);
+                oUIModel.setProperty("/headerTitle", "Delliom Help Portal");
+                oUIModel.setProperty("/helpSidebarVisible", true);
+                oUIModel.setProperty("/shellSidebarVisible", false);
+            } else if (sRouteName === "helpLeyCreaCrece") {
+                this._sCurrentContext = "face"; // Mimic Face context
+                oUIModel.setProperty("/headerVisible", true);
+                oUIModel.setProperty("/menuVisible", true);
+                oUIModel.setProperty("/backButtonVisible", true); // Enable back button to return to Help? Or false? User didn't specify, but usually doc needs exit.
+                oUIModel.setProperty("/headerTitle", "eCompliance > eInvoice Ley C&C");
+                oUIModel.setProperty("/faceSidebarVisible", true); // Show Face Sidebar as requested
+                oUIModel.setProperty("/shellSidebarVisible", false);
             } else if (sRouteName && (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("model") === 0 || sRouteName.indexOf("france") === 0 || sRouteName.indexOf("certificate") === 0 || sRouteName.indexOf("face") === 0)) {
                 // Statutory/France/Cert App Mode
                 // Show Global Header (Unified)
@@ -360,6 +377,17 @@ sap.ui.define([
                     break;
                 case "faceReceiverManager":
                     oRouter.navTo("faceReceiverManager");
+                    break;
+
+                // Help Portal Navigation
+                case "helpApps":
+                case "helpReporting":
+                case "helpStatutory":
+                case "helpConfig":
+                case "helpProcess":
+                case "helpAudit":
+                case "helpAPIs":
+                    // Stay on Help page, maybe scroll or filter later. For now, do nothing as requested.
                     break;
             }
 

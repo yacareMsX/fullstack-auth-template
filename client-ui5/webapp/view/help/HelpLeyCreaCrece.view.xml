@@ -1,0 +1,186 @@
+<mvc:View
+    controllerName="invoice.app.controller.help.HelpLeyCreaCrece"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:uxap="sap.uxap"
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+
+    <uxap:ObjectPageLayout id="ObjectPageLayout" showTitleInHeaderContent="true" showHeaderContent="true" showFooter="false">
+        <uxap:headerTitle>
+            <uxap:ObjectPageDynamicHeaderTitle>
+                <uxap:expandedHeading>
+                    <Title text="{i18n>helpLeyCreaCreceTitle}" wrapping="true" class="sapUiSmallMarginEnd"/>
+                </uxap:expandedHeading>
+                <uxap:snappedHeading>
+                    <Title text="{i18n>helpLeyCreaCreceTitle}" wrapping="true" class="sapUiSmallMarginEnd"/>
+                </uxap:snappedHeading>
+                <uxap:navigationActions>
+                    <Button icon="sap-icon://nav-back" press="onNavBack" type="Transparent"/>
+                </uxap:navigationActions>
+            </uxap:ObjectPageDynamicHeaderTitle>
+        </uxap:headerTitle>
+
+        <uxap:headerContent>
+            <FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+                <VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+                    <Label text="{i18n>helpLeyCreaCreceSubtitle}"/>
+                </VBox>
+            </FlexBox>
+        </uxap:headerContent>
+
+        <uxap:sections>
+            <!-- Overview Section -->
+            <uxap:ObjectPageSection titleUppercase="false" title="{i18n>helpOverview}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <FormattedText htmlText="{i18n>helpLeyCreaCreceOverviewText}" class="sapUiSmallMarginBottom"/>
+                                
+                                <Title text="{i18n>helpMoreInfoTitle}" level="H4" class="sapUiSmallMarginTop"/>
+                                <Link text="{i18n>helpFacePortalLink}" href="https://face.gob.es/es" target="_blank" class="sapUiTinyMarginBottom"/>
+                                <Link text="{i18n>helpFaceDocLink}" href="https://face.gob.es/es/ayuda" target="_blank" class="sapUiSmallMarginBottom"/>
+                                
+                                <Title text="{i18n>helpIntegrationSchemaTitle}" level="H4" class="sapUiSmallMarginTop"/>
+                                <Image src="img/help/integration_schema.png" width="40%" class="sapUiSmallMarginTopBottom" densityAware="false" decoration="all" />
+                                <FormattedText htmlText="{i18n>helpIntegrationSchemaDesc}" class="sapUiSmallMarginBottom"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- User Manual Section -->
+            <uxap:ObjectPageSection titleUppercase="false" title="{i18n>helpUserManual}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection title="{i18n>helpManualDashboard}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpManualDashboardText}" class="sapUiSmallMarginBottom"/>
+                                <Image src="img/help/dashboard.png" width="60%" class="sapUiMediumMarginBottom sapUiTinyMarginTop" densityAware="false" />
+                                <Title text="{i18n>helpFieldDescTitle}" level="H5"/>
+                                <FormattedText htmlText="{i18n>helpManualDashboardFields}" class="sapUiSmallMarginBottom"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                    <uxap:ObjectPageSubSection title="{i18n>helpManualInvoices}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpManualInvoicesText}" class="sapUiSmallMarginBottom"/>
+                                <Image src="img/help/invoicelist.png" width="60%" class="sapUiMediumMarginBottom sapUiTinyMarginTop" densityAware="false" />
+                                <Title text="{i18n>helpFieldDescTitle}" level="H5"/>
+                                <FormattedText htmlText="{i18n>helpManualInvoicesFields}" class="sapUiSmallMarginBottom"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                    <uxap:ObjectPageSubSection title="{i18n>helpManualCreate}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpManualCreateText}" class="sapUiSmallMarginBottom"/>
+                                <Image src="img/help/invoiceform.png" width="60%" class="sapUiMediumMarginBottom sapUiTinyMarginTop" densityAware="false" />
+                                <Title text="{i18n>helpFieldDescTitle}" level="H5"/>
+                                <FormattedText htmlText="{i18n>helpManualCreateFields}" class="sapUiSmallMarginBottom"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Getting Started Section -->
+            <uxap:ObjectPageSection titleUppercase="false" title="{i18n>helpGettingStarted}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection title="{i18n>helpConfiguration}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Title text="{i18n>helpCertificateSetup}" level="H4"/>
+                                <Text text="{i18n>helpCertificateSetupText}" class="sapUiSmallMarginBottom"/>
+                                
+                                <Title text="{i18n>helpFiscalData}" level="H4"/>
+                                <Text text="{i18n>helpFiscalDataText}" class="sapUiSmallMarginBottom"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Functional Modules Section -->
+            <uxap:ObjectPageSection titleUppercase="false" title="{i18n>helpFunctionalModules}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection title="{i18n>helpIssuingInvoices}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpIssuingInvoicesText}"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                    <uxap:ObjectPageSubSection title="{i18n>helpReceivingInvoices}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpReceivingInvoicesText}"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                    <uxap:ObjectPageSubSection title="{i18n>helpStatusManagement}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpStatusManagementText}"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Technical Modules Section -->
+            <uxap:ObjectPageSection titleUppercase="false" title="{i18n>helpTechnicalModules}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection title="{i18n>helpApiIntegration}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpApiIntegrationText}"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                    <uxap:ObjectPageSubSection title="{i18n>helpXmlFormat}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpXmlFormatText}"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                     <uxap:ObjectPageSubSection title="{i18n>helpSecurity}">
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Text text="{i18n>helpSecurityText}"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- FAQ Section -->
+            <uxap:ObjectPageSection titleUppercase="false" title="{i18n>helpFaq}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <VBox class="sapUiSmallMargin">
+                                <Panel expandable="true" headerText="{i18n>helpFaqQ1}" width="auto" class="sapUiResponsiveMargin">
+                                    <content>
+                                        <Text text="{i18n>helpFaqA1}"/>
+                                    </content>
+                                </Panel>
+                                <Panel expandable="true" headerText="{i18n>helpFaqQ2}" width="auto" class="sapUiResponsiveMargin">
+                                    <content>
+                                        <Text text="{i18n>helpFaqA2}"/>
+                                    </content>
+                                </Panel>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+        </uxap:sections>
+    </uxap:ObjectPageLayout>
+</mvc:View>

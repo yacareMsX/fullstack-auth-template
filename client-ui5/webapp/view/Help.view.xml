@@ -1,0 +1,149 @@
+<mvc:View
+    controllerName="invoice.app.controller.Help"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+
+    <Page title="Delliom Help Portal" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                
+                <!-- Search Section (Hero-like) -->
+                <FlexBox alignItems="Center" justifyContent="Center" direction="Column" class="helpHeroSection sapUiLargeMarginBottom">
+                    <Title text="We are here to help." level="H1" titleStyle="H1" class="heroTitle sapUiMediumMarginBottom"/>
+                    <HBox alignItems="Center">
+                        <Select id="searchFilter" class="sapUiTinyMarginEnd">
+                            <core:Item key="all" text="All Products"/>
+                            <core:Item key="invoices" text="eInvoice Apps"/>
+                            <core:Item key="reporting" text="Reporting"/>
+                            <core:Item key="statutory" text="Statutory"/>
+                            <core:Item key="config" text="Configuration"/>
+                        </Select>
+                        <SearchField placeholder="Search for documentation..." width="400px" search="onSearch" class="sapUiTinyMarginEnd"/>
+                        <Button text="Search" type="Emphasized" press="onSearch"/>
+                    </HBox>
+                </FlexBox>
+
+                <Title text="Help Topics" level="H2" class="sapUiSmallMarginBegin sapUiSmallMarginBottom"/>
+
+                <!-- Sections Grid -->
+                <layout:Grid defaultSpan="L4 M6 S12">
+                    
+                    <!-- eInvoice Apps -->
+                    <Panel headerText="eInvoice Apps" expandable="false" class="sapUiResponsiveMargin">
+                        <headerToolbar>
+                            <OverflowToolbar>
+                                <Title text="eInvoice Apps"/>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <content>
+                            <VBox>
+                                <Link text="eInvoice Face" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="eInvoice TBAI" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="Ley Crea y Crece" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="eInvoice Polonia" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="eInvoice Francia" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="eInvoice Belgica" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="eInvoice Alemania" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                            </VBox>
+                        </content>
+                    </Panel>
+
+                    <!-- Reporting -->
+                    <Panel headerText="Reporting" expandable="false" class="sapUiResponsiveMargin">
+                         <headerToolbar>
+                            <OverflowToolbar>
+                                <Title text="Reporting"/>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <content>
+                             <VBox>
+                                <Link text="SII" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="Verifactu" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="France Reporting" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                            </VBox>
+                        </content>
+                    </Panel>
+
+                    <!-- Statutory -->
+                    <Panel headerText="Statutory" expandable="false" class="sapUiResponsiveMargin">
+                         <headerToolbar>
+                            <OverflowToolbar>
+                                <Title text="Statutory"/>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <content>
+                            <VBox>
+                                <Link text="Modelo 301" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="Modelo 349" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="Modelo 322" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                            </VBox>
+                        </content>
+                    </Panel>
+
+                    <!-- Global Configuration -->
+                    <Panel headerText="Global Configuration" expandable="false" class="sapUiResponsiveMargin">
+                         <headerToolbar>
+                            <OverflowToolbar>
+                                <Title text="Global Configuration"/>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <content>
+                            <VBox>
+                                <Link text="User Management" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="Invoice Countries" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="Certificates Management" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                            </VBox>
+                        </content>
+                    </Panel>
+
+                    <!-- Process Designer -->
+                    <Panel headerText="Process Designer" expandable="false" class="sapUiResponsiveMargin">
+                         <headerToolbar>
+                            <OverflowToolbar>
+                                <Title text="Process Designer"/>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <content>
+                            <VBox>
+                                <Link text="Approval Processes" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                                <Link text="XML Design" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                            </VBox>
+                        </content>
+                    </Panel>
+                    
+                    <!-- Audit -->
+                    <Panel headerText="Audit" expandable="false" class="sapUiResponsiveMargin">
+                         <headerToolbar>
+                            <OverflowToolbar>
+                                <Title text="Audit"/>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <content>
+                            <VBox>
+                                <Link text="Audit Log" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                            </VBox>
+                        </content>
+                    </Panel>
+
+                     <!-- APIs -->
+                    <Panel headerText="APIs" expandable="false" class="sapUiResponsiveMargin">
+                         <headerToolbar>
+                            <OverflowToolbar>
+                                <Title text="APIs"/>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <content>
+                            <VBox>
+                                <Link text="API Documentation" press="onPressLink" class="sapUiTinyMarginBottom"/>
+                            </VBox>
+                        </content>
+                    </Panel>
+
+                </layout:Grid>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

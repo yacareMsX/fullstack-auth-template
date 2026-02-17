@@ -104,7 +104,7 @@ sap.ui.define([
         },
 
         onNavigateToHelp: function () {
-            sap.m.MessageToast.show("Coming soon: Help");
+            this.getOwnerComponent().getRouter().navTo("help");
         },
 
         onGenericTilePress: function (oEvent) {

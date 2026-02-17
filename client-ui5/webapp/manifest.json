@@ -390,6 +390,16 @@
                     "name": "faceReceiverManager",
                     "pattern": "face/config/receivers",
                     "target": "faceReceiverManager"
+                },
+                {
+                    "name": "help",
+                    "pattern": "help",
+                    "target": "help"
+                },
+                {
+                    "name": "helpLeyCreaCrece",
+                    "pattern": "help/ley-crea-y-crece",
+                    "target": "helpLeyCreaCrece"
                 }
             ],
             "targets": {
@@ -766,6 +776,18 @@
                 "faceReceiverManager": {
                     "viewId": "faceReceiverManager",
                     "viewName": "face.FaceReceiverManager",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "help": {
+                    "viewId": "help",
+                    "viewName": "Help",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "helpLeyCreaCrece": {
+                    "viewId": "helpLeyCreaCrece",
+                    "viewName": "help.HelpLeyCreaCrece",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 }

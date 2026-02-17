@@ -115,6 +115,15 @@
                         <!-- Business Mappings Sidebar Items -->
                         <tnt:NavigationListItem text="Business Mappings" icon="sap-icon://opportunity" key="documentationXml" visible="{ui>/businessMappingsSidebarVisible}"/>
 
+                        <!-- Help Portal Sidebar Items -->
+                        <tnt:NavigationListItem text="eInvoice Apps" icon="sap-icon://grid" key="helpApps" visible="{ui>/helpSidebarVisible}"/>
+                        <tnt:NavigationListItem text="Reporting" icon="sap-icon://data-analysis" key="helpReporting" visible="{ui>/helpSidebarVisible}"/>
+                        <tnt:NavigationListItem text="Statutory" icon="sap-icon://official-service" key="helpStatutory" visible="{ui>/helpSidebarVisible}"/>
+                        <tnt:NavigationListItem text="Global Configuration" icon="sap-icon://action-settings" key="helpConfig" visible="{ui>/helpSidebarVisible}"/>
+                        <tnt:NavigationListItem text="Process Designer" icon="sap-icon://process" key="helpProcess" visible="{ui>/helpSidebarVisible}"/>
+                        <tnt:NavigationListItem text="Audit" icon="sap-icon://shelf" key="helpAudit" visible="{ui>/helpSidebarVisible}"/>
+                        <tnt:NavigationListItem text="APIs" icon="sap-icon://api" key="helpAPIs" visible="{ui>/helpSidebarVisible}"/>
+
                     </tnt:NavigationList>
                 </tnt:SideNavigation>
             </tnt:sideContent>
