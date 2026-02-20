@@ -45,22 +45,22 @@
                                     </GenericTile>
                                     <GenericTile header="{i18n>tileEinvoicePolonia}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_POLONIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                         <TileContent>
-                                            <ImageContent src="sap-icon://world"/>
+                                            <ImageContent src="img/flag_pl.png" class="flagIcon"/>
                                         </TileContent>
                                     </GenericTile>
                                     <GenericTile header="{i18n>tileEinvoiceFrancia}" press="onNavigateToFrance" visible="{= !!${security>/APP_TILE_FRANCIA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                         <TileContent>
-                                            <ImageContent src="sap-icon://world"/>
+                                            <ImageContent src="img/flag_fr.png" class="flagIcon"/>
                                         </TileContent>
                                     </GenericTile>
                                     <GenericTile header="{i18n>tileEinvoiceBelgica}" press="onGenericTilePress" visible="{= !!${security>/APP_TILE_BELGICA} }" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                         <TileContent>
-                                            <ImageContent src="sap-icon://world"/>
+                                            <ImageContent src="img/flag_be.png" class="flagIcon"/>
                                         </TileContent>
                                     </GenericTile>
                                     <GenericTile header="eInvoice Alemania" press="onGenericTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginBottom">
                                         <TileContent>
-                                            <ImageContent src="sap-icon://world"/>
+                                            <ImageContent src="img/flag_de.png" class="flagIcon"/>
                                         </TileContent>
                                     </GenericTile>
                                 </layout:HorizontalLayout>

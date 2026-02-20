@@ -315,6 +315,12 @@ sap.ui.define([
             });
         },
 
+        formatDate: function (date) {
+            if (!date) return "";
+            var oDate = new Date(date);
+            return oDate.toLocaleDateString();
+        },
+
         _performDelete: function (sId) {
             var sToken = localStorage.getItem("auth_token");
             var oHeaders = { "Content-Type": "application/json" };

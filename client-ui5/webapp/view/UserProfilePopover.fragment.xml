@@ -3,32 +3,51 @@
     xmlns:core="sap.ui.core"
     xmlns:f="sap.f">
     <ResponsivePopover
-        title="{i18n>userProfile}"
-        class="sapUiPopupWithPadding"
+        class="sapUiPopupWithPadding userProfilePopover"
         placement="Bottom"
-        showHeader="true">
+        showHeader="false"
+        contentWidth="320px">
         <content>
-            <VBox alignItems="Center" class="sapUiMediumMargin">
-                <Avatar
-                    src="img/profile_pic.png"
-                    displaySize="L"
-                    class="sapUiMediumMarginBottom"/>
-                <Title
-                    text="{auth>/user/firstName} {auth>/user/lastName}"
-                    level="H2"
-                    class="sapUiTinyMarginBottom"/>
-                <Text
-                    text="{auth>/user/email}"
-                    class="sapUiSmallMarginBottom textSecondary"/>
+            <VBox class="sapUiContentPadding">
+                <!-- Header Section -->
+                <VBox alignItems="Center" class="userPopoverHeader">
+                    <Avatar
+                        src="sap-icon://person-placeholder"
+                        displaySize="L"
+                        class="userAvatar"/>
+                    <Title
+                        text="{auth>/user/firstName} {auth>/user/lastName}"
+                        level="H3"
+                        class="userPopoverName"/>
+                    <Text
+                        text="{auth>/user/username}"
+                        class="userPopoverDetail"/>
+                    <Text
+                        text="{auth>/user/email}"
+                        class="userPopoverDetail"/>
+                    <Text
+                        text="T4S Advance Solutions SL (2690501)"
+                        class="userPopoverDetail"/>
+                </VBox>
+
+                <core:HTML content='&lt;hr class=&quot;popoverSeparator&quot;&gt;' />
+
+                <!-- Menu Items -->
+                <List ShowSeparators="None" class="userPopoverMenu">
+                    <StandardListItem title="My Account" type="Active" press="onUserMenuPress"/>
+                    <StandardListItem title="My Settings" type="Active" press="onUserMenuPress"/>
+                    <StandardListItem title="My Company Info" type="Active" press="onUserMenuPress"/>
+                    <StandardListItem title="What's New in Dellion GCP?" type="Active" press="onUserMenuPress"/>
+                </List>
+
+                <core:HTML content='&lt;hr class=&quot;popoverSeparator&quot;&gt;' />
+
+                <!-- Logout -->
+                 <List ShowSeparators="None" class="userPopoverMenu">
+                    <StandardListItem title="Logout" type="Active" press="onLogout"/>
+                </List>
+
             </VBox>
         </content>
-        <beginButton>
-            <Button
-                text="{i18n>logout}"
-                icon="sap-icon://log"
-                type="Reject"
-                press="onLogout"
-                width="100%"/>
-        </beginButton>
     </ResponsivePopover>
 </core:FragmentDefinition>

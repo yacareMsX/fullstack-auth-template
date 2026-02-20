@@ -5,21 +5,25 @@
     xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" displayBlock="true">
     <tnt:ToolPage id="toolPage">
         <tnt:header>
-            <tnt:ToolHeader class="bannerHeader">
-                <!-- <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" tooltip="{i18n>menu}" class="sapUiSmallMarginEnd"/> -->
-                <Button icon="img/home.svg" type="Transparent" press="onNavHome" tooltip="{i18n>backToHome}" class="sapUiSmallMarginEnd">
-                    <layoutData>
-                        <OverflowToolbarLayoutData priority="NeverOverflow"/>
-                    </layoutData>
-                </Button>
-                <!-- <Button icon="sap-icon://nav-back" type="Transparent" press="onNavHome" tooltip="{i18n>backToHome}" class="sapUiSmallMarginEnd"/> -->
-                <Title text="{i18n>headerTitle}" level="H2" class="sapUiSmallMarginBegin"/>
+            <tnt:ToolHeader class="appHeader">
+                <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" visible="{ui>/menuVisible}" tooltip="{i18n>menu}"/>
+                <Button icon="sap-icon://nav-back" type="Transparent" press="onNavHome" visible="true" tooltip="{i18n>backToHome}"/>
+                <Image src="../../img/delliom_logo.png" height="2rem" press="onNavHome" class="sapUiTinyMarginBegin sapUiTinyMarginEnd" densityAware="false"/>
+                <Title text="Delliom Compliance" level="H3"/>
+                
                 <ToolbarSpacer/>
-                <Button icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="{i18n>toggleTheme}" class="sapUiSmallMarginEnd"/>
-                <Button icon="sap-icon://search" type="Transparent" tooltip="{i18n>search}"/>
-                <Button icon="sap-icon://sys-help-2" type="Transparent" tooltip="{i18n>help}"/>
-                <Button icon="sap-icon://bell" type="Transparent" tooltip="{i18n>notifications}"/>
-                <Avatar src="../../../img/profile_pic.png" displaySize="XS" class="sapUiSmallMarginBegin" tooltip="{i18n>profile}"/>
+                
+                <SearchField width="40%" placeholder="{i18n>search}" search="onSearch"/>
+                
+                <ToolbarSpacer/>
+                
+                <Button icon="sap-icon://bell" type="Transparent" tooltip="{i18n>notifications}" press="onNotificationsPress">
+                    <customData>
+                        <BadgeCustomData key="badge" value="7" visible="true" xmlns="sap.m"/>
+                    </customData>
+                </Button>
+                <Button icon="sap-icon://sys-help" type="Transparent" tooltip="{i18n>help}" press="onHelpPress"/>
+                <Avatar src="../../img/profile_pic.png" displaySize="XS" press="onProfilePress" class="sapUiTinyMarginBeginEnd"/>
             </tnt:ToolHeader>
         </tnt:header>
         <tnt:sideContent>

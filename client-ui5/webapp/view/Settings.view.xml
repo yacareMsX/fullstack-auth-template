@@ -1,0 +1,127 @@
+<mvc:View
+    controllerName="invoice.app.controller.Settings"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:layout="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+
+    <Page
+        title="{i18n>settingsTitle}"
+        showNavButton="true"
+        navButtonPress="onNavBack"
+        class="sapUiContentPadding">
+
+        <IconTabBar
+            id="idIconTabBar"
+            expanded="true"
+            class="sapUiResponsiveContentPadding">
+            <items>
+                <IconTabFilter
+                    text="{i18n>portalPreferences}"
+                    key="portalPreferences">
+                    
+                    <Panel width="auto" class="sapUiResponsiveMargin" accessibleRole="Region">
+                        <headerToolbar>
+                            <Toolbar height="3rem" style="Clear">
+                                <Title text="{i18n>generalSettings}" titleStyle="H3"/>
+                                <ToolbarSpacer />
+                                <Button icon="sap-icon://overflow" type="Transparent" />
+                            </Toolbar>
+                        </headerToolbar>
+                        <content>
+                            <form:SimpleForm
+                                editable="true"
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="12"
+                                labelSpanL="12"
+                                labelSpanM="12"
+                                labelSpanS="12"
+                                adjustLabelSpan="false"
+                                emptySpanXL="0"
+                                emptySpanL="0"
+                                emptySpanM="0"
+                                emptySpanS="0"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="1"
+                                singleContainerFullSize="false">
+                                <form:content>
+                                    
+                                    <core:Title text="" />
+                                    
+                                    <Label text="{i18n>dateFormat}" />
+                                    <Select selectedKey="{settings>/dateFormat}" width="100%">
+                                        <items>
+                                            <core:Item key="dd.MM.yyyy" text="DD.MM.YYYY" />
+                                            <core:Item key="MM/dd/yyyy" text="MM/DD/YYYY" />
+                                            <core:Item key="yyyy-MM-dd" text="YYYY-MM-DD" />
+                                        </items>
+                                    </Select>
+
+                                    <Label text="{i18n>numberFormat}" />
+                                    <Select selectedKey="{settings>/numberFormat}" width="100%">
+                                        <items>
+                                            <core:Item key="1,234,567.89" text="1,234,567.89" />
+                                            <core:Item key="1.234.567,89" text="1.234.567,89" />
+                                        </items>
+                                    </Select>
+
+                                    <Label text="{i18n>language}" />
+                                    <Select selectedKey="{settings>/language}" width="100%">
+                                        <items>
+                                            <core:Item key="en" text="{i18n>langEnglish}" />
+                                            <core:Item key="es" text="{i18n>langSpanish}" />
+                                            <core:Item key="fr" text="{i18n>langFrench}" />
+                                            <core:Item key="pl" text="{i18n>langPolish}" />
+                                        </items>
+                                    </Select>
+
+                                    <core:Title text="" />
+
+                                    <Label text="{i18n>timeFormat}" />
+                                    <Select selectedKey="{settings>/timeFormat}" width="100%">
+                                        <items>
+                                            <core:Item key="24h" text="14:10:02 (24 Hours)" />
+                                            <core:Item key="12h" text="02:10:02 PM (12 Hours)" />
+                                        </items>
+                                    </Select>
+
+                                    <Label text="{i18n>appearance}" />
+                                    <Select selectedKey="{settings>/appearance}" width="100%">
+                                        <items>
+                                            <core:Item key="auto" text="Auto-detect" />
+                                            <core:Item key="light" text="Light" />
+                                            <core:Item key="dark" text="Dark" />
+                                            <core:Item key="hc_light" text="High Contrast (Light)" />
+                                            <core:Item key="hc_dark" text="High Contrast (Dark)" />
+                                        </items>
+                                    </Select>
+
+                                    <Label text="{i18n>timeZone}" />
+                                    <Select selectedKey="{settings>/timeZone}" width="100%">
+                                        <items>
+                                            <core:Item key="Europe/Madrid" text="Europe/Madrid" />
+                                            <core:Item key="UTC" text="UTC" />
+                                            <core:Item key="America/New_York" text="America/New_York" />
+                                        </items>
+                                    </Select>
+
+                                </form:content>
+                            </form:SimpleForm>
+                        </content>
+                    </Panel>
+                    
+                    <Toolbar style="Clear" class="sapUiSmallMarginTop">
+                         <ToolbarSpacer />
+                         <Button text="{i18n>saveSettings}" type="Emphasized" press="onSaveSettings" />
+                    </Toolbar>
+
+                </IconTabFilter>
+                
+
+            </items>
+        </IconTabBar>
+    </Page>
+</mvc:View>

@@ -7,8 +7,8 @@
         "test": "ui5 test"
     },
     "devDependencies": {
-        "@ui5/cli": "^3.0.0",
         "@sap/ux-ui5-tooling": "1",
+        "@ui5/cli": "^4.0.44",
         "ui5-middleware-simpleproxy": "^0.9.5"
     }
 }

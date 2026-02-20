@@ -1,0 +1,114 @@
+<mvc:View
+    controllerName="invoice.app.controller.Calendar"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified"
+    xmlns:l="sap.ui.layout"
+    height="100%">
+
+    <Page showHeader="false" enableScrolling="false">
+        <content>
+            <VBox height="100%" class="sapUiSmallMargin">
+                <!-- Header with Title and Button -->
+                <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBottom">
+                    <Title text="Calendar" level="H1" titleStyle="H1" class="sapUiTinyMarginTop"/>
+                    <Button text="Get Assistance" type="Ghost"/>
+                </HBox>
+
+                <!-- IconTabBar for Tabs and Separator -->
+                <IconTabBar
+                    id="idIconTabBar"
+                    select="onTabSelect"
+                    expandable="false"
+                    headerBackgroundDesign="Transparent"
+                    class="sapUiNoContentPadding"
+                    stretchContentHeight="true">
+                    <layoutData>
+                        <FlexItemData growFactor="1" />
+                    </layoutData>
+                    <items>
+                        <IconTabFilter text="Calendar" key="calendar">
+                            <content>
+                                <!-- Content Container with Spacing -->
+                                <VBox height="100%" class="sapUiMediumMarginTop">
+                                    <l:Splitter height="100%" width="100%">
+                                        
+                                        <!-- Left Sidebar: Filters/Legend -->
+                                        <VBox width="20%" class="sapUiSmallMarginEnd">
+                                            <layoutData>
+                                                <l:SplitterLayoutData size="250px" resizable="true" />
+                                            </layoutData>
+                                            
+                                            <Title text="18.02.2026" level="H4" class="sapUiSmallMarginBottom"/>
+                        
+                                            <List headerText="Filters" mode="MultiSelect" includeItemInSelection="true">
+                                                <StandardListItem title="Planned Events for Cloud..." icon="sap-icon://appointment" infoState="Information" />
+                                                <StandardListItem title="License key expiry" icon="sap-icon://key" infoState="Warning" />
+                                                <StandardListItem title="Schedule an Expert or Ma..." icon="sap-icon://calendar" infoState="Success" />
+                                                <StandardListItem title="Maintenance deliveries (p..." icon="sap-icon://shipping-status" infoState="Error" />
+                                                <StandardListItem title="Extranet release dates" icon="sap-icon://date-time" />
+                                                <StandardListItem title="SAP Security Patch days" icon="sap-icon://shield" />
+                                            </List>
+                                        </VBox>
+                        
+                                        <!-- Right Content: Calendar -->
+                                        <VBox width="80%">
+                                            <layoutData>
+                                                <l:SplitterLayoutData size="auto" />
+                                            </layoutData>
+                                            
+                                            <Toolbar>
+                                                <CheckBox text="Favorite products only" />
+                                                <SearchField placeholder="Search" width="300px"/>
+                                                <ToolbarSpacer/>
+                                                <Select selectedKey="month">
+                                                    <core:Item key="month" text="Month" />
+                                                    <core:Item key="week" text="Week" />
+                                                    <core:Item key="day" text="Day" />
+                                                </Select>
+                                                <Button icon="sap-icon://hide" text="Hide Legend" type="Transparent"/>
+                                                <Switch state="true" customTextOn="Aggregated view" customTextOff="List view">
+                                                    <layoutData>
+                                                        <FlexItemData growFactor="0" />
+                                                    </layoutData>
+                                                </Switch>
+                                                <Button icon="sap-icon://filter" type="Transparent"/>
+                                                <Button icon="sap-icon://download" type="Transparent"/>
+                                                <Button icon="sap-icon://overflow" type="Transparent"/>
+                                            </Toolbar>
+                        
+                                            <SinglePlanningCalendar
+                                                id="SPC1"
+                                                class="sapUiSmallMarginTop"
+                                                title="February 2026"
+                                                startDate="{path: '/startDate'}"
+                                                appointments="{path: '/appointments'}">
+                                                <views>
+                                                    <SinglePlanningCalendarMonthView key="MonthView" title="Month" />
+                                                    <SinglePlanningCalendarWeekView key="WeekView" title="Week" />
+                                                    <SinglePlanningCalendarDayView key="DayView" title="Day" />
+                                                </views>
+                                                <appointments>
+                                                    <unified:CalendarAppointment
+                                                        title="{title}"
+                                                        text="{text}"
+                                                        type="{type}"
+                                                        icon="{icon}"
+                                                        startDate="{startDate}"
+                                                        endDate="{endDate}" />
+                                                </appointments>
+                                            </SinglePlanningCalendar>
+                                        </VBox>
+                                    </l:Splitter>
+                                </VBox>
+                            </content>
+                        </IconTabFilter>
+                        <IconTabFilter text="Maintenance Deliveries" key="maintenance"/>
+                        <IconTabFilter text="Planned Events for Cloud Services" key="events"/>
+                    </items>
+                </IconTabBar>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

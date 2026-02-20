@@ -70,6 +70,64 @@ sap.ui.define([
             window.location.href = "../../index.html";
         },
 
+        onNotificationsPress: function (oEvent) {
+            sap.m.MessageToast.show("You have 7 new notifications");
+        },
+
+        onHelpPress: function () {
+            window.location.href = "../../index.html#/help";
+        },
+
+        onProfilePress: function (oEvent) {
+            var oButton = oEvent.getSource();
+            var oView = this.getView();
+
+            if (!this._pProfilePopover) {
+                this._pProfilePopover = sap.ui.core.Fragment.load({
+                    id: oView.getId(),
+                    name: "invoice.app.view.UserProfilePopover",
+                    controller: this
+                }).then(function (oPopover) {
+                    oView.addDependent(oPopover);
+                    return oPopover;
+                });
+            }
+
+            this._pProfilePopover.then(function (oPopover) {
+                oPopover.openBy(oButton);
+            });
+        },
+
+        onThemeToggle: function () {
+            var sCurrentTheme = sap.ui.getCore().getConfiguration().getTheme();
+            var sNewTheme = (sCurrentTheme === "sap_horizon_dark") ? "sap_horizon" : "sap_horizon_dark";
+
+            sap.ui.getCore().applyTheme(sNewTheme);
+            localStorage.setItem("theme", sNewTheme);
+            // In Shell this updates the icon, but here we don't have the icon in header anymore.
+            // But the popover might use it if we share the same controller logic/model name.
+        },
+
+        onLogout: function () {
+            var sToken = localStorage.getItem("auth_token");
+            if (sToken) {
+                fetch("/api/logout", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer " + sToken
+                    }
+                }).finally(function () {
+                    localStorage.removeItem("auth_token");
+                    localStorage.removeItem("auth_user");
+                    window.location.href = "../../login.html";
+                });
+            } else {
+                localStorage.removeItem("auth_token");
+                localStorage.removeItem("auth_user");
+                window.location.href = "../../login.html";
+            }
+        },
+
         onMenuPress: function () {
             // Optional: Toggle sidebar if we wanted to support collapsing the SplitApp master
         },

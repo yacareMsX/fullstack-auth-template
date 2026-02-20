@@ -17,6 +17,97 @@ sap.ui.define([
             // Log Security Model Data
             var oSecurityModel = this.getOwnerComponent().getModel("security");
             console.log("[Home] Security Model Data onInit:", oSecurityModel ? oSecurityModel.getData() : "Model not found");
+
+            this.getOwnerComponent().getRouter().attachRouteMatched(this._onRouteMatched, this);
+        },
+
+        _onRouteMatched: function (oEvent) {
+            var sRouteName = oEvent.getParameter("name");
+            if (sRouteName !== "home") {
+                return;
+            }
+
+            var oArgs = oEvent.getParameter("arguments");
+            var oQuery = oArgs["?query"];
+
+            console.log("[Home] _onRouteMatched triggered. Query:", oQuery);
+
+            if (oQuery && oQuery.section) {
+                var sSectionId;
+                switch (oQuery.section) {
+                    case "invoices":
+                        sSectionId = "invoices";
+                        break;
+                    case "reporting":
+                        sSectionId = "reporting";
+                        break;
+                    case "statutory":
+                        sSectionId = "statutory";
+                        break;
+                    case "france":
+                        sSectionId = "invoices"; // France is in eInvoice Apps section? No, let's check view.
+                        // View has: id="invoices" title="eInvoice Apps" -> contains France tile.
+                        // But also France Layout routes exist? 
+                        // The sidebar "France" item was likely mapping to `nav_france`?
+                        // Shell controller maps `nav_einvoice` -> `section: "invoices"`.
+                        // Let's assume France is inside "invoices" or "reporting".
+                        // Looking at View: "eInvoice Apps" (id="invoices") has "eInvoice Francia".
+                        // "Statutory" (id="statutory") has models.
+                        // "Reporting" has France Reporting.
+                        // Let's map based on structure.
+                        break;
+                    case "face":
+                        sSectionId = "invoices"; // FACE is in eInvoice Apps
+                        break;
+                    case "certificates":
+                        sSectionId = "config"; // Certificates in Global Configuration? view id="config" has certificate tile.
+                        break;
+                    case "businessMappings":
+                        sSectionId = "school"; // Business Mappings in "School" section (id="school")
+                        break;
+                    case "userManagement":
+                        sSectionId = "config"; // User Management in "Global Config" (id="config")
+                        break;
+                    case "config":
+                        sSectionId = "config";
+                        break;
+                    case "processDesigner":
+                        sSectionId = "workflow";
+                        break;
+                    case "workflow":
+                        sSectionId = "workflow";
+                        break;
+                    case "school":
+                        sSectionId = "school";
+                        break;
+                    case "audit":
+                        sSectionId = "audit";
+                        break;
+                    case "api":
+                        sSectionId = "api";
+                        break;
+                }
+
+                console.log("[Home] Scrolling to section ID:", sSectionId);
+
+                if (sSectionId) {
+                    // Use a timeout to ensure the view is rendered
+                    setTimeout(function () {
+                        var oObjectPage = this.byId("ObjectPageLayout");
+                        if (oObjectPage) {
+                            var sFullId = this.byId(sSectionId) ? this.byId(sSectionId).getId() : null;
+                            if (sFullId) {
+                                console.log("[Home] ObjectPageLayout found. Scrolling to:", sFullId);
+                                oObjectPage.scrollToSection(sFullId);
+                            } else {
+                                console.error("[Home] Section not found: " + sSectionId);
+                            }
+                        } else {
+                            console.error("[Home] ObjectPageLayout NOT found.");
+                        }
+                    }.bind(this), 500);
+                }
+            }
         },
 
         onAfterRendering: function () {

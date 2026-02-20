@@ -136,7 +136,7 @@ body,
 .loginPage,
 .loginPage .sapMPage,
 .loginPage .sapMPageBgStandard {
-    background-image: url('../img/login_bg.png') !important;
+    background-image: url('../images/login_bg.png') !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -230,11 +230,12 @@ body,
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 30, 60, 0.4); /* Dark blue overlay for text readability */
+    background: rgba(0, 30, 60, 0.4);
+    /* Dark blue overlay for text readability */
     z-index: 0;
 }
 
-.helpHeroSection > * {
+.helpHeroSection>* {
     position: relative;
     z-index: 1;
 }
@@ -318,6 +319,25 @@ body,
 
 .sapTntNavLI:hover {
     background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Bold Sidebar Text for Home Page */
+.homeSidebar .sapTntNLIText {
+    font-weight: 700 !important;
+}
+
+/* Sidebar Spacing - Applied to the container */
+.homeSidebar .sapTntNavL {
+    padding-top: 2rem !important;
+}
+
+/* Header Visual Delimiter */
+.appHeader {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    border-bottom: 2px solid #b0b0b0 !important;
+    /* Visible grey border */
+    z-index: 100 !important;
+    position: relative;
 }
 
 /* Banner Header */
@@ -563,20 +583,34 @@ html.sapUiTheme-sap_horizon,
     color: #0070f2 !important;
 }
 
+/* Dark Mode Fixes for Section Headers */
+html.sapUiTheme-sap_horizon_dark .sapUxAPObjectPageSectionHeader {
+    display: none !important;
+    /* Hide the standard duplicate header */
+}
+
+/* Ensure Custom Title is White in Dark Mode */
+html.sapUiTheme-sap_horizon_dark .customSectionTitle,
+html.sapUiTheme-sap_fiori_3_hcb .customSectionTitle {
+    color: #ffffff !important;
+}
+
 /* Fix Focus Outline without covering content */
 .sapUiTheme-sap_horizon .sapUxAPObjectPageSection:focus,
-.sapUiTheme-sap_horizon .sapUxAPObjectPageSubSection:focus {
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSubSection:focus,
+html.sapUiTheme-sap_horizon_dark .sapUxAPObjectPageSection:focus,
+html.sapUiTheme-sap_horizon_dark .sapUxAPObjectPageSubSection:focus {
     outline: none !important;
     border: none !important;
 }
 
 .sapUiTheme-sap_horizon .sapUxAPObjectPageSection:focus::before,
-.sapUiTheme-sap_horizon .sapUxAPObjectPageSubSection:focus::before {
-    border: 1px solid #ffffff !important;
-    /* Make border white as requested */
+.sapUiTheme-sap_horizon .sapUxAPObjectPageSubSection:focus::before,
+html.sapUiTheme-sap_horizon_dark .sapUxAPObjectPageSection:focus::before,
+html.sapUiTheme-sap_horizon_dark .sapUxAPObjectPageSubSection:focus::before {
+    border: 1px solid transparent !important;
     outline: none !important;
     background: transparent !important;
-    /* Ensure content is visible */
     pointer-events: none !important;
 }
 
@@ -599,21 +633,170 @@ html.sapUiTheme-sap_horizon,
 html.sapUiTheme-sap_horizon .loginPage,
 html.sapUiTheme-sap_horizon .loginPage .sapMPage,
 html.sapUiTheme-sap_horizon .loginPage .sapMPageBgStandard {
-    background-image: url('../img/login_bg.png') !important;
+    background-image: url('../images/login_bg.png') !important;
     background-color: transparent !important;
     background-size: cover !important;
     background-attachment: fixed !important;
 }
 
-/* Force White Background globally as per user request */
+/* Force White Background globally as per user request (Light Mode) */
 .sapMGlobalBackgroundColor,
-.sapMGenericTile, 
-.sapMPage, 
-.sapMPageBg, 
+.sapMGenericTile,
+.sapMPage,
+.sapMPageBg,
 .sapUiGlobalBackgroundColor,
 .sapMApp,
 .sapMShell,
 .sapMShellBG {
     background-color: #ffffff !important;
     background-image: none !important;
+}
+
+/* Dark Mode Background Fix */
+html.sapUiTheme-sap_horizon_dark .sapMGlobalBackgroundColor,
+html.sapUiTheme-sap_horizon_dark .sapMPage,
+html.sapUiTheme-sap_horizon_dark .sapMPageBg,
+html.sapUiTheme-sap_horizon_dark .sapUiGlobalBackgroundColor,
+html.sapUiTheme-sap_horizon_dark .sapMApp,
+html.sapUiTheme-sap_horizon_dark .sapMShell,
+html.sapUiTheme-sap_horizon_dark .sapMShellBG,
+html.sapUiTheme-sap_horizon_dark body,
+html.sapUiTheme-sap_horizon_dark .sapUiBody {
+    background-color: #000000 !important;
+    /* Black background */
+    background-image: none !important;
+}
+
+/* Ensure tiles stand out in dark mode */
+html.sapUiTheme-sap_horizon_dark .sapMGT {
+    background-color: #1d232a !important;
+    /* Dark Grey / Light Black */
+    border: 1px solid #333 !important;
+    /* Subtle border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+    /* Restore shadow */
+}
+
+/* High Contrast Dark Mode Fix */
+html.sapUiTheme-sap_fiori_3_hcb .sapMGlobalBackgroundColor,
+html.sapUiTheme-sap_fiori_3_hcb .sapMGenericTile,
+html.sapUiTheme-sap_fiori_3_hcb .sapMPage,
+html.sapUiTheme-sap_fiori_3_hcb .sapMPageBg,
+html.sapUiTheme-sap_fiori_3_hcb .sapUiGlobalBackgroundColor,
+html.sapUiTheme-sap_fiori_3_hcb .sapMApp,
+html.sapUiTheme-sap_fiori_3_hcb .sapMShell,
+html.sapUiTheme-sap_fiori_3_hcb .sapMShellBG,
+html.sapUiTheme-sap_fiori_3_hcb body,
+html.sapUiTheme-sap_fiori_3_hcb .sapUiBody {
+    background-color: #000000 !important;
+}
+
+/* Secciones Header Alignment */
+li[data-key="secciones_header"] .sapTntNavLIText {
+    margin-left: -1.0rem !important;
+    /* Move text to the left to align with icons */
+    font-weight: bold;
+    /* Make it stand out as a header */
+    color: #acc6e1;
+    /* Optional: distinct header color */
+    text-transform: uppercase;
+    /* Optional: make it look more like a section header */
+    font-size: 0.75rem;
+}
+
+li[data-key="secciones_header"] {
+    pointer-events: none;
+    /* Ensure it's not clickable as it is a header */
+    cursor: default;
+
+    /* Separator Line */
+    border-top: 1px solid #999999 !important;
+    margin-top: 12px !important;
+}
+
+/* Custom Flag Icon Size */
+.flagIcon img {
+    height: 2rem !important;
+    /* Reduced from 2.5rem */
+    width: auto !important;
+    margin-top: 0.5rem;
+    /* Align with text if needed */
+}
+
+/* Bottom Left Logo */
+.bottomLeftLogo {
+    position: absolute !important;
+    bottom: 2rem !important;
+    left: 2rem !important;
+    height: 3rem !important;
+    width: auto !important;
+    z-index: 10 !important;
+}
+
+/* User Profile Popover */
+.userProfilePopover .sapMPopoverCont {
+    padding: 2rem 1.5rem !important;
+    /* Increased padding */
+}
+
+.userPopoverHeader {
+    text-align: center;
+    padding-bottom: 1rem;
+}
+
+.userAvatar {
+    background-color: #dbf0ff !important;
+    /* Lighter blue like reference */
+    border-color: #dbf0ff !important;
+    color: #0064d9 !important;
+    /* SAP Blue icon */
+    margin-bottom: 1rem !important;
+    /* Space between avatar and name */
+}
+
+.userPopoverName {
+    font-family: var(--sapTitleFontFamily) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    /* Decreased font size */
+    color: #32363a !important;
+    margin-bottom: 0.25rem !important;
+    line-height: 1.2 !important;
+}
+
+.userPopoverDetail {
+    font-size: 0.8rem !important;
+    /* Decreased font size */
+    color: #555c61 !important;
+    /* Slightly darker grey for readability */
+    line-height: 1.4 !important;
+    margin-bottom: 0px !important;
+    /* Compact details */
+}
+
+.popoverSeparator {
+    border: 0;
+    border-top: 1px solid #e5e5e5;
+    margin: 0.5rem 0 0.5rem 0;
+    /* Tight margins */
+    width: 100%;
+}
+
+.userPopoverMenu .sapMLIB {
+    border-bottom: none !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    height: 2.25rem !important;
+    /* Even more compact menu items */
+    line-height: 2.25rem !important;
+}
+
+.userPopoverMenu .sapMLIBContent {
+    font-size: 0.85rem !important;
+    /* Decreased font size */
+    color: #32363a !important;
+}
+
+.userPopoverMenu .sapMLIB:hover {
+    background-color: #f5f5f5 !important;
 }

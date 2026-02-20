@@ -18,6 +18,7 @@ sap.ui.define([
 
                 faceSidebarVisible: false,
 
+                homeSidebarVisible: false,
                 menuVisible: false, // Default to false for Home
                 headerTitle: "Home",
                 headerVisible: true,
@@ -127,6 +128,7 @@ sap.ui.define([
             oUIModel.setProperty("/businessMappingsSidebarVisible", false);
             oUIModel.setProperty("/faceSidebarVisible", false);
             oUIModel.setProperty("/helpSidebarVisible", false);
+            oUIModel.setProperty("/homeSidebarVisible", false);
         },
 
         _onRouteMatched: function (oEvent) {
@@ -146,11 +148,25 @@ sap.ui.define([
             var sAppTitle = oResourceBundle.getText("appTitle");
 
             // Hide sidebar and menu button on Home screen
-            if (sRouteName === "home") {
+            if (sRouteName === "home" || sRouteName === "calendar") {
                 // Sidebars already hidden by _resetSidebars
+                this._sCurrentContext = "home";
                 oUIModel.setProperty("/headerVisible", true);
                 oUIModel.setProperty("/headerTitle", sAppTitle);
-                oUIModel.setProperty("/shellSidebarExpanded", false);
+                oUIModel.setProperty("/shellSidebarExpanded", true);
+                oUIModel.setProperty("/menuVisible", true);
+                oUIModel.setProperty("/homeSidebarVisible", true);
+                oUIModel.setProperty("/shellSidebarVisible", false);
+            } else if (sRouteName === "settings") {
+                // Treat like Home for Sidebar, but show specific title
+                this._sCurrentContext = "home";
+                oUIModel.setProperty("/headerVisible", true);
+                oUIModel.setProperty("/headerTitle", oResourceBundle.getText("settingsTitle"));
+                oUIModel.setProperty("/shellSidebarExpanded", true);
+                oUIModel.setProperty("/menuVisible", true);
+                oUIModel.setProperty("/homeSidebarVisible", true);
+                oUIModel.setProperty("/shellSidebarVisible", false);
+                oUIModel.setProperty("/backButtonVisible", true); // Allow going back from settings
             } else if (sRouteName === "help") {
                 this._sCurrentContext = "help";
                 oUIModel.setProperty("/headerVisible", true);
@@ -177,7 +193,7 @@ sap.ui.define([
                 // Show Menu Button to allow toggling sidebar
                 oUIModel.setProperty("/menuVisible", true);
 
-                // Show Back Button -> DISABLED to keep Home Icon visible
+                // Show Back Button -> DISABLED to keep Home Icon visible (Moved to local view)
                 oUIModel.setProperty("/backButtonVisible", false);
 
                 if (sRouteName.indexOf("statutory") === 0 || sRouteName.indexOf("model") === 0) {
@@ -237,6 +253,49 @@ sap.ui.define([
             var oRouter = this.getOwnerComponent().getRouter();
 
             switch (sKey) {
+                // New Sidebar Items Navigation
+                case "nav_einvoice":
+                    oRouter.navTo("home", { "?query": { section: "invoices" } });
+                    break;
+                case "nav_reporting":
+                    oRouter.navTo("home", { "?query": { section: "reporting" } });
+                    break;
+                case "nav_statutory":
+                    oRouter.navTo("home", { "?query": { section: "statutory" } });
+                    break;
+                case "nav_config":
+                    oRouter.navTo("home", { "?query": { section: "config" } });
+                    break;
+                case "nav_process":
+                    oRouter.navTo("home", { "?query": { section: "workflow" } });
+                    break;
+                case "nav_school":
+                    oRouter.navTo("home", { "?query": { section: "school" } });
+                    break;
+                case "nav_audit":
+                    oRouter.navTo("home", { "?query": { section: "audit" } });
+                    break;
+                case "nav_api":
+                    oRouter.navTo("home", { "?query": { section: "api" } });
+                    break;
+
+                // Footer Items
+                case "footer_assistance":
+                    sap.m.MessageToast.show("Get Assistance clicked");
+                    break;
+                case "footer_feedback":
+                    sap.m.MessageToast.show("Feedback feature coming soon");
+                    break;
+                case "footer_legal":
+                    sap.m.MessageToast.show("Legal Information");
+                    break;
+                case "footer_status":
+                    sap.m.MessageToast.show("System Status: Operational");
+                    break;
+                case "footer_mobile":
+                    sap.m.MessageToast.show("Mobile App download link");
+                    break;
+
                 case "dashboard":
                     oRouter.navTo("dashboard");
                     break;
@@ -254,6 +313,12 @@ sap.ui.define([
                     break;
                 case "scanInvoice":
                     oRouter.navTo("scanInvoice");
+                    break;
+                case "calendar":
+                    oRouter.navTo("calendar");
+                    break;
+                case "home":
+                    oRouter.navTo("home");
                     break;
                 case "uploadExcel":
                     sap.m.MessageToast.show("Coming soon");
@@ -458,6 +523,31 @@ sap.ui.define([
             this._pProfilePopover.then(function (oPopover) {
                 oPopover.openBy(oButton);
             });
+        },
+
+        onNotificationsPress: function (oEvent) {
+            sap.m.MessageToast.show("You have 7 new notifications");
+        },
+
+        onHelpPress: function () {
+            this.getOwnerComponent().getRouter().navTo("helpApps");
+        },
+
+        onSearch: function (oEvent) {
+            var sQuery = oEvent.getParameter("query");
+            sap.m.MessageToast.show("Search: " + sQuery);
+        },
+
+        onUserMenuPress: function (oEvent) {
+            var oItem = oEvent.getSource();
+            var sTitle = oItem.getTitle();
+
+            if (sTitle === "My Settings" || sTitle === "Mis Ajustes" || sTitle === "Mes paramètres" || sTitle === "Moje ustawienia") { // Check against all languages or use a data attribute
+                var oRouter = this.getOwnerComponent().getRouter();
+                oRouter.navTo("settings");
+            } else {
+                sap.m.MessageToast.show(sTitle + " - Coming Soon");
+            }
         },
 
         onLogout: function () {

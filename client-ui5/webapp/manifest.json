@@ -40,7 +40,8 @@
                 "sap.ui.layout": {},
                 "sap.f": {},
                 "sap.uxap": {},
-                "sap.viz": {}
+                "sap.viz": {},
+                "sap.ui.unified": {}
             }
         },
         "resources": {
@@ -88,8 +89,13 @@
             "routes": [
                 {
                     "name": "home",
-                    "pattern": "",
+                    "pattern": ":?query:",
                     "target": "home"
+                },
+                {
+                    "name": "calendar",
+                    "pattern": "calendar",
+                    "target": "calendar"
                 },
                 {
                     "name": "invoices",
@@ -390,6 +396,11 @@
                     "name": "helpLeyCreaCrece",
                     "pattern": "help/ley-crea-y-crece",
                     "target": "helpLeyCreaCrece"
+                },
+                {
+                    "name": "settings",
+                    "pattern": "settings",
+                    "target": "settings"
                 }
             ],
             "targets": {
@@ -500,6 +511,12 @@
                 "home": {
                     "viewId": "home",
                     "viewName": "Home",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "calendar": {
+                    "viewId": "calendar",
+                    "viewName": "Calendar",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 },
@@ -772,6 +789,12 @@
                 "helpLeyCreaCrece": {
                     "viewId": "helpLeyCreaCrece",
                     "viewName": "help.HelpLeyCreaCrece",
+                    "controlId": "shellNavContainer",
+                    "controlAggregation": "pages"
+                },
+                "settings": {
+                    "viewId": "settings",
+                    "viewName": "Settings",
                     "controlId": "shellNavContainer",
                     "controlAggregation": "pages"
                 }

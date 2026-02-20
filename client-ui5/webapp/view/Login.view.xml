@@ -26,12 +26,10 @@
                         width="100%" 
                         alignItems="Center"
                         class="sapUiMediumMarginBottom">
-                        <Image
-                            src="img/t4s_logo.png"
-                            width="200px"
-                            class="sapUiSmallMarginBottom"/>
+
+
                         <Title 
-                            text="Compliance Hub" 
+                            text="Global Compliance Platform" 
                             level="H3"
                             class="loginTitle"/>
                     </VBox>
@@ -95,6 +93,12 @@
                 </VBox>
                 
             </FlexBox>
+            
+            <!-- Bottom Left Logo -->
+            <Image
+                src="images/logo_vasst4s.svg"
+                class="bottomLeftLogo"/>
+                
         </content>
     </Page>
 </mvc:View>

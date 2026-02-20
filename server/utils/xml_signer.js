@@ -1,5 +1,5 @@
 const { SignedXml } = require('xml-crypto');
-const { DOMParser, XMLSerializer } = require('xmldom');
+const { DOMParser, XMLSerializer } = require('@xmldom/xmldom');
 const forge = require('node-forge');
 const xpath = require('xpath');
 

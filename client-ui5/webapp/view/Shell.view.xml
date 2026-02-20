@@ -6,16 +6,26 @@
     xmlns:core="sap.ui.core" displayBlock="true" height="100%">
 
     <VBox height="100%">
-        <f:ShellBar title="{ui>/headerTitle}" homeIcon="img/home.svg" homeIconPressed="onNavHome" showMenuButton="{ui>/menuVisible}" showNavButton="{ui>/backButtonVisible}" menuButtonPressed="onMenuPress" navButtonPressed="onNavBack" showSearch="true" showNotifications="true" notificationsPressed="onNotificationsPress" showProductSwitcher="true" productSwitcherPressed="onProductSwitcherPress">
-            <f:additionalContent>
-                <!-- Button id="themeButton" icon="{ui>/themeIcon}" type="Transparent" press="onThemeToggle" tooltip="Toggle Theme"/ -->
-                <!-- Button icon="sap-icon://home" type="Transparent" press="onNavHome" tooltip="Home"/ -->
-                <Button id="languageButton" icon="sap-icon://world" type="Transparent" press="onLanguagePress" tooltip="{i18n>selectLanguage}"/>
-            </f:additionalContent>
-            <f:profile>
-                <Avatar press="onProfilePress" src="img/profile_pic.png" displaySize="XS"/>
-            </f:profile>
-        </f:ShellBar>
+        <tnt:ToolHeader class="appHeader">
+            <Button icon="sap-icon://menu2" type="Transparent" press="onMenuPress" visible="{ui>/menuVisible}" tooltip="Menu"/>
+            <Button icon="sap-icon://nav-back" type="Transparent" press="onNavBack" visible="{ui>/backButtonVisible}" tooltip="Back"/>
+            <Image src="img/delliom_logo.png" height="2rem" press="onNavHome" class="sapUiTinyMarginBegin sapUiTinyMarginEnd" densityAware="false"/>
+            <Title text="Delliom Compliance" level="H3"/>
+            
+            <ToolbarSpacer />
+            
+            <SearchField width="40%" placeholder="Search" search="onSearch"/>
+            
+            <ToolbarSpacer />
+            
+            <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications">
+                <customData>
+                    <BadgeCustomData key="badge" value="7" visible="true" xmlns="sap.m"/>
+                </customData>
+            </Button>
+            <Button icon="sap-icon://sys-help" type="Transparent" tooltip="Help" press="onHelpPress"/>
+            <Avatar src="img/profile_pic.png" displaySize="XS" press="onProfilePress" class="sapUiTinyMarginBeginEnd"/>
+        </tnt:ToolHeader>
 
         <tnt:ToolPage id="toolPage" sideExpanded="{ui>/shellSidebarExpanded}">
             <tnt:layoutData>
@@ -23,10 +33,31 @@
             </tnt:layoutData>
             <!-- Side Navigation -->
             <tnt:sideContent>
-                <tnt:SideNavigation expanded="{ui>/shellSidebarExpanded}" itemSelect="onItemSelect">
+                <tnt:SideNavigation expanded="{ui>/shellSidebarExpanded}" itemSelect="onItemSelect" class="{= ${ui>/homeSidebarVisible} ? 'homeSidebar' : '' }">
                     <tnt:NavigationList>
-                        <!-- Default Sidebar Items -->
-                        <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bbyd-dashboard" key="dashboard" visible="{ui>/shellSidebarVisible}"/>
+                            <!-- Top Items -->
+                            <tnt:NavigationListItem text="Home" icon="sap-icon://home" key="home" visible="{ui>/homeSidebarVisible}"/>
+                            <tnt:NavigationListItem text="Calendar" icon="sap-icon://calendar" key="calendar" visible="{ui>/homeSidebarVisible}"/>
+
+                            <!-- Sections Group Header -->
+                            <tnt:NavigationListItem text="Secciones" enabled="false" selectable="false" visible="{ui>/homeSidebarVisible}" class="sidebarSectionHeader sectionHeaderSeparator">
+                                <tnt:customData>
+                                    <core:CustomData key="key" value="secciones_header" writeToDom="true" />
+                                </tnt:customData>
+                            </tnt:NavigationListItem>
+
+                            <!-- Section Items -->
+                            <tnt:NavigationListItem text="eInvoice Apps" icon="sap-icon://document-text" key="nav_einvoice" visible="{ui>/homeSidebarVisible}"/>
+                            <tnt:NavigationListItem text="Reporting" icon="sap-icon://bar-chart" key="nav_reporting" visible="{ui>/homeSidebarVisible}"/>
+                            <tnt:NavigationListItem text="Statutory Reporting" icon="sap-icon://official-service" key="nav_statutory" visible="{ui>/homeSidebarVisible}"/>
+                            <tnt:NavigationListItem text="Global Configuration" icon="sap-icon://action-settings" key="nav_config" visible="{ui>/homeSidebarVisible}"/>
+                            <tnt:NavigationListItem text="Process Designer" icon="sap-icon://process" key="nav_process" visible="{ui>/homeSidebarVisible}"/>
+                            <tnt:NavigationListItem text="School" icon="sap-icon://video" key="nav_school" visible="{ui>/homeSidebarVisible}"/>
+                            <tnt:NavigationListItem text="Audit" icon="sap-icon://shield" key="nav_audit" visible="{ui>/homeSidebarVisible}"/>
+                            <tnt:NavigationListItem text="APIs" icon="sap-icon://api" key="nav_api" visible="{ui>/homeSidebarVisible}"/>
+
+                            <!-- Default Sidebar Items -->
+                            <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bbyd-dashboard" key="dashboard" visible="{ui>/shellSidebarVisible}"/>
 
                         <tnt:NavigationListItem text="{i18n>issueInvoices}" icon="sap-icon://create-form" expanded="false" visible="{ui>/shellSidebarVisible}">
                             <tnt:NavigationListItem text="{i18n>invoiceList}" key="issueList"/>
@@ -121,6 +152,14 @@
                         <tnt:NavigationListItem text="APIs" icon="sap-icon://api" key="helpAPIs" visible="{ui>/helpSidebarVisible}"/>
 
                     </tnt:NavigationList>
+                    <tnt:fixedItem>
+                        <tnt:NavigationList>
+                            <tnt:NavigationListItem text="Get Assistance" icon="sap-icon://sys-help" key="footer_assistance" visible="{ui>/homeSidebarVisible}" />
+                            <tnt:NavigationListItem text="Feedback" icon="sap-icon://feedback" key="footer_feedback" visible="{ui>/homeSidebarVisible}" />
+                            <tnt:NavigationListItem text="Legal" icon="sap-icon://official-service" key="footer_legal" visible="{ui>/homeSidebarVisible}" />
+                            <tnt:NavigationListItem text="Status" icon="sap-icon://monitor-payments" key="footer_status" visible="{ui>/homeSidebarVisible}" />
+                        </tnt:NavigationList>
+                    </tnt:fixedItem>
                 </tnt:SideNavigation>
             </tnt:sideContent>
 

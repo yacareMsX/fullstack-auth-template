@@ -1,8 +1,9 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
-    "sap/m/MessageToast"
-], function (Controller, JSONModel, MessageToast) {
+    "sap/m/MessageToast",
+    "sap/ui/core/routing/History"
+], function (Controller, JSONModel, MessageToast, History) {
     "use strict";
 
     return Controller.extend("invoice.app.controller.statutory.Modelo303", {
@@ -65,6 +66,18 @@ sap.ui.define([
                     }
                 })
                 .catch(err => console.error("Error loading model:", err));
+        },
+
+        onNavBack: function () {
+            var oHistory = History.getInstance();
+            var sPreviousHash = oHistory.getPreviousHash();
+
+            if (sPreviousHash !== undefined) {
+                window.history.go(-1);
+            } else {
+                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                oRouter.navTo("home", {}, true);
+            }
         },
 
         onSave: function () {
